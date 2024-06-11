@@ -1,0 +1,4 @@
+name: bedwars
+version: '${version}'
+main: mc.bedwars.BedWars
+api-version: '1.20'
