@@ -1,18 +1,23 @@
 package mc.bedwars.game;
 
+import mc.bedwars.BedWars;
 import mc.bedwars.game.card.Card;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static mc.bedwars.game.GameData.players_data;
+import static mc.bedwars.game.GameState.end;
+import static mc.bedwars.game.GameState.players_data;
 
 public class PlayerData {
+    private static int order_g = 1;
     private final Player player;
     public List<Card> items = new ArrayList<>();
     public List<Card> equipments = new ArrayList<>();
+    private int order = 0;
     //经济
     private int money = 8;
     //战力
@@ -22,6 +27,8 @@ public class PlayerData {
 
     public PlayerData(Player player) {
         this.player = player;
+        order = order_g++;
+        if (order_g == 5) order_g = 0;
         players_data.put(player, this);
     }
 
@@ -87,7 +94,7 @@ public class PlayerData {
     }
 
     public int getPower() {
-        return power;
+        return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
 
     public boolean removeMoney(int amount) {
@@ -110,6 +117,19 @@ public class PlayerData {
         if (!has_bed) {
             players_data.remove(player);
         }
+        //检测结束
+        if (players_data.size() == 1) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    end();
+                }
+            }.runTaskLater(BedWars.instance, 1);
+        }
         return m;
+    }
+
+    public int getOrder() {
+        return order;
     }
 }
