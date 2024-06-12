@@ -22,6 +22,7 @@ public class PlayerData {
     private int money = 8;
     //战力
     private int power = 2;
+    private int Maxpower = 2;
     //是否拥有床
     private boolean has_bed = true;
 
@@ -94,6 +95,9 @@ public class PlayerData {
     }
 
     public int getPower() {
+        return power ;
+    }
+    public int getMaxPower() {
         return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
 
