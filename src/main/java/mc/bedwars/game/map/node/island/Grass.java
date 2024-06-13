@@ -1,6 +1,6 @@
-package mc.bedwars.game.map.node;
+package mc.bedwars.game.map.node.island;
 
-public class Grass extends Node{
+public class Grass extends Island {
     public Grass(int x, int y) {
         super(x, y);
     }
@@ -9,4 +9,5 @@ public class Grass extends Node{
     public String getType() {
         return "grass";
     }
+
 }

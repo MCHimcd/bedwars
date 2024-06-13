@@ -1,6 +1,7 @@
 package mc.bedwars.game;
 
 import mc.bedwars.game.map.GameMap;
+import mc.bedwars.game.map.node.island.resource.Resource;
 import org.bukkit.entity.Player;
 
 import java.util.Hashtable;
@@ -26,18 +27,25 @@ public final class GameState {
 
     public static void end() {
         //结束
-        players_data.keySet().stream().findFirst().ifPresent(winner -> {
-            winner.sendMessage("§a你赢了！");
-        });
+        players_data.keySet().stream().findFirst().ifPresent(winner -> winner.sendMessage("§a你赢了！"));
         reset();
     }
 
-    public static void next() {
-        order++;
+    public static void nextPlayer() {
+        if (++order == 5) {
+            nextTurn();
+        }
         players_data.forEach((p, d) -> {
             if (d.getOrder() == order) {
                 p.addScoreboardTag("action");
             } else p.removeScoreboardTag("action");
+        });
+    }
+
+    public static void nextTurn() {
+        order = 1;
+        map.nodes.forEach(node -> {
+            if (node instanceof Resource r) r.generate();
         });
     }
 }
