@@ -1,15 +1,20 @@
 package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class EndStone extends Card implements BlockCount{
-    public void effect() {
-    }
     @Override
     public int getCount(){
         return Count;
     };
     public int Count = itemMaxCount();
+
+    @Override
+    public void effect(Player player) {
+
+    }
+
     @Override
     public int power() {
         return 0;

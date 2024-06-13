@@ -1,7 +1,10 @@
 package mc.bedwars.game.card;
 
+import org.bukkit.entity.Player;
+
+
 public abstract class Card {
-    abstract public void effect();
+    abstract public void effect(Player player);
     abstract public int power();
     abstract public int costMoney();
     abstract public int itemMaxCount();

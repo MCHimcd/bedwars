@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class BridgeEgg extends Card {
-    public void effect() {
-        //直接搭到岛对面
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

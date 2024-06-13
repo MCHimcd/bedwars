@@ -20,13 +20,19 @@ public class PlayerData {
     private int order = 0;
     //经济
     private int money = 8;
-    //战力
-    private int power = 2;
     private int Maxpower = getMaxPower();
     //是否拥有床
     private boolean has_bed = true;
     //行动力
     private int action =1;
+    //最大血量
+    private final int MaxHealth=100;
+    //当前血量
+    private int Health=100;
+    //初始战力
+    private int power = 2;
+    //临时战力
+    private int Dpower=0;
 
     public PlayerData(Player player) {
         this.player = player;
@@ -55,6 +61,7 @@ public class PlayerData {
             var final_dead = ld == null;
             if (total_money <= 16) {
                 players_data.get(winners.getFirst()).addMoney(finalMoney(total_money));
+                //winners扣血;
             } else if (total_money <= 32) {
                 PlayerData w = players_data.get(winners.getFirst());
                 w.addMoney(16);
@@ -95,9 +102,15 @@ public class PlayerData {
     public void addMoney(int amount) {
         money = Math.min(money + amount, 64);
     }
+    public void setHealth(int amount){Health=amount;}
+    public void addDpower(int amount){Dpower+=amount;}
+    public void resetDpower(){Dpower=0;}
 
     public int getPower() {
-        return power ;
+        return getMaxPower()*((Health+1)/100)+Dpower ;
+    }
+    public int getHealth() {
+        return Health ;
     }
     public int getMaxPower() {
         return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();

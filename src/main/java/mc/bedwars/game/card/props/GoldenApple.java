@@ -1,11 +1,18 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
+
+import static mc.bedwars.game.GameState.players_data;
 
 public class GoldenApple extends Card {
-    public void effect() {
-        //如果当前战力没达到上限，可以回复到战力上限(消耗行动点;如果战力到达上限，则使战力+2  (不需要行动点
-        //看这个卡来说好像还有一种设定 就是战力不是一定会达到上限的，那这样这也太难算了吧 能看到不，打个字
+    @Override
+    public void effect(Player player) {
+        PlayerData playerData = players_data.get(player);
+        if (playerData.getPower()<playerData.getMaxPower()){
+            playerData.setHealth(100);
+        }else playerData.addDpower(2);
     }
     @Override
     public int power() {
