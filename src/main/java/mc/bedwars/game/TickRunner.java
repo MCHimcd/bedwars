@@ -16,6 +16,7 @@ public class TickRunner extends BukkitRunnable {
                     nextPlayer();
                 }
             });
+
         }
         Bukkit.getOnlinePlayers().forEach(player -> {
             var r = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getLocation().getDirection(), 100, 10, entity -> entity.getType() == org.bukkit.entity.EntityType.ARMOR_STAND);

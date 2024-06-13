@@ -1,14 +1,18 @@
-package mc.bedwars.game.card.equips;
+package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
 import mc.bedwars.menu.ChoosePlayerMenu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class KbtStick extends Card {
+public class KbtStick extends Card implements isProps, needTarget {
     @Override
     public void effect(Player player) {
-
+//        player.openInventory(new ChoosePlayerMenu(player,));
+        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1击退棒".formatted(player.getName())));
+    }
+    public boolean isProp(){
+        return true;
     }
     @Override
     public int power() {

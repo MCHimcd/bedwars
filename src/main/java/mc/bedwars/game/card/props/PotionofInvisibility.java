@@ -7,13 +7,17 @@ import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class PotionofInvisibility extends Card implements Duration{
+public class PotionofInvisibility extends Card implements Duration,isProps{
     @Override
     public void effect(Player player) {
+        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §b隐身药水".formatted(player.getName())));
         PlayerData playerData = players_data.get(player);
         playerData.addDpower(2);
         playerData.addAction(1);
     }
+    public boolean isProp(){
+        return true;
+    };
     @Override
     public int DurationRound() {
         return 1;

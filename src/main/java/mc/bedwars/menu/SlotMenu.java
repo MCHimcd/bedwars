@@ -35,9 +35,8 @@ public abstract class SlotMenu implements InventoryHolder {
 
     public void handleClick(int slot) {
         if (slotFunctions.containsKey(slot)) {
-            if (close) player.closeInventory();
+            player.closeInventory();
             slotFunctions.get(slot).accept(inventory.getItem(slot), player);
-            close = true;
         }
     }
 

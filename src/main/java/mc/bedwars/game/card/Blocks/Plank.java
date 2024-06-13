@@ -4,10 +4,13 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class Plank extends Card implements BlockCount{
+public class Plank extends Card implements BlockCount,isBlock{
     @Override
     public void effect(Player player) {
 
+    }
+    public boolean isBlock(){
+        return true;
     }
     @Override
     public int getCount(){

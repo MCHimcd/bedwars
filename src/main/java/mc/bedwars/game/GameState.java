@@ -45,7 +45,7 @@ public final class GameState {
         //结束
         players_data.keySet().stream().findFirst().ifPresent(winner -> winner.sendMessage(Component.text("§a你获得最终胜利！")));
         reset();
-    }
+    };
 
     public static void nextPlayer() {
         if (++order == 5) {
@@ -74,6 +74,11 @@ public final class GameState {
             if (playerData.getHealth() < 50) playerData.setHealth(playerData.getHealth() + 10);
             //重置行动力
             playerData.resetAction();
+            if (playerData.getNeedSpawn()){
+                playerData.addAction(-1);
+            }
+            //重置目标
+            playerData.resetTarget();
         });
     }
 

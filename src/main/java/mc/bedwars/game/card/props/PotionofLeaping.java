@@ -7,14 +7,17 @@ import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class PotionofLeaping extends Card implements Duration{
+public class PotionofLeaping extends Card implements Duration,isProps{
     @Override
     public void effect(Player player) {
         PlayerData playerData = players_data.get(player);
         playerData.addDpower(2);
-
+        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §9跳跃药水".formatted(player.getName())));
 
     }
+    public boolean isProp(){
+        return true;
+    };
     @Override
     public int DurationRound() {
         return 1;

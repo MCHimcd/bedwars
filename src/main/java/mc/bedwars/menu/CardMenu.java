@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+import static mc.bedwars.game.GameState.players_data;
+
 public class CardMenu extends SlotMenu {
     public CardMenu(Player p, List<Card> cards) {
         super(27, Component.text("卡"), p);
@@ -22,7 +24,19 @@ public class CardMenu extends SlotMenu {
                                 .data(card.CustomModelData())
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
-                        (it, pl) -> card.effect(pl));
+                        (it, pl) -> {
+                            if (card instanceof needTarget) {
+                                if (players_data.get(p).getTarget() != null) {
+                                    card.effect(pl);
+                                    players_data.get(p).items.remove(card);
+                                } else {
+                                    p.sendMessage(Component.text("<S>      你需要一个目标才可使用%s.".formatted(card.Name())));
+                                }
+                            } else {
+                                card.effect(pl);
+                                players_data.get(p).items.remove(card);
+                            }
+                        });
             }
         }
     }

@@ -4,11 +4,14 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class Fireball extends Card {
+public class Fireball extends Card implements isProps{
     @Override
     public void effect(Player player) {
-
+        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1火球".formatted(player.getName())));
     }
+    public boolean isProp(){
+        return true;
+    };
     @Override
     public int power() {
         return 0;

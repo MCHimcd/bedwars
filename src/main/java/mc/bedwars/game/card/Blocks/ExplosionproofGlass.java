@@ -4,16 +4,14 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class ExplosionproofGlass extends Card implements BlockCount{
+public class ExplosionproofGlass extends Card implements isBlock{
     @Override
     public void effect(Player player) {
 
     }
-    @Override
-    public int getCount(){
-        return Count;
-    };
-    public int Count = itemMaxCount();
+    public boolean isBlock(){
+        return true;
+    }
     @Override
     public int power() {
         return 0;

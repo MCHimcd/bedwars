@@ -4,11 +4,14 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class BridgeEgg extends Card {
+public class BridgeEgg extends Card implements isProps{
     @Override
     public void effect(Player player) {
-
+        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1搭桥蛋".formatted(player.getName())));
     }
+    public boolean isProp(){
+        return true;
+    };
     @Override
     public int power() {
         return 0;

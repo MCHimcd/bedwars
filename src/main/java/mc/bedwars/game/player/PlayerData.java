@@ -43,6 +43,7 @@ public class PlayerData {
     private int max_power = getMaxPower();
     //临时战力
     private int Dpower = 0;
+    private boolean needSpawn=false;
 
     public PlayerData(Player player) {
         this.player = player;
@@ -55,64 +56,6 @@ public class PlayerData {
         }).findFirst().ifPresent(bed -> location = bed);
         if (order_g == 5) order_g = 1;
         players_data.put(player, this);
-    }
-
-    public static void pvp(List<Player> players) {
-        var p1 = new ArrayList<Player>();
-        var p2 = new ArrayList<Player>();
-        //选择队伍 todo
-        //计算战力
-        int power1 = power(p1);
-        int power2 = power(p2);
-        while (power1 == power2) {
-            power1 = power(p1);
-            power2 = power(p2);
-        }
-        List<Player> winners = power1 > power2 ? p1 : p2;
-        List<Player> losers = power1 > power2 ? p2 : p1;
-        /*
-        winners扣血机制:
-        1.若胜利者(以下简称为W）队伍与失败者（以下简称为L) 队伍都只有一人;  则 W收到的伤害为L的战力值
-        2.若W队伍中有多人，L中只有一人 则W中两人平分 等同于L的战力值的伤害
-        3.若W队伍中只有一人 L中有多人， 则W受到的伤害值 为 L中个人战力x1/n (n为队伍人数) 然后求和
-        4.若多对多  则先求L中个人战力x1/n (n为队伍人数)的和   然后胜利者队伍的玩家均摊;
-        */
-        int hurt_amount = losers.stream().mapToInt(loser -> players_data.get(loser).getPower()).sum() / losers.size() / winners.size();
-        winners.forEach(winner -> players_data.get(winner).hurt(hurt_amount));
-        //分钱
-        losers.forEach(loser -> {
-            var total_money = players_data.get(loser).die(winners);
-            var ld = players_data.get(loser);
-            var final_dead = ld == null;
-            if (total_money <= 16) {
-                players_data.get(winners.getFirst()).addMoney(finalMoney(total_money));
-
-            } else if (total_money <= 32) {
-                PlayerData w = players_data.get(winners.getFirst());
-                w.addMoney(16);
-                if (final_dead) {
-                    w.addMoney(finalMoney(total_money - 16));
-                } else {
-                    ld.addMoney(finalMoney(total_money - 16));
-                }
-            } else {
-                //大于32
-                PlayerData w = players_data.get(winners.removeFirst());
-                w.addMoney(16);
-                if (final_dead) {
-                    w.addMoney(16);
-                } else {
-                    ld.addMoney(16);
-                }
-                total_money -= 32;
-                for (Player winner : winners) {
-                    if (total_money > 0) {
-                        total_money = Math.max(total_money - 8, 0);
-                        players_data.get(winner).addMoney(8);
-                    } else break;
-                }
-            }
-        });
     }
 
     public static int finalMoney(int money) {
@@ -148,6 +91,14 @@ public class PlayerData {
         action = 1;
     }
 
+    public void resetTarget() {
+        target = null;
+    }
+
+    public Player getTarget() {
+        return target;
+    }
+
     public void setTarget(Player player) {
         target = player;
     }
@@ -163,9 +114,15 @@ public class PlayerData {
     public void setHealth(int amount) {
         health = amount;
     }
+    public boolean getNeedSpawn(){
+        return needSpawn;
+    }
 
     public int getMaxPower() {
         return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
+    }
+    public int getAction(){
+        return action;
     }
 
     public boolean removeMoney(int amount) {
@@ -188,6 +145,8 @@ public class PlayerData {
         //最终击杀
         if (!has_bed) {
             players_data.remove(player);
+        }else {
+            needSpawn=true;
         }
         //检测结束
         if (players_data.size() == 1) {

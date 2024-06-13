@@ -17,10 +17,12 @@ public abstract class Card {
     abstract public Component Name();
     abstract public Component Introduction();
     abstract public boolean CanUse();
+//    abstract public boolean NeedTarget();
 
     //1xxxx   装备
     //2xxxx   道具
     //3xxxx   加成
     //4xxxx   方块
-    //5xxxx   床 其他
+    //5xxxx   床
+    //6xxxx   其他
 }
