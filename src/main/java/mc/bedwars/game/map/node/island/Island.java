@@ -19,7 +19,4 @@ public abstract class Island extends Node {
         return x;
     }
 
-    public abstract String getType();
-
-
 }

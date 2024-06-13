@@ -1,5 +1,6 @@
 package mc.bedwars.game.card.equips;
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class IronSword extends Card {
@@ -26,5 +27,17 @@ public class IronSword extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("铁剑");
+    }
+    @Override
+    public boolean CanUse(){
+        return false;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("获得2点战力");
     }
 }

@@ -2,6 +2,7 @@ package mc.bedwars.game;
 
 import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.island.resource.Resource;
+import mc.bedwars.game.player.PlayerData;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -20,13 +21,13 @@ public final class GameState {
         players_data.clear();
         order = 1;
         map = new GameMap();
-        started=false;
+        started = false;
     }
 
     public static void start(List<Player> players) {
         //开始
         players.forEach(PlayerData::new);
-        started=true;
+        started = true;
     }
 
     public static void end() {
@@ -54,4 +55,5 @@ public final class GameState {
             if (node instanceof Resource r) r.generate();
         });
     }
+
 }

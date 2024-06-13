@@ -1,5 +1,6 @@
 package mc.bedwars.game.card.equips;
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class IronEquips extends Card {
@@ -26,5 +27,17 @@ public class IronEquips extends Card {
     @Override
     public boolean CanDrop(){
         return false;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("铁装备");
+    }
+    @Override
+    public boolean CanUse(){
+        return false;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("获得4点战力");
     }
 }

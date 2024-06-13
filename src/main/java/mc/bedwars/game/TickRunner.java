@@ -1,7 +1,7 @@
 package mc.bedwars.game;
 
+import mc.bedwars.game.player.PlayerData;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static mc.bedwars.game.GameState.*;

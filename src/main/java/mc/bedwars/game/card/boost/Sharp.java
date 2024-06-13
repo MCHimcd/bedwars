@@ -1,24 +1,16 @@
 package mc.bedwars.game.card.boost;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class Sharp extends Card implements Boostlevel{
+public class Sharp extends Card{
     @Override
     public void effect(Player player) {
-
     }
-    @Override
-    public int Maxlevel() {
-        return 4;
-    }
-    public int getLevel() {
-        return Level;
-    }
-    public int Level=1;
     @Override
     public int power() {
-        return 1+Level;
+        return 2;
     }
     @Override
     public int costMoney() {
@@ -35,5 +27,18 @@ public class Sharp extends Card implements Boostlevel{
     @Override
     public boolean CanDrop(){
         return false;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("锋利");
+    }
+    @Override
+    public boolean CanUse(){
+        return false;
+    }
+
+    @Override
+    public Component Introduction() {
+        return Component.text("获得2点战力");
     }
 }

@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class EnderPearl extends Card {
@@ -27,5 +28,17 @@ public class EnderPearl extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("末影珍珠");
+    }
+    @Override
+    public boolean CanUse(){
+        return true;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("当被打入虚空时可以使用，回到相邻岛屿");
     }
 }

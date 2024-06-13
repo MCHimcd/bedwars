@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class Wool extends Card implements BlockCount{
@@ -32,5 +33,18 @@ public class Wool extends Card implements BlockCount{
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("羊毛");
+    }
+    @Override
+    public boolean CanUse(){
+        return true;
+    }
+
+    @Override
+    public Component Introduction() {
+        return Component.text("守床，搭路");
     }
 }

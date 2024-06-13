@@ -1,7 +1,8 @@
 package mc.bedwars.game.card.props;
 
-import mc.bedwars.game.PlayerData;
+import mc.bedwars.game.player.PlayerData;
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
@@ -33,5 +34,17 @@ public class GoldenApple extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("金苹果");
+    }
+    @Override
+    public boolean CanUse(){
+        return true;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("当血量未满时将血量回满，当血量已满时增加2点临时战力。");
     }
 }

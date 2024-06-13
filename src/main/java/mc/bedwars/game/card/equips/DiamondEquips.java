@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class DiamondEquips extends Card {
@@ -27,5 +28,18 @@ public class DiamondEquips extends Card {
     @Override
     public boolean CanDrop(){
         return false;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("钻石套装");
+    }
+    @Override
+    public boolean CanUse(){
+        return false;
+    }
+
+    @Override
+    public Component Introduction() {
+        return Component.text("获得8点战力。");
     }
 }

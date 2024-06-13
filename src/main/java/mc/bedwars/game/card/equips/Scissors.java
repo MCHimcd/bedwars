@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class Scissors extends Card {
@@ -27,5 +28,17 @@ public class Scissors extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("剪刀");
+    }
+    @Override
+    public boolean CanUse(){
+        return false;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("破坏羊毛.");
     }
 }

@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class Tnt extends Card {
@@ -27,5 +28,17 @@ public class Tnt extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("TNT");
+    }
+    @Override
+    public boolean CanUse(){
+        return true;
+    }
+    @Override
+    public Component Introduction() {
+        return Component.text("破坏除黑曜石和防爆玻璃以外的所有方块,或以上材质的岛屿");
     }
 }

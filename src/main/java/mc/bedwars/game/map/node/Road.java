@@ -22,4 +22,13 @@ public class Road extends Node {
     public Material getMaterial() {
         return material;
     }
+
+    public void setEnd(Node node){
+        nodes.set(1,node);
+    }
+
+    @Override
+    public String getType() {
+        return "road";
+    }
 }

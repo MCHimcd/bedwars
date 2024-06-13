@@ -1,5 +1,6 @@
 package mc.bedwars.game.map.node.island.resource;
 
+import mc.bedwars.game.player.PlayerData;
 import mc.bedwars.game.map.node.island.Island;
 
 public abstract class Resource extends Island {
@@ -16,8 +17,9 @@ public abstract class Resource extends Island {
 
     abstract int getGenerationCD();
 
-    public int getMoney() {
-        return r_amount * getMoneyOfEach();
+    public void giveMoney(PlayerData p) {
+        p.addMoney(r_amount * getMoneyOfEach());
+        r_amount = 0;
     }
 
     public void generate() {

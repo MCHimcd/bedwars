@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class BridgeEgg extends Card {
@@ -27,5 +28,18 @@ public class BridgeEgg extends Card {
     @Override
     public boolean CanDrop(){
         return true;
+    }
+    @Override
+    public Component Name() {
+        return Component.text("搭桥蛋");
+    }
+    @Override
+    public boolean CanUse(){
+        return true;
+    }
+
+    @Override
+    public Component Introduction() {
+        return Component.text("在两座岛屿之间建立材质为羊毛的桥");
     }
 }

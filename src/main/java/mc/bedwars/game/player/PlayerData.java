@@ -1,7 +1,8 @@
-package mc.bedwars.game;
+package mc.bedwars.game.player;
 
 import mc.bedwars.BedWars;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.node.Node;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,24 +16,25 @@ import static mc.bedwars.game.GameState.players_data;
 public class PlayerData {
     private static int order_g = 1;
     private final Player player;
+    //最大血量
+    private final int MaxHealth = 100;
     public List<Card> items = new ArrayList<>();
     public List<Card> equipments = new ArrayList<>();
+    public Node location = null;
     private int order = 0;
     //经济
     private int money = 8;
-    private int Maxpower = getMaxPower();
     //是否拥有床
     private boolean has_bed = true;
     //行动力
-    private int action =1;
-    //最大血量
-    private final int MaxHealth=100;
+    private int action = 1;
     //当前血量
-    private int Health=100;
+    private int health = 100;
     //初始战力
     private int power = 2;
+    private int max_power = getMaxPower();
     //临时战力
-    private int Dpower=0;
+    private int Dpower = 0;
 
     public PlayerData(Player player) {
         this.player = player;
@@ -54,6 +56,15 @@ public class PlayerData {
         }
         List<Player> winners = power1 > power2 ? p1 : p2;
         List<Player> losers = power1 > power2 ? p2 : p1;
+        /*
+        winners扣血机制:
+        1.若胜利者(以下简称为W）队伍与失败者（以下简称为L) 队伍都只有一人;  则 W收到的伤害为L的战力值
+        2.若W队伍中有多人，L中只有一人 则W中两人平分 等同于L的战力值的伤害
+        3.若W队伍中只有一人 L中有多人， 则W受到的伤害值 为 L中个人战力x1/n (n为队伍人数) 然后求和
+        4.若多对多  则先求L中个人战力x1/n (n为队伍人数)的和   然后胜利者队伍的玩家均摊;
+        */
+        int hurt_amount = losers.stream().mapToInt(loser -> players_data.get(loser).getPower()).sum() / losers.size() / winners.size();
+        winners.forEach(winner -> players_data.get(winner).hurt(hurt_amount));
         //分钱
         losers.forEach(loser -> {
             var total_money = players_data.get(loser).die(winners);
@@ -61,7 +72,7 @@ public class PlayerData {
             var final_dead = ld == null;
             if (total_money <= 16) {
                 players_data.get(winners.getFirst()).addMoney(finalMoney(total_money));
-                //winners扣血;
+
             } else if (total_money <= 32) {
                 PlayerData w = players_data.get(winners.getFirst());
                 w.addMoney(16);
@@ -99,19 +110,37 @@ public class PlayerData {
         return players.stream().mapToInt(p -> players_data.get(p).getPower() + r.nextInt(1, 7)).sum();
     }
 
+    public void hurt(int amount) {
+        health = Math.max(health - amount, 1);
+    }
+
     public void addMoney(int amount) {
         money = Math.min(money + amount, 64);
     }
-    public void setHealth(int amount){Health=amount;}
-    public void addDpower(int amount){Dpower+=amount;}
-    public void resetDpower(){Dpower=0;}
+
+    public void addDpower(int amount) {
+        Dpower += amount;
+    }
+    public void addAction(int amount){
+        action += amount;
+    }
+
+    public void resetDpower() {
+        Dpower = 0;
+    }
 
     public int getPower() {
-        return getMaxPower()*((Health+1)/100)+Dpower ;
+        return getMaxPower() * ((health + 1) / 100) + Dpower;
     }
+
     public int getHealth() {
-        return Health ;
+        return health;
     }
+
+    public void setHealth(int amount) {
+        health = amount;
+    }
+
     public int getMaxPower() {
         return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
@@ -123,6 +152,7 @@ public class PlayerData {
         money -= amount;
         return true;
     }
+
     public void destroyBed() {
         has_bed = false;
     }
