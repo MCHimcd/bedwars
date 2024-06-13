@@ -39,6 +39,13 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+tasks.register('copyArtifacts', Copy) {
+    from 'build/libs'
+    into "D:/AAA-bedwars/plugins"
+    include '**/*.jar'
+    rename { "BedWars.jar" }
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props

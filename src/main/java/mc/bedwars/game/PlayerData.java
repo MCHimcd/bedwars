@@ -22,9 +22,11 @@ public class PlayerData {
     private int money = 8;
     //战力
     private int power = 2;
-    private int Maxpower = 2;
+    private int Maxpower = getMaxPower();
     //是否拥有床
     private boolean has_bed = true;
+    //行动力
+    private int action =1;
 
     public PlayerData(Player player) {
         this.player = player;
@@ -108,7 +110,6 @@ public class PlayerData {
         money -= amount;
         return true;
     }
-
     public void destroyBed() {
         has_bed = false;
     }
