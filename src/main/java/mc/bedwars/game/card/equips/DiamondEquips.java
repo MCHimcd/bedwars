@@ -1,9 +1,12 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class DiamondEquips extends Card {
-    public void effect() {
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

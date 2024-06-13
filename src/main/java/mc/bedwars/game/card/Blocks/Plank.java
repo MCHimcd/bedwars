@@ -1,9 +1,12 @@
 package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class Plank extends Card implements BlockCount{
-    public void effect() {
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int getCount(){

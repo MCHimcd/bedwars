@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class PotionofSwiftness extends Card {
-    public void effect() {
-        //+一个行动点
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

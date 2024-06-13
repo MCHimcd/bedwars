@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class EnderPearl extends Card {
-    public void effect() {
-        //瞬移自救
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

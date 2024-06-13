@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class IronAxe extends Card {
     @Override
-    public void effect() {
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class PotionofInvisibility extends Card implements Duration{
-    public void effect() {
-        //战力+2 行动值+1  不消耗行动点
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int DurationRound() {

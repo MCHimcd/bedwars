@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class PotionofLeaping extends Card implements Duration{
-    public void effect() {
-        //提升本轮2点战力  不消耗行动点
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int DurationRound() {

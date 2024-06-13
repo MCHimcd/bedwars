@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class KbtStick extends Card {
-    public void effect() {
-        //击退玩家
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

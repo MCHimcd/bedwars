@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.boost;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class Sharp extends Card implements Boostlevel{
-    public void effect() {
-        if (getLevel()<4)Level++;
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int Maxlevel() {

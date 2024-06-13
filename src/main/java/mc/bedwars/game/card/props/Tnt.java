@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class Tnt extends Card {
-    public void effect() {
-        //破坏
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {

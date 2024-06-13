@@ -1,10 +1,12 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import org.bukkit.entity.Player;
 
 public class Pickaxe extends Card {
-    public void effect() {
-        //拆除末地石，或消耗两个该道具拆除黑曜石
+    @Override
+    public void effect(Player player) {
+
     }
     @Override
     public int power() {
