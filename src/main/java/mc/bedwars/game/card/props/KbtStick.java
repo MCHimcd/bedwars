@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.equips;
 
 import mc.bedwars.game.card.Card;
+import mc.bedwars.menu.ChoosePlayerMenu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -41,4 +42,5 @@ public class KbtStick extends Card {
     public Component Introduction() {
         return Component.text("击飞敌人。");
     }
+
 }

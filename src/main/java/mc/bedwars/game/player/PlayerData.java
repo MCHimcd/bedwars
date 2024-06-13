@@ -3,17 +3,22 @@ package mc.bedwars.game.player;
 import mc.bedwars.BedWars;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.Node;
+import mc.bedwars.game.map.node.island.Island;
+import mc.bedwars.game.map.node.island.resource.Bed;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static mc.bedwars.game.GameState.end;
-import static mc.bedwars.game.GameState.players_data;
+import static mc.bedwars.game.GameState.*;
 
 public class PlayerData {
+    //目标
+    static public Player target = null;
     private static int order_g = 1;
     private final Player player;
     //最大血量
@@ -23,6 +28,7 @@ public class PlayerData {
     //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
     public Node location = null;
+    public Node target_location = null;
     private int order = 0;
     //经济
     private int money = 8;
@@ -41,7 +47,13 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.player = player;
         order = order_g++;
-        if (order_g == 5) order_g = 0;
+        map.nodes.stream().filter(node -> {
+            if (node instanceof Bed bed) {
+                return bed.getOrder() == order;
+            }
+            return false;
+        }).findFirst().ifPresent(bed -> location = bed);
+        if (order_g == 5) order_g = 1;
         players_data.put(player, this);
     }
 
@@ -123,15 +135,21 @@ public class PlayerData {
     public void addDpower(int amount) {
         Dpower += amount;
     }
-    public void addAction(int amount){
+
+    public void addAction(int amount) {
         action += amount;
     }
 
     public void resetDpower() {
         Dpower = 0;
     }
+
     public void resetAction() {
         action = 1;
+    }
+
+    public void setTarget(Player player) {
+        target = player;
     }
 
     public int getPower() {
@@ -185,5 +203,59 @@ public class PlayerData {
 
     public int getOrder() {
         return order;
+    }
+
+    public List<ItemStack> getActions() {
+        List<ItemStack> items = new ArrayList<>();
+        //移动
+        items.add(new ItemStack(Material.PAPER) {{
+            editMeta(m -> m.setCustomModelData(60007));
+        }});
+        //搭路
+        items.add(new ItemStack(Material.PAPER) {{
+            editMeta(m -> m.setCustomModelData(60003));
+        }});
+        //pvp
+        if (location instanceof Island i) {
+            if (i.players.size() > 1) {
+                items.add(new ItemStack(Material.PAPER) {{
+                    editMeta(m -> m.setCustomModelData(60002));
+                }});
+            }
+        }
+        //使用道具
+        items.add(new ItemStack(Material.PAPER) {{
+            editMeta(m -> m.setCustomModelData(60008));
+        }});
+        //破坏
+        items.add(new ItemStack(Material.PAPER) {{
+            editMeta(m -> m.setCustomModelData(60006));
+        }});
+        //商店、床
+        if (location instanceof Bed b) {
+            //商店
+            items.add(new ItemStack(Material.PAPER) {{
+                editMeta(m -> m.setCustomModelData(60005));
+            }});
+            if (b.getOrder() == order) {
+                //自己床
+                items.add(new ItemStack(Material.PAPER) {{
+                    editMeta(m -> m.setCustomModelData(60004));
+                }});
+            } else {
+                //别人床
+                items.add(new ItemStack(Material.PAPER) {{
+                    editMeta(m -> m.setCustomModelData(60004));
+                }});
+            }
+        }
+        //选择目标
+        if (location.players.size() > 2) {
+            items.add(new ItemStack(Material.PAPER) {{
+                editMeta(m -> m.setCustomModelData(60009));
+            }});
+        }
+
+        return items;
     }
 }

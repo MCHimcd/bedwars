@@ -1,8 +1,11 @@
 package mc.bedwars.game.map.node.island.resource;
 
-public class Bed extends Resource{
-    public Bed(int x, int y) {
+public class Bed extends Resource {
+    private final int order;
+
+    public Bed(int x, int y, int order) {
         super(x, y);
+        this.order = order;
     }
 
     @Override
@@ -23,5 +26,9 @@ public class Bed extends Resource{
     @Override
     int getGenerationCD() {
         return 1;
+    }
+
+    public int getOrder() {
+        return order;
     }
 }

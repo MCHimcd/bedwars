@@ -6,3 +6,6 @@ commands:
   test:
     usage: /<command>
     description: "测试"
+  start:
+    usage: /<command>
+    description: "开始游戏"

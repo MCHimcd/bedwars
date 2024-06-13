@@ -1,8 +1,10 @@
 package mc.bedwars.game.map;
 
+import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Grass;
+import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.*;
 import mc.bedwars.game.player.PlayerData;
 import org.bukkit.Material;
@@ -29,10 +31,10 @@ public class GameMap {
             new Gold(0, 4),
             new Gold(4, 0),
             new Gold(4, 4),
-            new Bed(0, 2),
-            new Bed(2, 0),
-            new Bed(2, 4),
-            new Bed(4, 2),
+            new Bed(0, 2, 3),
+            new Bed(2, 0, 2),
+            new Bed(2, 4, 4),
+            new Bed(4, 2, 1),
             new Diamond(1, 1),
             new Diamond(3, 3),
             new Diamond(3, 1),
@@ -65,6 +67,8 @@ public class GameMap {
         PlayerData pd = players_data.get(p);
         var road = roads.stream().filter(r -> r.getMaterial() != Material.AIR && r.hasNode(start) && r.hasNode(end)).findFirst();
         if (road.isPresent() || start.equals(end)) {
+            if (start instanceof Island i1) i1.players.remove(p);
+            if (end instanceof Island i2) i2.players.add(p);
             pd.location = end;
             if (end instanceof Resource r) {
                 r.giveMoney(pd);
@@ -73,5 +77,15 @@ public class GameMap {
             return true;
         }
         return false;
+    }
+
+    public void breakRoad(Player p, Road r) {
+        r.setMaterial(Material.AIR);
+        r.players.forEach(player -> {
+            PlayerData pd = players_data.get(player);
+            var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
+            if (ep.isPresent()) ep.get().effect(player);
+            else pd.die(List.of(p));
+        });
     }
 }
