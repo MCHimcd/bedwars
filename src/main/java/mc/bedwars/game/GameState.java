@@ -54,6 +54,14 @@ public final class GameState {
         map.nodes.forEach(node -> {
             if (node instanceof Resource r) r.generate();
         });
+        players_data.forEach((player, playerData) -> {
+            //重置临时战力
+            playerData.resetDpower();
+            //血量低于50回血
+            if (playerData.getHealth()<50)playerData.setHealth(playerData.getHealth()+10);
+            //重置行动力
+            playerData.resetAction();
+        });
     }
 
 }

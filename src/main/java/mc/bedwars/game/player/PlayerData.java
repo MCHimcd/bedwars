@@ -18,7 +18,9 @@ public class PlayerData {
     private final Player player;
     //最大血量
     private final int MaxHealth = 100;
+    //可使用的卡牌
     public List<Card> items = new ArrayList<>();
+    //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
     public Node location = null;
     private int order = 0;
@@ -128,6 +130,9 @@ public class PlayerData {
     public void resetDpower() {
         Dpower = 0;
     }
+    public void resetAction() {
+        action = 1;
+    }
 
     public int getPower() {
         return getMaxPower() * ((health + 1) / 100) + Dpower;
@@ -160,7 +165,8 @@ public class PlayerData {
     public int die(List<Player> killers) {
         var m = money;
         money = 0;
-        items.clear();
+        items.removeIf(Card::CanDrop);
+        equipments.removeIf(Card::CanDrop);
         //最终击杀
         if (!has_bed) {
             players_data.remove(player);
