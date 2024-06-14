@@ -4,22 +4,13 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class Protection extends Card implements Boostlevel{
+public class Protection extends Card{
     @Override
     public void effect(Player player) {
-        if (Level<Maxlevel())Level++;
     }
-    @Override
-    public int Maxlevel() {
-        return 4;
-    }
-    public int getLevel() {
-        return Level;
-    }
-    public int Level=1;
     @Override
     public int power() {
-        return Level;
+        return 1;
     }
     @Override
     public int costMoney() {
@@ -27,7 +18,7 @@ public class Protection extends Card implements Boostlevel{
     }
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 4;
     }
     @Override
     public int CustomModelData() {
@@ -48,6 +39,6 @@ public class Protection extends Card implements Boostlevel{
 
     @Override
     public Component Introduction() {
-        return Component.text("获得战力，每等级+1");
+        return Component.text("获得战力");
     }
 }

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 public class Fireball extends Card implements isProps{
     @Override
     public void effect(Player player) {
+        //todo 使用火球
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1火球".formatted(player.getName())));
     }
     public boolean isProp(){

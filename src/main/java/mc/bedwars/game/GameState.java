@@ -68,7 +68,7 @@ public final class GameState {
         map.islands.forEach(node -> {
             if (node instanceof Resource r) r.generate();
         });
-        players_data.forEach((_, playerData) -> {
+        players_data.forEach((it, playerData) -> {
             //重置临时战力
             playerData.resetDpower();
             //血量低于50回血

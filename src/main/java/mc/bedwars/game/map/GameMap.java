@@ -1,5 +1,6 @@
 package mc.bedwars.game.map;
 
+import mc.bedwars.game.card.Blocks.Wool;
 import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.Road;
@@ -102,7 +103,10 @@ public class GameMap {
         r.setMaterial(Material.AIR);
         r.players.forEach(player -> {
             PlayerData pd = players_data.get(player);
+            var wool =pd.items.stream().filter(item->item instanceof Wool).findFirst();
+            //todo 有羊毛就可以不掉落，不一定要有珍珠
             var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
+            //todo 掉入虚空需要优化，可以写在playdata里的一个布尔值，然后再tickrunner里判断，因为珍珠还可以使用珍珠进行位移
             if (ep.isPresent()) ep.get().effect(player);
             else pd.die(List.of(p));
         });

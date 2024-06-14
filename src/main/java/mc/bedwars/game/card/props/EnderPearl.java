@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 public class EnderPearl extends Card implements isProps{
     @Override
     public void effect(Player player) {
+        //todo 使用珍珠
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §7末影之眼".formatted(player.getName())));
     }
     public boolean isProp(){

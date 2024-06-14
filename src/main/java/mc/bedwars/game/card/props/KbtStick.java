@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class KbtStick extends Card implements isProps, needTarget {
     @Override
     public void effect(Player player) {
-//        player.openInventory(new ChoosePlayerMenu(player,));
+        //todo 使用击退棒 等将掉入虚空设成布尔值后再写
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1击退棒".formatted(player.getName())));
     }
     public boolean isProp(){

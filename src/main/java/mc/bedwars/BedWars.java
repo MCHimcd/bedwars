@@ -100,8 +100,9 @@ public final class BedWars extends JavaPlugin implements Listener {
                     if (pd.target_location != null) {
                         Island i1 = (Island) pd.location;
                         Island i2 = (Island) pd.target_location;
-                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1)
+                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1){
                             p.openInventory(new BlockMenu(p).getInventory());
+                        }
                     }
                 }
                 //使用道具
