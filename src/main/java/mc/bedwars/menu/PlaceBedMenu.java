@@ -16,7 +16,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class PlaceBedMenu extends SlotMenu{
     public PlaceBedMenu(Player p) {
-        super(27, Component.text("选择摆放或拆除的方块"), p);
+        super(27, Component.text("选择放置的层数"), p);
         var pd = players_data.get(p);
         List<Card> cards = pd.items.stream().filter(card -> card instanceof isBlock).toList();
         for (int i = 0; i < cards.size(); i++) {
@@ -29,8 +29,8 @@ public class PlaceBedMenu extends SlotMenu{
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
-                            card.effect(pl);
-                            players_data.get(p).items.remove(card);
+                    pd.placeBedBlock(((isBlock) card).material());
+                            pd.items.remove(card);
                         });
             }
         }

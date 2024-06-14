@@ -28,7 +28,7 @@ public class BlockMenu extends SlotMenu {
                                 .data(card.CustomModelData())
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
-                        (_, pl) -> {
+                        (it, pl) -> {
                             var pd1 = players_data.get(p);
                             pd1.items.remove(card);
                             map.buildRoad((Island) pd1.location, (Island) pd1.target_location, ((isBlock) card).material());

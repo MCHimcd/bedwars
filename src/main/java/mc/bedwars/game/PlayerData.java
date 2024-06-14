@@ -24,6 +24,14 @@ public class PlayerData {
     private final Player player;
     //最大血量
     private final int MaxHealth = 100;
+    //当前选择的保护床方块层数
+    private int protectBed =1;
+    //1层床保护方块
+    private Material firstBedBlock = Material.AIR;
+    //2层床保护方块
+    private Material secondBedBlock = Material.AIR;
+    //3层床保护方块
+    private Material thirdBedBlock = Material.AIR;
     //可使用的卡牌
     public List<Card> items = new ArrayList<>();
     //不可使用的卡牌
@@ -103,6 +111,32 @@ public class PlayerData {
 
     public void setTarget(Player player) {
         target = player;
+    }
+    public void setProtectBed(int amount){
+        protectBed=amount;
+    }
+    public Material protectBedBlockMaterial(int amount){
+        if (amount==0){
+            return firstBedBlock;
+        }
+        if (amount==1){
+            return secondBedBlock;
+        }
+        if (amount==2){
+            return thirdBedBlock;
+        }
+        return Material.AIR;
+    }
+    public void placeBedBlock(Material material){
+        if (protectBed==1){
+            firstBedBlock=material;
+        }
+        if (protectBed==2){
+            secondBedBlock=material;
+        }
+        if (protectBed==3){
+            thirdBedBlock=material;
+        }
     }
 
     public int getPower() {

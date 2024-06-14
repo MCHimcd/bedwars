@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -73,7 +74,7 @@ public final class BedWars extends JavaPlugin implements Listener {
                 case 60009 -> //选择目标菜单
                         p.openInventory(new ChoosePlayerMenu(
                                 p, pd.location.players.stream().filter(player -> !player.equals(p)).toList(),
-                                (it, _) -> {
+                                (it, pl) -> {
                                     SkullMeta meta = (SkullMeta) it.getItemMeta();
                                     var target = (Player) meta.getOwningPlayer();
                                     pd.setTarget(target);
@@ -85,8 +86,14 @@ public final class BedWars extends JavaPlugin implements Listener {
                 case 60007 -> {
                     //移动
                     if (pd.target_location != null) {
-                        if (!map.move(p, pd.location, pd.target_location)) p.sendMessage("无路");
-                    } else p.sendMessage("无目标");
+                        if (!map.move(p, pd.location, pd.target_location)) {
+                            p.sendMessage(Component.text("无路"));
+                            p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
+                        }
+                    } else {
+                        p.sendMessage("无目标");
+                        p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
+                    }
                 }
                 case 60003 -> {
                     //搭路
@@ -110,14 +117,22 @@ public final class BedWars extends JavaPlugin implements Listener {
                 }
                 case 60006 -> {
                     //破坏
+                    if (pd.target_location != null) {
+                        Island i1 = (Island) pd.location;
+                        Island i2 = (Island) pd.target_location;
+                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1){
+                        }
+                    }
                 }
                 case 60005 -> //商店
                         p.openInventory(new ShopMenu(p).getInventory());
                 case 60010 -> {
+                    //破坏床
                     p.openInventory(new DestoryBedMenu(p, pd.equipments).getInventory());
                 }
                 case 60004 -> {
-                    p.openInventory(new PlaceBedMenu(p, pd.equipments).getInventory());
+                    //建床
+                    p.openInventory(new ChoosePlaceBedBlockMenu(p).getInventory());
                 }
             }
         }

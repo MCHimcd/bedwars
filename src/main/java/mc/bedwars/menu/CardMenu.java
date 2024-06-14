@@ -25,7 +25,7 @@ public class CardMenu extends SlotMenu {
                                 .data(card.CustomModelData())
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
-                        (_, pl) -> {
+                        (it, pl) -> {
                             if (card instanceof needTarget) {
                                 if (players_data.get(p).getTarget() != null) {
                                     card.effect(pl);
