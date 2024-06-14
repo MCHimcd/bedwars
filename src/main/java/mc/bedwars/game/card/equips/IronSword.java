@@ -3,11 +3,12 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class IronSword extends Card {
+public class IronSword extends Card implements isEquip{
     @Override
     public void effect(Player player) {
 
     }
+    public boolean isEquip(){return true;}
     @Override
     public int power() {
         return 2;

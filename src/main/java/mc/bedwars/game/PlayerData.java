@@ -1,4 +1,4 @@
-package mc.bedwars.game.player;
+package mc.bedwars.game;
 
 import mc.bedwars.BedWars;
 import mc.bedwars.game.card.Card;
@@ -6,6 +6,7 @@ import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,6 +30,7 @@ public class PlayerData {
     public List<Card> equipments = new ArrayList<>();
     public Node location = null;
     public Node target_location = null;
+    private ArmorStand marker;
     private int order = 0;
     //经济
     private int money = 8;
@@ -43,12 +45,12 @@ public class PlayerData {
     private int max_power = getMaxPower();
     //临时战力
     private int Dpower = 0;
-    private boolean needSpawn=false;
+    private boolean needSpawn = false;
 
     public PlayerData(Player player) {
         this.player = player;
         order = order_g++;
-        map.nodes.stream().filter(node -> {
+        map.islands.stream().filter(node -> {
             if (node instanceof Bed bed) {
                 return bed.getOrder() == order;
             }
@@ -114,14 +116,16 @@ public class PlayerData {
     public void setHealth(int amount) {
         health = amount;
     }
-    public boolean getNeedSpawn(){
+
+    public boolean getNeedSpawn() {
         return needSpawn;
     }
 
     public int getMaxPower() {
         return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
-    public int getAction(){
+
+    public int getAction() {
         return action;
     }
 
@@ -145,8 +149,8 @@ public class PlayerData {
         //最终击杀
         if (!has_bed) {
             players_data.remove(player);
-        }else {
-            needSpawn=true;
+        } else {
+            needSpawn = true;
         }
         //检测结束
         if (players_data.size() == 1) {
@@ -171,9 +175,11 @@ public class PlayerData {
             editMeta(m -> m.setCustomModelData(60007));
         }});
         //搭路
-        items.add(new ItemStack(Material.PAPER) {{
-            editMeta(m -> m.setCustomModelData(60003));
-        }});
+        if (location instanceof Island) {
+            items.add(new ItemStack(Material.PAPER) {{
+                editMeta(m -> m.setCustomModelData(60003));
+            }});
+        }
         //pvp
         if (location instanceof Island i) {
             if (i.players.size() > 1) {
@@ -204,7 +210,7 @@ public class PlayerData {
             } else {
                 //别人床
                 items.add(new ItemStack(Material.PAPER) {{
-                    editMeta(m -> m.setCustomModelData(60004));
+                    editMeta(m -> m.setCustomModelData(60010));
                 }});
             }
         }

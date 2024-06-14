@@ -16,7 +16,6 @@ public abstract class SlotMenu implements InventoryHolder {
     protected final Player player;
     private final Inventory inventory;
     private final HashMap<Integer, BiConsumer<ItemStack, Player>> slotFunctions = new HashMap<>();
-    protected boolean close = true;
 
     public SlotMenu(int size, Component title, Player p) {
         inventory = BedWars.instance.getServer().createInventory(this, size, title);

@@ -3,16 +3,16 @@ package mc.bedwars;
 import mc.bedwars.Command.test;
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.game.GameState;
+import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.TickRunner;
 import mc.bedwars.game.card.Card;
-import mc.bedwars.game.player.PlayerData;
-import mc.bedwars.menu.CardMenu;
-import mc.bedwars.menu.ChoosePlayerMenu;
-import mc.bedwars.menu.SlotMenu;
+import mc.bedwars.game.map.node.island.Island;
+import mc.bedwars.menu.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +49,7 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        map.markers.keySet().forEach(Entity::remove);
     }
 
     @EventHandler
@@ -63,60 +63,61 @@ public final class BedWars extends JavaPlugin implements Listener {
         if (e.getHand() == EquipmentSlot.OFF_HAND) return;
         var item = e.getItem();
         var p = e.getPlayer();
-        if (item == null) {
-
-        } else {
+        if (item != null) {
             if (!item.getItemMeta().hasCustomModelData()) return;
             var id = item.getItemMeta().getCustomModelData();
             var pd = players_data.get(p);
             switch (id) {
-                case 1 -> {
-                    //卡片菜单
-                    p.openInventory(new CardMenu(p, pd.items).getInventory());
-                }
-                case 60009 -> {
-                    //选择目标菜单
-                    p.openInventory(new ChoosePlayerMenu(
-                            p, pd.location.players.stream().filter(player -> !player.equals(p)).toList(),
-                            (it, pl) -> {
-                                SkullMeta meta = (SkullMeta) it.getItemMeta();
-                                var target = (Player) meta.getOwningPlayer();
-                                pd.setTarget(target);
-                                p.closeInventory();
-                                assert target != null;
-                                p.sendMessage(Component.text("<S>     你选择了%s".formatted(target.getName())));
-                            }
-                    ).getInventory());
-                }
+                case 1 -> //卡片菜单
+                        p.openInventory(new CardMenu(p, pd.items).getInventory());
+                case 60009 -> //选择目标菜单
+                        p.openInventory(new ChoosePlayerMenu(
+                                p, pd.location.players.stream().filter(player -> !player.equals(p)).toList(),
+                                (it, _) -> {
+                                    SkullMeta meta = (SkullMeta) it.getItemMeta();
+                                    var target = (Player) meta.getOwningPlayer();
+                                    pd.setTarget(target);
+                                    p.closeInventory();
+                                    assert target != null;
+                                    p.sendMessage(Component.text("<S>     你选择了%s".formatted(target.getName())));
+                                }
+                        ).getInventory());
                 case 60007 -> {
                     //移动
-
+                    if (pd.target_location != null) {
+                        if (!map.move(p, pd.location, pd.target_location)) p.sendMessage("无路");
+                    } else p.sendMessage("无目标");
                 }
                 case 60003 -> {
                     //搭路
+                    if (pd.target_location != null) {
+                        Island i1 = (Island) pd.location;
+                        Island i2 = (Island) pd.target_location;
+                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1)
+                            p.openInventory(new BlockMenu(p).getInventory());
+                    }
                 }
-                case 60008 -> {
-                    p.openInventory(new CardMenu(p, pd.items).getInventory());
-                }
+                //使用道具
+                case 60008 -> p.openInventory(new CardMenu(p, pd.items).getInventory());
                 case 60002 -> {
                     //pvp
+                    //除被玩家选中的人  以外  岛上其他人可以选择加入其中一方，或者旁观
                     var t = pd.getTarget();
                     if (t != null) {
-                        p.getServer().getOnlinePlayers().forEach(player -> {
-                            player.sendMessage(Component.text("<S>     %s和%s进行了一场pvp;".formatted(p.getName(),t.getName())));
-                        });
+                        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("<S>     %s和%s进行了一场pvp;".formatted(p.getName(), t.getName()))));
                         GameState.pvp(pd.location.players, p, t);
                     }
                 }
-                //除被玩家选中的人  以外  岛上其他人可以选择加入其中一方，或者旁观
                 case 60006 -> {
                     //破坏
                 }
-                case 60005 -> {
-                    //商店
+                case 60005 -> //商店
+                        p.openInventory(new ShopMenu(p).getInventory());
+                case 60010 -> {
+                    p.openInventory(new DestoryBedMenu(p, pd.equipments).getInventory());
                 }
                 case 60004 -> {
-                    //床
+                    p.openInventory(new PlaceBedMenu(p, pd.equipments).getInventory());
                 }
             }
         }

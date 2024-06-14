@@ -4,11 +4,12 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class DiamondEquips extends Card {
+public class DiamondEquips extends Card implements isEquip{
     @Override
     public void effect(Player player) {
 
     }
+    public boolean isEquip(){return true;}
     @Override
     public int power() {
         return 8;

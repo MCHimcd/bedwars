@@ -2,12 +2,16 @@ package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class Wool extends Card implements isBlock{
     @Override
     public void effect(Player player) {
 
+    }
+    public Material material(){
+        return Material.WHITE_WOOL;
     }
     public boolean isBlock(){
         return true;

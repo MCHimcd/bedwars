@@ -6,16 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Road extends Node {
-    private static int id_g = 0;
     private final List<Node> nodes = new ArrayList<>();
     private Material material;
-    private int id = 0;
 
-    public Road(Node n1, Node n2, Material m) {
-        nodes.add(n1);
-        nodes.add(n2);
+    public Road(Material m, Node... ns) {
+        nodes.addAll(List.of(ns));
         material = m;
-        id = id_g++;
     }
 
     public boolean hasNode(Node node) {
@@ -39,7 +35,4 @@ public class Road extends Node {
         return "road";
     }
 
-    public int getId() {
-        return id;
-    }
 }

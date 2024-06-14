@@ -2,9 +2,10 @@ package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public class Plank extends Card implements BlockCount,isBlock{
+public class Plank extends Card implements isBlock{
     @Override
     public void effect(Player player) {
 
@@ -12,12 +13,9 @@ public class Plank extends Card implements BlockCount,isBlock{
     public boolean isBlock(){
         return true;
     }
-    @Override
-    public int getCount(){
-        return Count;
-    };
-    public int Count = itemMaxCount();
-    @Override
+    public Material material(){
+        return Material.CRIMSON_PLANKS;
+    }
     public int power() {
         return 0;
     }

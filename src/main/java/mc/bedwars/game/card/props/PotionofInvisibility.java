@@ -1,6 +1,6 @@
 package mc.bedwars.game.card.props;
 
-import mc.bedwars.game.player.PlayerData;
+import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;

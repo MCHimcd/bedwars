@@ -3,10 +3,10 @@ package mc.bedwars.game;
 import mc.bedwars.BedWars;
 import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.island.resource.Resource;
-import mc.bedwars.game.player.PlayerData;
 import mc.bedwars.menu.JoinPVPMenu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -18,14 +18,15 @@ import java.util.Map;
 public final class GameState {
     public static boolean started = false;
     public static Map<Player, PlayerData> players_data = new Hashtable<>();
-    public static GameMap map;
+    public static GameMap map = null;
     public static int order = 1;
 
     public static void reset() {
         //重置
         players_data.clear();
         order = 0;
-        map = new GameMap();
+        if (map != null) map.markers.keySet().forEach(Entity::remove);
+        map = new GameMap(Bukkit.getWorld("world"));
         started = false;
     }
 
@@ -45,7 +46,7 @@ public final class GameState {
         //结束
         players_data.keySet().stream().findFirst().ifPresent(winner -> winner.sendMessage(Component.text("§a你获得最终胜利！")));
         reset();
-    };
+    }
 
     public static void nextPlayer() {
         if (++order == 5) {
@@ -64,17 +65,17 @@ public final class GameState {
 
     public static void nextTurn() {
         order = 0;
-        map.nodes.forEach(node -> {
+        map.islands.forEach(node -> {
             if (node instanceof Resource r) r.generate();
         });
-        players_data.forEach((player, playerData) -> {
+        players_data.forEach((_, playerData) -> {
             //重置临时战力
             playerData.resetDpower();
             //血量低于50回血
             if (playerData.getHealth() < 50) playerData.setHealth(playerData.getHealth() + 10);
             //重置行动力
             playerData.resetAction();
-            if (playerData.getNeedSpawn()){
+            if (playerData.getNeedSpawn()) {
                 playerData.addAction(-1);
             }
             //重置目标
@@ -82,17 +83,18 @@ public final class GameState {
         });
     }
 
-    public static void pvp(List<Player> players,Player attacker,Player target) {
+    public static void pvp(List<Player> players, Player attacker, Player target) {
         var p1 = new ArrayList<Player>();
         p1.add(attacker);
         var p2 = new ArrayList<Player>();
         p2.add(target);
         //选择队伍
         new BukkitRunnable() {
-            private int t=0;
+            private int t = 0;
+
             @Override
             public void run() {
-                if(t++>=300){
+                if (t++ >= 300) {
                     //计算战力
                     int power1 = PlayerData.power(p1);
                     int power2 = PlayerData.power(p2);
@@ -149,8 +151,6 @@ public final class GameState {
                 }
             }
         }.runTaskTimer(BedWars.instance, 0, 1);
-        players.stream().filter(p -> !p.equals(attacker) && !p.equals(target)).forEach(player -> {
-            player.openInventory(new JoinPVPMenu(player,p1,p2).getInventory());
-        });
+        players.stream().filter(p -> !p.equals(attacker) && !p.equals(target)).forEach(player -> player.openInventory(new JoinPVPMenu(player, p1, p2).getInventory()));
     }
 }

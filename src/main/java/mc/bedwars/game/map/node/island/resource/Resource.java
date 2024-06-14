@@ -1,6 +1,6 @@
 package mc.bedwars.game.map.node.island.resource;
 
-import mc.bedwars.game.player.PlayerData;
+import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.map.node.island.Island;
 
 public abstract class Resource extends Island {

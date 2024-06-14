@@ -4,11 +4,13 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class IronAxe extends Card {
+public class IronAxe extends Card implements IsTool,isEquip{
     @Override
     public void effect(Player player) {
 
     }
+    public boolean isEquip(){return true;}
+    public boolean isTool(){return true;}
     @Override
     public int power() {
         return 2;
