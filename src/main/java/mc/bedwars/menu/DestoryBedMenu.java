@@ -27,6 +27,7 @@ public class DestoryBedMenu extends SlotMenu{
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
+                    //todo destory不会写destroy
                                 card.effect(pl);
                                 players_data.get(p).items.remove(card);
                         });
