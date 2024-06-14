@@ -10,7 +10,7 @@ public class TickRunner extends BukkitRunnable {
     @Override
     public void run() {
         if (started) {
-            players_data.forEach((_, playerData) -> {
+            players_data.forEach((p, playerData) -> {
                 if (playerData.getAction() <= 0 && playerData.getOrder() == order) {
                     nextPlayer();
                 }

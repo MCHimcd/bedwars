@@ -51,7 +51,7 @@ public class ShopMenu extends SlotMenu {
         }};
         AtomicInteger i = new AtomicInteger();
         items.forEach((card, itemStack) -> {
-            setSlot(i.get(), itemStack, (_, pl) -> {
+            setSlot(i.get(), itemStack, (it, pl) -> {
                 var pd = players_data.get(pl);
                 if (pd.items.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()){
                     p.sendMessage(Component.text("<S>      §a持有%s超过上限。".formatted(card.Name())));
