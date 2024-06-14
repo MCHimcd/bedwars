@@ -1,22 +1,16 @@
 package mc.bedwars.game.card.Blocks;
 
 import mc.bedwars.game.card.Card;
-import mc.bedwars.game.map.GameMap;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 public class EndStone extends Card implements isBlock{
-    public boolean isBlock(){
-        return true;
-    }
     public Material material(){
         return Material.END_STONE;
     }
 
     @Override
     public void effect(Player player) {
-
     }
 
     @Override

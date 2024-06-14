@@ -1,14 +1,18 @@
 package mc.bedwars.game;
 
 import mc.bedwars.BedWars;
+import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -24,20 +28,24 @@ public class PlayerData {
     private final Player player;
     //最大血量
     private final int MaxHealth = 100;
-    //当前选择的保护床方块层数
-    private int protectBed =1;
-    //1层床保护方块
-    private Material firstBedBlock = Material.AIR;
-    //2层床保护方块
-    private Material secondBedBlock = Material.AIR;
-    //3层床保护方块
-    private Material thirdBedBlock = Material.AIR;
+    public double distanceX = 0;
+    public double distanceZ = 0;
     //可使用的卡牌
     public List<Card> items = new ArrayList<>();
     //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
     public Node location = null;
     public Node target_location = null;
+    //当前选择的保护床方块层数
+    private int protectBed = 1;
+    //1层床保护方块
+    private Material firstBedBlock = Material.AIR;
+    //2层床保护方块
+    private Material secondBedBlock = Material.AIR;
+    //3层床保护方块
+    private Material thirdBedBlock = Material.AIR;
+    //将要破坏的层数
+    private int destroyBedBlock = 1;
     private ArmorStand marker;
     private int order = 0;
     //经济
@@ -63,7 +71,17 @@ public class PlayerData {
                 return bed.getOrder() == order;
             }
             return false;
-        }).findFirst().ifPresent(bed -> location = bed);
+        }).findFirst().ifPresent(bed -> {
+            location = bed;
+            marker = player.getWorld().spawn(GameMap.getLocation(bed), ArmorStand.class, ar -> {
+                ar.setMarker(true);
+                ar.getEquipment().setHelmet(new ItemStack(Material.PLAYER_HEAD) {{
+                    editMeta(m -> {
+                        if (m instanceof SkullMeta meta) meta.setOwningPlayer(player);
+                    });
+                }});
+            });
+        });
         if (order_g == 5) order_g = 1;
         players_data.put(player, this);
     }
@@ -97,6 +115,14 @@ public class PlayerData {
         Dpower = 0;
     }
 
+    public int getDestroyBedBlock() {
+        return destroyBedBlock;
+    }
+
+    public void setDestroyBedBlock(int count) {
+        destroyBedBlock = count;
+    }
+
     public void resetAction() {
         action = 1;
     }
@@ -112,30 +138,37 @@ public class PlayerData {
     public void setTarget(Player player) {
         target = player;
     }
-    public void setProtectBed(int amount){
-        protectBed=amount;
+
+    public int getProtectBed() {
+        return protectBed;
     }
-    public Material protectBedBlockMaterial(int amount){
-        if (amount==0){
+
+    public void setProtectBed(int amount) {
+        protectBed = amount;
+    }
+
+    public Material protectBedBlockMaterial(int amount) {
+        if (amount == 0) {
             return firstBedBlock;
         }
-        if (amount==1){
+        if (amount == 1) {
             return secondBedBlock;
         }
-        if (amount==2){
+        if (amount == 2) {
             return thirdBedBlock;
         }
         return Material.AIR;
     }
-    public void placeBedBlock(Material material){
-        if (protectBed==1){
-            firstBedBlock=material;
+
+    public void placeBedBlock(Material material) {
+        if (protectBed == 1) {
+            firstBedBlock = material;
         }
-        if (protectBed==2){
-            secondBedBlock=material;
+        if (protectBed == 2) {
+            secondBedBlock = material;
         }
-        if (protectBed==3){
-            thirdBedBlock=material;
+        if (protectBed == 3) {
+            thirdBedBlock = material;
         }
     }
 
@@ -204,57 +237,43 @@ public class PlayerData {
 
     public List<ItemStack> getActions() {
         List<ItemStack> items = new ArrayList<>();
-        //移动
-        items.add(new ItemStack(Material.PAPER) {{
-            editMeta(m -> m.setCustomModelData(60007));
-        }});
-        //搭路
+        //移动 60007
+        items.add(ItemCreator.create(Material.PAPER).data(60007).name(Component.text("移动")).getItem());
+        //搭路 60003
         if (location instanceof Island) {
-            items.add(new ItemStack(Material.PAPER) {{
-                editMeta(m -> m.setCustomModelData(60003));
-            }});
+            items.add(ItemCreator.create(Material.PAPER).data(60003).name(Component.text("搭路")).getItem());
         }
-        //pvp
+        //pvp 60002
         if (location instanceof Island i) {
             if (i.players.size() > 1) {
-                items.add(new ItemStack(Material.PAPER) {{
-                    editMeta(m -> m.setCustomModelData(60002));
-                }});
+                items.add(ItemCreator.create(Material.PAPER).data(60002).name(Component.text("PVP")).getItem());
             }
         }
-        //使用道具
-        items.add(new ItemStack(Material.PAPER) {{
-            editMeta(m -> m.setCustomModelData(60008));
-        }});
-        //破坏
-        items.add(new ItemStack(Material.PAPER) {{
-            editMeta(m -> m.setCustomModelData(60006));
-        }});
-        //商店、床
+        //使用道具 60008
+        items.add(ItemCreator.create(Material.PAPER).data(60008).name(Component.text("使用道具")).getItem());
+        //破坏60006
+        items.add(ItemCreator.create(Material.PAPER).data(60006).name(Component.text("破坏桥")).getItem());
+        //商店60005、床60004  他人60010
         if (location instanceof Bed b) {
             //商店
-            items.add(new ItemStack(Material.PAPER) {{
-                editMeta(m -> m.setCustomModelData(60005));
-            }});
+            items.add(ItemCreator.create(Material.PAPER).data(60005).name(Component.text("商店")).getItem());
             if (b.getOrder() == order) {
                 //自己床
-                items.add(new ItemStack(Material.PAPER) {{
-                    editMeta(m -> m.setCustomModelData(60004));
-                }});
+                items.add(ItemCreator.create(Material.PAPER).data(60004).name(Component.text("守护床")).getItem());
             } else {
                 //别人床
-                items.add(new ItemStack(Material.PAPER) {{
-                    editMeta(m -> m.setCustomModelData(60010));
-                }});
+                items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("破坏该床")).getItem());
             }
         }
-        //选择目标
+        //选择目标 60009
         if (location.players.size() > 2) {
-            items.add(new ItemStack(Material.PAPER) {{
-                editMeta(m -> m.setCustomModelData(60009));
-            }});
+            items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("选择目标")).getItem());
         }
 
         return items;
+    }
+
+    public ArmorStand getMarker() {
+        return marker;
     }
 }

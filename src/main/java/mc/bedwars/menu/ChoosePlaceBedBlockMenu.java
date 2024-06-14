@@ -1,15 +1,8 @@
 package mc.bedwars.menu;
 
 import mc.bedwars.factory.ItemCreator;
-import mc.bedwars.game.card.Blocks.isBlock;
-import mc.bedwars.game.card.Card;
-import mc.bedwars.game.card.props.isProps;
-import mc.bedwars.game.card.props.needTarget;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 import static mc.bedwars.game.GameState.players_data;
 

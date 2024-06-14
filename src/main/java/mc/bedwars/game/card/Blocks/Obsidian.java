@@ -8,14 +8,11 @@ import org.bukkit.entity.Player;
 public class Obsidian extends Card implements isBlock{
     @Override
     public void effect(Player player) {
-
     }
     public Material material(){
         return Material.OBSIDIAN;
     }
-    public boolean isBlock(){
-        return true;
-    }
+
     @Override
     public int power() {
         return 0;

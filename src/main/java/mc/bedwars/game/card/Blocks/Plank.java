@@ -8,11 +8,8 @@ import org.bukkit.entity.Player;
 public class Plank extends Card implements isBlock{
     @Override
     public void effect(Player player) {
+    }
 
-    }
-    public boolean isBlock(){
-        return true;
-    }
     public Material material(){
         return Material.CRIMSON_PLANKS;
     }

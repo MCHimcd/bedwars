@@ -7,7 +7,6 @@ import mc.bedwars.game.card.equips.*;
 import mc.bedwars.game.card.props.*;
 
 import mc.bedwars.game.card.Card;
-import mc.bedwars.game.card.props.isProps;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -58,7 +57,7 @@ public class ShopMenu extends SlotMenu {
                     p.sendMessage(Component.text("<S>      §a持有%s超过上限。".formatted(card.Name())));
                     p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                 } else if( pd.removeMoney(card.costMoney())) {
-                    if (card instanceof isEquip){
+                    if (card instanceof Equip){
                         pd.equipments.add(card);
                     }else pd.items.add(card);
                     p.playSound(p, Sound.ENTITY_VILLAGER_YES,1f,1f);

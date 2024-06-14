@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class GoldenApple extends Card implements isProps{
+public class GoldenApple extends Card implements Prop {
     @Override
     public void effect(Player player) {
         PlayerData playerData = players_data.get(player);
@@ -16,9 +16,8 @@ public class GoldenApple extends Card implements isProps{
             playerData.setHealth(100);
         }else playerData.addDpower(2);
     }
-    public boolean isProp(){
-        return true;
-    };
+
+    ;
     @Override
     public int power() {
         return 0;

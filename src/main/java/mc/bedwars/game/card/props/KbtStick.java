@@ -1,19 +1,20 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
-import mc.bedwars.menu.ChoosePlayerMenu;
+import mc.bedwars.game.map.GameMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import static mc.bedwars.game.GameState.players_data;
 
-public class KbtStick extends Card implements isProps, needTarget {
+public class KbtStick extends Card implements Prop, NeedTarget {
     @Override
     public void effect(Player player) {
-        //todo 使用击退棒 等将掉入虚空设成布尔值后再写
+        var pd=players_data.get(player);
+        var target=pd.getTarget();
+        GameMap.intoVoid(player,target);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1击退棒".formatted(player.getName())));
     }
-    public boolean isProp(){
-        return true;
-    }
+
     @Override
     public int power() {
         return 0;

@@ -6,7 +6,11 @@ import mc.bedwars.game.GameState;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.TickRunner;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.card.equips.IronAxe;
+import mc.bedwars.game.card.equips.Pickaxe;
+import mc.bedwars.game.card.equips.Scissors;
 import mc.bedwars.game.map.node.island.Island;
+import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.menu.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -81,6 +85,7 @@ public final class BedWars extends JavaPlugin implements Listener {
                                     p.closeInventory();
                                     assert target != null;
                                     p.sendMessage(Component.text("<S>     你选择了%s".formatted(target.getName())));
+                                    p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                                 }
                         ).getInventory());
                 case 60007 -> {
@@ -112,8 +117,10 @@ public final class BedWars extends JavaPlugin implements Listener {
                     //除被玩家选中的人  以外  岛上其他人可以选择加入其中一方，或者旁观
                     var t = pd.getTarget();
                     if (t != null) {
+                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                         p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("<S>     %s和%s进行了一场pvp;".formatted(p.getName(), t.getName()))));
                         GameState.pvp(pd.location.players, p, t);
+                        pd.addAction(-1);
                     }
                 }
                 case 60006 -> {
@@ -121,7 +128,25 @@ public final class BedWars extends JavaPlugin implements Listener {
                     if (pd.target_location != null) {
                         Island i1 = (Island) pd.location;
                         Island i2 = (Island) pd.target_location;
-                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1){
+                        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
+                            map.roads.stream().filter(road -> road.hasNode(pd.location)).findFirst().ifPresent(
+                                    road -> {
+                                        if (switch (road.getMaterial()) {
+                                            case Material.END_STONE ->
+                                                    pd.equipments.stream().anyMatch(em -> em instanceof Pickaxe);
+                                            case WHITE_WOOL ->
+                                                    pd.equipments.stream().anyMatch(em -> em instanceof Scissors);
+                                            case Material.CRIMSON_PLANKS ->
+                                                    pd.equipments.stream().anyMatch(em -> em instanceof IronAxe);
+                                            default -> false;
+                                        }) {
+                                            map.breakRoad(p, road);
+                                            p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                                            pd.addAction(-1);
+                                        }
+                                    }
+                            );
+
                         }
                     }
                 }
@@ -129,12 +154,24 @@ public final class BedWars extends JavaPlugin implements Listener {
                         p.openInventory(new ShopMenu(p).getInventory());
                 case 60010 -> {
                     //破坏床
-                    p.openInventory(new DestoryBedMenu(p, pd.equipments).getInventory());
+                    if (pd.location instanceof Bed b) {
+                        if (b.getOrder() != pd.getOrder()) {
+                            players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
+                                for (int j = 0; j < 4; j++) {
+                                    if (pld.protectBedBlockMaterial(j) != Material.AIR) {
+                                        pd.setDestroyBedBlock(j);
+                                        p.openInventory(new DestoryBedMenu(p, pd.equipments).getInventory());
+                                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                                        break;
+                                    }
+                                    if (j == 3) pld.destroyBed();
+                                }
+                            });
+                        }
+                    }
                 }
-                case 60004 -> {
-                    //建床
-                    p.openInventory(new ChoosePlaceBedBlockMenu(p).getInventory());
-                }
+                case 60004 -> //建床
+                        p.openInventory(new ChoosePlaceBedBlockMenu(p).getInventory());
             }
         }
     }

@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 public class HealingSpring extends Card {
     @Override
     public void effect(Player player) {
-
     }
     @Override
     public int power() {

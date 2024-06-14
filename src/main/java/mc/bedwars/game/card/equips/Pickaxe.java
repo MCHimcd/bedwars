@@ -4,12 +4,12 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class Pickaxe extends Card implements IsTool,isEquip{
+public class Pickaxe extends Card implements Tool, Equip {
     @Override
     public void effect(Player player) {
+
     }
-    public boolean isEquip(){return true;}
-    public boolean isTool(){return true;}
+
     @Override
     public int power() {
         return 0;
