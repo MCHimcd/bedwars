@@ -1,6 +1,7 @@
 package mc.bedwars.game;
 
 import mc.bedwars.BedWars;
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.boost.HealingSpring;
 import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.GameMap;
@@ -8,15 +9,20 @@ import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.JoinPVPMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
 import static mc.bedwars.BedWars.*;
 
 public final class GameState {
@@ -27,7 +33,12 @@ public final class GameState {
 
     public static void reset() {
         //重置
-        players_data.values().forEach(p->p.getMarker().remove());
+        players_data.values().forEach(p -> p.getMarker().remove());
+        Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+            player.teleport(new Location(player.getWorld(), 0, 66, 0));
+            player.sendMessage(Component.text("               §c§l 游戏已重置!"));
+            player.getInventory().clear();
+        });
         players_data.clear();
         order = 0;
         if (map != null) map.markers.keySet().forEach(Entity::remove);
@@ -41,18 +52,47 @@ public final class GameState {
 
     public static void start(List<Player> players) {
         if (players.size() != 4) {
-            Bukkit.broadcast(Component.text("§c游戏需要4名玩家参与！"));
+            Bukkit.broadcast(Component.text("            §c游戏需要4名玩家参与！"));
             return;
         }
-        //开始
-        players.forEach(PlayerData::new);
-        started = true;
-        nextTurn();
+        new BukkitRunnable() {
+            int t = 0;
+            int a = 0;
+            @Override
+            public void run() {
+                t++;
+                if (t % 20 == 0) {
+                    a++;
+                    players.forEach(player -> player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f));
+                    players.forEach(player -> {
+                        player.showTitle(Title.title(Message.rMsg("<rainbow> --游戏加载中--"),
+                                Message.rMsg("<gold>" + "■".repeat(a) + "<white>" + "□".repeat(5 - a)),
+                                Title.Times.times(Duration.ofMillis(1000), Duration.ZERO, Duration.ZERO)));
+                    });
+                }
+                if (t >= 100) {
+                    cancel();
+                    //开始
+                    players.forEach(player -> player.playSound(player,Sound.ENTITY_ENDERMAN_TELEPORT,1f,.5f));
+                    players.forEach(PlayerData::new);
+                    players.forEach(player -> {
+                        player.teleport(new Location(player.getWorld(), 0, 22, 0));
+                    });
+                    started = true;
+                    nextTurn();
+                }
+            }
+        }.runTaskTimer(instance, 0, 1);
     }
 
     public static void end() {
         //结束
-        players_data.keySet().stream().findFirst().ifPresent(winner -> winner.sendMessage(Component.text("§a你获得最终胜利！")));
+        players_data.keySet().stream().findFirst().ifPresent(winner -> {
+            Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+                player.sendMessage(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
+                winner.playSound(winner,Sound.ENTITY_FIREWORK_ROCKET_BLAST,1f,1f);
+            });
+        });
         reset();
     }
 
@@ -65,8 +105,9 @@ public final class GameState {
             p.getInventory().clear();
             if (d.getOrder() == order) {
                 p.getServer().getOnlinePlayers().forEach(player -> {
-                    player.sendMessage("<S>     现在是%s的回合了".formatted(p.getName()));
+                    player.sendMessage(Message.rMsg("               <rainbow>现在轮到<bold> %s <reset><rainbow>的回合了".formatted(p.getName())));
                 });
+                p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,2f,2f);
                 var is = d.getActions();
                 for (int i = 0; i < is.size(); i++) {
                     p.getInventory().setItem(i, is.get(i));
@@ -96,10 +137,10 @@ public final class GameState {
             }
             //重置目标
             playerData.resetTarget();
-            var Hs =playerData.items.stream().filter(item -> item instanceof HealingSpring).findFirst();
+            var Hs = playerData.items.stream().filter(item -> item instanceof HealingSpring).findFirst();
             //生命泉水
-            if (Hs.isPresent()){
-                if (playerData.location instanceof Bed bed && bed.getOrder()==playerData.getOrder()){
+            if (Hs.isPresent()) {
+                if (playerData.location instanceof Bed bed && bed.getOrder() == playerData.getOrder()) {
                     playerData.addDpower(3);
                 }
             }

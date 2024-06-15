@@ -2,13 +2,18 @@ package mc.bedwars.game;
 
 import mc.bedwars.BedWars;
 import mc.bedwars.factory.ItemCreator;
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -41,12 +46,19 @@ public class PlayerData {
     public Node target_location = null;
     //当前选择的保护床方块层数
     private int protectBed = 1;
-    //1层床保护方块
-    private Material firstBedBlock = Material.AIR;
-    //2层床保护方块
-    private Material secondBedBlock = Material.AIR;
-    //3层床保护方块
-    private Material thirdBedBlock = Material.AIR;
+    //左1层床保护方块
+    private Material LfirstBedBlock = Material.AIR;
+    //左2层床保护方块
+    private Material LsecondBedBlock = Material.WHITE_WOOL;
+    //左3层床保护方块
+    private Material LthirdBedBlock = Material.WHITE_WOOL;
+
+    //右1层床保护方块
+    private Material RfirstBedBlock = Material.AIR;
+    //右2层床保护方块
+    private Material RsecondBedBlock = Material.WHITE_WOOL;
+    //右3层床保护方块
+    private Material RthirdBedBlock = Material.WHITE_WOOL;
     //将要破坏的层数
     private int destroyBedBlock = 1;
     private ArmorStand marker;
@@ -166,26 +178,44 @@ public class PlayerData {
 
     public Material protectBedBlockMaterial(int amount) {
         if (amount == 0) {
-            return firstBedBlock;
+            return LfirstBedBlock;
         }
         if (amount == 1) {
-            return secondBedBlock;
+            return LsecondBedBlock;
         }
         if (amount == 2) {
-            return thirdBedBlock;
+            return LthirdBedBlock;
+        }
+        if (amount == 3) {
+            return RthirdBedBlock;
+        }
+        if (amount == 4) {
+            return RsecondBedBlock;
+        }
+        if (amount == 5) {
+            return RfirstBedBlock;
         }
         return Material.AIR;
     }
 
     public void placeBedBlock(Material material) {
         if (protectBed == 1) {
-            firstBedBlock = material;
+            LfirstBedBlock = material;
         }
         if (protectBed == 2) {
-            secondBedBlock = material;
+            LsecondBedBlock = material;
         }
         if (protectBed == 3) {
-            thirdBedBlock = material;
+            LthirdBedBlock = material;
+        }
+        if (protectBed == 4) {
+            RthirdBedBlock = material;
+        }
+        if (protectBed == 5) {
+            RsecondBedBlock = material;
+        }
+        if (protectBed == 6) {
+            RfirstBedBlock = material;
         }
     }
 
@@ -231,6 +261,9 @@ public class PlayerData {
 
     public void destroyBed() {
         has_bed = false;
+        Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
+            player1.sendMessage(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
+        });
     }
 
     public int die(List<Player> killers) {
@@ -241,6 +274,11 @@ public class PlayerData {
         //最终击杀
         if (!has_bed) {
             players_data.remove(player);
+            Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
+                player1.sendMessage(Message.rMsg("          <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
+            });
+            player.teleport(new Location(player.getWorld(),0,22,0));
+            player.showTitle(Title.title(Message.rMsg("<aqua>观战"),Message.rMsg("<rainbow>--------")));
         } else {
             needSpawn = true;
         }

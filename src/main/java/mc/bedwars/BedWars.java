@@ -3,6 +3,7 @@ package mc.bedwars;
 import mc.bedwars.Command.start;
 import mc.bedwars.Command.test;
 import mc.bedwars.factory.ItemCreator;
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.GameState;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.TickRunner;
@@ -15,6 +16,7 @@ import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.menu.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -103,8 +105,6 @@ public final class BedWars extends JavaPlugin implements Listener {
             var id = item.getItemMeta().getCustomModelData();
             var pd = players_data.get(p);
             switch (id) {
-                case 1 -> //卡片菜单
-                        p.openInventory(new CardMenu(p, pd.items).getInventory());
                 case 60009 -> //选择目标菜单
                         p.openInventory(new ChoosePlayerMenu(
                                 p, pd.location.players.stream().filter(player -> !player.equals(p)).toList(),
@@ -114,7 +114,7 @@ public final class BedWars extends JavaPlugin implements Listener {
                                     pd.setTarget(target);
                                     p.closeInventory();
                                     assert target != null;
-                                    p.sendMessage(Component.text("<S>     你选择了%s".formatted(target.getName())));
+                                    p.showTitle(Title.title(Message.rMsg("<aqua>你选择的目标为:"),Message.rMsg("<rainbow>%s".formatted(target.getName()))));
                                     p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                                 }
                         ).getInventory());
@@ -122,11 +122,11 @@ public final class BedWars extends JavaPlugin implements Listener {
                     //移动
                     if (pd.target_location != null) {
                         if (!map.move(p, pd.location, pd.target_location)) {
-                            p.sendMessage(Component.text("无路"));
+                            p.showTitle(Title.title(Message.rMsg("<aqua>当前岛屿方向没路可走"),Message.rMsg(".")));
                             p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                         }
                     } else {
-                        p.sendMessage("无目标");
+                        p.showTitle(Title.title(Message.rMsg("<aque>请选择一个岛屿"),Message.rMsg(".")));
                         p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                     }
                 }
@@ -137,7 +137,12 @@ public final class BedWars extends JavaPlugin implements Listener {
                         Island i2 = (Island) pd.target_location;
                         if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1){
                             p.openInventory(new BlockMenu(p).getInventory());
+                        }else {
+                            p.showTitle(Title.title(Message.rMsg("<aqua>请选择一个就近岛屿"),Message.rMsg(".")));
                         }
+                    }else {
+                        p.showTitle(Title.title(Message.rMsg("<aqua>请选择一个就近岛屿"),Message.rMsg(".")));
+                        p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                     }
                 }
                 //使用道具
@@ -147,8 +152,9 @@ public final class BedWars extends JavaPlugin implements Listener {
                     //除被玩家选中的人  以外  岛上其他人可以选择加入其中一方，或者旁观
                     var t = pd.getTarget();
                     if (t != null) {
-                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("<S>     %s和%s进行了一场pvp;".formatted(p.getName(), t.getName()))));
+                        p.playSound(p,Sound.ENTITY_PLAYER_ATTACK_SWEEP,1f,1.5f);
+                        pd.getTarget().playSound(pd.getTarget(),Sound.ENTITY_PLAYER_ATTACK_SWEEP,1f,1.5f);
+                        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Message.rMsg("         %s和%s进行了一场<red>pvp".formatted(p.getName(), t.getName()))));
                         GameState.pvp(pd.location.players, p, t);
                         pd.addAction(-1);
                     }
@@ -173,37 +179,43 @@ public final class BedWars extends JavaPlugin implements Listener {
                                             map.breakRoad(p, road);
                                             p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                                             pd.addAction(-1);
+                                        }else {
+                                            p.showTitle(Title.title(Message.rMsg("<aqua>你没有破坏这座桥的工具"),Message.rMsg(".")));
+                                            p.playSound(p,Sound.ENTITY_VILLAGER_NO,1f,1f);
                                         }
                                     }
                             );
-
+                        }else {
+                            p.showTitle(Title.title(Message.rMsg("<aqua> 请选择一个就近岛屿 "),Message.rMsg(".")));
+                            p.playSound(p,Sound.ENTITY_VILLAGER_NO,1f,1f);
                         }
                     }
                 }
                 case 60005 -> //商店
-                        p.openInventory(new ShopMenu(p).getInventory());
+                {
+                    p.openInventory(new ShopMenu(p).getInventory());
+                    p.playSound(p,Sound.ENTITY_VILLAGER_TRADE,1f,1.5f);
+                }
                 case 60010 -> {
                     //破坏床
                     if (pd.location instanceof Bed b) {
                         if (b.getOrder() != pd.getOrder()) {
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
-                                for (int j = 0; j < 4; j++) {
-                                    if (pld.protectBedBlockMaterial(j) != Material.AIR) {
-                                        pd.setDestroyBedBlock(j);
-                                        p.openInventory(new DestoryBedMenu(p, pd.equipments).getInventory());
-                                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                        break;
-                                    }
-                                    if (j == 3) pld.destroyBed();
-                                }
+                                p.openInventory(new ChooseDestoryBedBlockMenu(p).getInventory());
                             });
                         }
                     }
                 }
-                case 60004 -> //建床
-                        p.openInventory(new ChoosePlaceBedBlockMenu(p).getInventory());
+                case 60004 ->{//建床
+                    p.openInventory(new ChoosePlaceBedBlockMenu(p).getInventory());
+                    p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                }
                 case 60011 -> //跳过回合
-                        map.move(p,pd.location,pd.location);
+                {
+                    map.move(p,pd.location,pd.location);
+                    p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                    p.playSound(p,Sound.UI_BUTTON_CLICK,1f,.5f);
+                }
             }
         }
     }
@@ -220,7 +232,6 @@ public final class BedWars extends JavaPlugin implements Listener {
             e.setCancelled(true);
         }
     }
-
     @EventHandler
     public void openInv(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
@@ -245,6 +256,5 @@ public final class BedWars extends JavaPlugin implements Listener {
                     .lore(card.Introduction())
                     .hideAttributes().getItem());
         }
-
     }
 }

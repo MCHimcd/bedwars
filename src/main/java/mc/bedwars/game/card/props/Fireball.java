@@ -19,7 +19,7 @@ public class Fireball extends Card implements Prop {
                 road -> {
                     if (switch (road.getMaterial()) {
                         case WHITE_WOOL -> true;
-                        case Material.CRIMSON_PLANKS -> true;
+                        case CRIMSON_PLANKS -> true;
                         default -> false;
                     }) map.breakRoad(player, road);
                 }//不知道   等把桥的材质可以坏了 到时候看看吧

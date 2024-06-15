@@ -19,7 +19,7 @@ public class Tnt extends Card implements Prop {
             map.roads.stream().filter(road -> road.hasNode(pd.location)).findFirst().ifPresent(
                     road -> {
                         if (switch (road.getMaterial()) {
-                            case END_STONE, Material.CRIMSON_PLANKS, WHITE_WOOL -> true;
+                            case END_STONE, CRIMSON_PLANKS, WHITE_WOOL -> true;
                             default -> false;
                         }) map.breakRoad(player, road);
                     }

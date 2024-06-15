@@ -1,6 +1,7 @@
 package mc.bedwars.menu;
 
 import mc.bedwars.factory.ItemCreator;
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.card.equips.IronAxe;
 import mc.bedwars.game.card.equips.Tool;
@@ -16,8 +17,8 @@ import java.util.List;
 import static mc.bedwars.game.GameState.players_data;
 
 public class DestoryBedMenu extends SlotMenu {
-    public DestoryBedMenu(Player p, List<Card> cards) {
-        super(27, Component.text("选择使用的工具"), p);
+    public DestoryBedMenu(Player p, List<Card> cards,int j) {
+        super(27, Message.rMsg("<red>选择工具破坏第<bold>%s</bold>层".formatted(j)), p);
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             if (card instanceof Tool) {
@@ -32,17 +33,20 @@ public class DestoryBedMenu extends SlotMenu {
                     Bed b= (Bed) pd.location;
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
                                 if(switch (pld.protectBedBlockMaterial(pd.getDestroyBedBlock())){
-                                    case Material.END_STONE -> card instanceof Pickaxe;
+                                    case END_STONE -> card instanceof Pickaxe;
                                     case WHITE_WOOL -> card instanceof Scissors;
-                                    case Material.CRIMSON_PLANKS -> card instanceof IronAxe;
+                                    case CRIMSON_PLANKS -> card instanceof IronAxe;
                                     default -> false;
                                 }) {
                                     pld.setProtectBed(pd.getDestroyBedBlock());
                                     pld.placeBedBlock(Material.AIR);
                                     p.sendMessage(Component.text("<S>     正确的的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
+                                    p.closeInventory();
                                 } else {
                                     pd.addAction(-1);
+                                    pd.equipments.remove(card);
                                     p.sendMessage(Component.text("<S>     错误的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
+                                    p.closeInventory();
                                 }
                             });
                         });

@@ -2,6 +2,7 @@ package mc.bedwars.Command;
 
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.factory.particle;
+import mc.bedwars.game.GameState;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,8 +18,7 @@ public class test implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         Player player = (Player) sender;
-        List<Location> graph = graph1(player);
-        Location location = player.getLocation().add(3, 1, 0);
+        GameState.reset();
         return true;
     }
     //旋转圆
