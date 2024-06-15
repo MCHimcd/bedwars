@@ -3,7 +3,6 @@ package mc.bedwars.game.card.props;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.map;
@@ -11,7 +10,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class Tnt extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         var pd = players_data.get(player);
         Island i1 = (Island) pd.location;
         Island i2 = (Island) pd.target_location;
@@ -26,6 +25,7 @@ public class Tnt extends Card implements Prop {
             );
             player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §cTNT".formatted(player.getName())));
         }
+        return true;
     }
 
     ;

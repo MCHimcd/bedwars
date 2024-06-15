@@ -9,7 +9,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class PotionofLeaping extends Card implements Duration, Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         PlayerData playerData = players_data.get(player);
         playerData.addDpower(2);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §9跳跃药水".formatted(player.getName())));

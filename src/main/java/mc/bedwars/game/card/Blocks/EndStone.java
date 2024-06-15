@@ -10,7 +10,8 @@ public class EndStone extends Card implements isBlock{
     }
 
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
+        return true;
     }
 
     @Override

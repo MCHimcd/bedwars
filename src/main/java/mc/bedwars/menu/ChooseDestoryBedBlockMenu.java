@@ -8,6 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static mc.bedwars.game.GameState.players_data;
 
 public class ChooseDestoryBedBlockMenu extends SlotMenu {
@@ -18,16 +20,20 @@ public class ChooseDestoryBedBlockMenu extends SlotMenu {
                 (it, pl) -> {
                     p.closeInventory();
                     if (pd.location instanceof Bed b) {
+                        AtomicInteger isnull = new AtomicInteger();
                         if (b.getOrder() != pd.getOrder()) {
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
-                                for (int j = 0; j < 2; j++) {
+                                for (int j = 1; j < 3; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
-                                        p.openInventory(new DestoryBedMenu(p, pd.equipments,j).getInventory());
+                                        p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
                                         p.sendMessage(Message.rMsg("     当前破坏的层数为%s".formatted(j)));
-                                        p.playSound(p, Sound.UI_BUTTON_CLICK,1f,.5f);
-                                        break;
-                                    }else {
+                                        p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
+                                        return;
+                                    } else {
+                                        isnull.getAndIncrement();
+                                    }
+                                    if (isnull.get()==3){
                                         pld.destroyBed();
                                     }
                                 }
@@ -38,16 +44,20 @@ public class ChooseDestoryBedBlockMenu extends SlotMenu {
         setSlot(8, ItemCreator.create(Material.PAPER).amount(1).name(Message.rMsg("<red><右边>")).getItem(),
                 (it, pl) -> {
                     if (pd.location instanceof Bed b) {
+                        AtomicInteger isnull = new AtomicInteger();
                         if (b.getOrder() != pd.getOrder()) {
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
-                                for (int j = 3; j < 5; j++) {
+                                for (int j = 4; j < 6; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
-                                        p.openInventory(new DestoryBedMenu(p, pd.equipments,j).getInventory());
+                                        p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
                                         p.sendMessage(Message.rMsg("     当前破坏的层数为%s".formatted(j)));
-                                        p.playSound(p, Sound.UI_BUTTON_CLICK,1f,.5f);
-                                        break;
-                                    }else {
+                                        p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
+                                        return;
+                                    } else {
+                                        isnull.getAndIncrement();
+                                    }
+                                    if (isnull.get()==3){
                                         pld.destroyBed();
                                     }
                                 }

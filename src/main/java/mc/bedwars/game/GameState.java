@@ -5,6 +5,7 @@ import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.boost.HealingSpring;
 import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.GameMap;
+import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.JoinPVPMenu;
@@ -15,7 +16,10 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.checkerframework.checker.units.qual.C;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -27,17 +31,21 @@ import static mc.bedwars.BedWars.*;
 
 public final class GameState {
     public static boolean started = false;
+    public static int turn;
     public static Map<Player, PlayerData> players_data = new Hashtable<>();
     public static GameMap map = null;
     public static int order = 1;
 
     public static void reset() {
+        GameState.turn=0;
         //重置
         players_data.values().forEach(p -> p.getMarker().remove());
         Bukkit.getServer().getOnlinePlayers().forEach(player -> {
             player.teleport(new Location(player.getWorld(), 0, 66, 0));
             player.sendMessage(Component.text("               §c§l 游戏已重置!"));
             player.getInventory().clear();
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,100000,5));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,100000,5));
         });
         players_data.clear();
         order = 0;
@@ -73,10 +81,12 @@ public final class GameState {
                 if (t >= 100) {
                     cancel();
                     //开始
-                    players.forEach(player -> player.playSound(player,Sound.ENTITY_ENDERMAN_TELEPORT,1f,.5f));
-                    players.forEach(PlayerData::new);
+
                     players.forEach(player -> {
+                        new PlayerData(player);
+                        player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
                         player.teleport(new Location(player.getWorld(), 0, 22, 0));
+                        player.showBossBar(bossbar);
                     });
                     started = true;
                     nextTurn();
@@ -105,8 +115,9 @@ public final class GameState {
             p.getInventory().clear();
             if (d.getOrder() == order) {
                 p.getServer().getOnlinePlayers().forEach(player -> {
-                    player.sendMessage(Message.rMsg("               <rainbow>现在轮到<bold> %s <reset><rainbow>的回合了".formatted(p.getName())));
+                    player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())));
                 });
+                bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(),turn)));
                 p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,2f,2f);
                 var is = d.getActions();
                 for (int i = 0; i < is.size(); i++) {
@@ -116,11 +127,21 @@ public final class GameState {
             if (d.location instanceof Resource r) {
                 r.giveMoney(p);
             }
+            for (var i :map.islands){
+                if(i instanceof Resource r) {
+                    map.markers.forEach((m,n)->{
+                        if(r.equals(n)){
+                            m.text(Component.text("%s岛".formatted(i.getType())).append(Component.text("\n%s存有数量:%d".formatted(i.getType().substring(2),r.getAmount()), NamedTextColor.RED)));
+                        }
+                    });
+                }
+            }
         });
     }
 
     public static void nextTurn() {
         order = 0;
+        turn++;
         map.islands.forEach(node -> {
             if (node instanceof Resource r) r.generate();
         });
@@ -212,6 +233,7 @@ public final class GameState {
                             }
                         }
                     });
+                    players_data.get(attacker).addAction(-1);
                     cancel();
                 }
             }

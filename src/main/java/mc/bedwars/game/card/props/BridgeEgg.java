@@ -1,6 +1,5 @@
 package mc.bedwars.game.card.props;
 
-import mc.bedwars.game.GameState;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
@@ -11,7 +10,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class BridgeEgg extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         var pd=players_data.get(player);
         Island i1 = (Island) pd.location;
         Island i2 = (Island) pd.target_location;

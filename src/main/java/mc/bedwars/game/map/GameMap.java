@@ -1,5 +1,6 @@
 package mc.bedwars.game.map;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Blocks.Wool;
 import mc.bedwars.game.card.props.EnderPearl;
@@ -67,7 +68,13 @@ public class GameMap {
     public GameMap(World world) {
         //生成markers
         for (var i : islands) {
-            markers.put(world.spawn(getLocation(i), Marker.class), i);
+            markers.put(world.spawn(getLocation(i), TextDisplay.class, marker -> {
+                var t=marker.getTransformation();
+                marker.setTransformation(new Transformation(t.getTranslation().add(0,5,0),t.getLeftRotation(),t.getScale().mul(4),t.getRightRotation()));
+                marker.setBillboard(Display.Billboard.CENTER);
+                marker.setDefaultBackground(true);
+                marker.text(Component.text("%s岛".formatted(i.getType())));
+            }), i);
         }
         //重置地图
         for (int i = -40; i<41; i++) {

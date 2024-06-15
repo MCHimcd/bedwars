@@ -11,7 +11,7 @@ import static mc.bedwars.game.GameState.map;
 
 public class EnderPearl extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         var pd = GameState.players_data.get(player);
         pd.addAction(1);
         pd.location = pd.target_location;

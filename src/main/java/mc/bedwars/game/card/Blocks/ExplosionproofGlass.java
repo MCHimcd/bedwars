@@ -7,7 +7,8 @@ import org.bukkit.entity.Player;
 
 public class ExplosionproofGlass extends Card implements isBlock{
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
+        return true;
     }
     public Material material(){
         return Material.BLACK_STAINED_GLASS;

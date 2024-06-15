@@ -36,7 +36,7 @@ public class TickRunner extends BukkitRunnable {
                     pd.getAction())));
             var r = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getLocation().getDirection(), 100, 5, entity -> entity.getType() == EntityType.MARKER);
             if (r != null) {
-                var e = (Marker) r.getHitEntity();
+                var e = r.getHitEntity();
                 if (e != null) {
                     pd.target_location =map.markers.get(e);
                 }

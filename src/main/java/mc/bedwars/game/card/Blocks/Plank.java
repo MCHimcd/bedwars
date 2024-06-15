@@ -7,7 +7,8 @@ import org.bukkit.entity.Player;
 
 public class Plank extends Card implements isBlock{
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
+        return true;
     }
 
     public Material material(){

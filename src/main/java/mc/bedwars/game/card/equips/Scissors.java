@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 
 public class Scissors extends Card implements Tool, Equip {
     @Override
-    public void effect(Player player) {
-
+    public boolean effect(Player player) {
+        return true;
     }
 
     @Override

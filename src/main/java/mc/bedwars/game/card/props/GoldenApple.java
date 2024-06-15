@@ -9,7 +9,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class GoldenApple extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         PlayerData playerData = players_data.get(player);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §6金苹果".formatted(player.getName())));
         if (playerData.getPower()<playerData.getMaxPower()){

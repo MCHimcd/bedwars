@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 
 public abstract class Card{
-    abstract public void effect(Player player);
+    abstract public boolean effect(Player player);
     abstract public int power();
     abstract public int costMoney();
     abstract public int itemMaxCount();

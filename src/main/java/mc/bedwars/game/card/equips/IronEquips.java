@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 
 public class IronEquips extends Card implements Equip {
     @Override
-    public void effect(Player player) {
-
+    public boolean effect(Player player) {
+        return true;
     }
 
     @Override

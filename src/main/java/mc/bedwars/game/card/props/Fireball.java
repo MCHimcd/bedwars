@@ -11,20 +11,28 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class Fireball extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         var pd = players_data.get(player);
-        Island i1 = (Island) pd.location;
-        Island i2 = (Island) pd.target_location;
-        map.roads.stream().filter(road -> road.hasNode(pd.location)).findFirst().ifPresent(
-                road -> {
-                    if (switch (road.getMaterial()) {
-                        case WHITE_WOOL -> true;
-                        case CRIMSON_PLANKS -> true;
-                        default -> false;
-                    }) map.breakRoad(player, road);
-                }//不知道   等把桥的材质可以坏了 到时候看看吧
-        );
-        player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1火球".formatted(player.getName())));
+        if (pd.target_location_1 == null) {
+            pd.target_location_1 = pd.target_location;
+            player.sendMessage("下一个");
+            return false;
+        } else {
+            Island i1 = (Island) pd.target_location_1;
+            Island i2 = (Island) pd.target_location;
+            map.roads.stream().filter(road -> road.hasNode(pd.location)).findFirst().ifPresent(
+                    road -> {
+                        if (switch (road.getMaterial()) {
+                            case WHITE_WOOL, CRIMSON_PLANKS -> true;
+                            default -> false;
+                        }) map.breakRoad(player, road);
+                    }
+            );
+            player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1火球".formatted(player.getName())));
+            pd.target_location_1 = null;
+            pd.addAction(-1);
+            return true;
+        }
     }
 
     @Override

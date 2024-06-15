@@ -9,7 +9,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class PotionofSwiftness extends Card implements Prop {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §b迅捷药水".formatted(player.getName())));
         PlayerData playerData = players_data.get(player);
         playerData.addAction(1);

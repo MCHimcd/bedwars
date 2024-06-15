@@ -8,7 +8,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class KbtStick extends Card implements Prop, NeedTarget {
     @Override
-    public void effect(Player player) {
+    public boolean effect(Player player) {
         var pd=players_data.get(player);
         var target=pd.getTarget();
         GameMap.intoVoid(player,target);

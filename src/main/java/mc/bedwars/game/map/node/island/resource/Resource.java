@@ -1,5 +1,6 @@
 package mc.bedwars.game.map.node.island.resource;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.GameState;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.map.node.island.Island;
@@ -25,7 +26,7 @@ public abstract class Resource extends Island {
         var pd= GameState.players_data.get(p);
         if(r_amount>0){
             pd.addMoney(r_amount * getMoneyOfEach());
-            p.sendMessage("<S>     获得 %d 钱".formatted(r_amount * getMoneyOfEach()));
+            p.sendMessage(Message.rMsg("          获得 %d 钱".formatted(r_amount * getMoneyOfEach())));
             r_amount = 0;
         }
 
