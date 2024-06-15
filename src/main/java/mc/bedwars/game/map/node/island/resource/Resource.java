@@ -22,6 +22,10 @@ public abstract class Resource extends Island {
 
     abstract int getGenerationCD();
 
+    public int getAmount(){
+        return r_amount;
+    }
+
     public void giveMoney(Player p) {
         var pd= GameState.players_data.get(p);
         if(r_amount>0){
@@ -29,9 +33,7 @@ public abstract class Resource extends Island {
             p.sendMessage(Message.rMsg("          获得 %d 钱".formatted(r_amount * getMoneyOfEach())));
             r_amount = 0;
         }
-
     }
-
     public void generate() {
         if (--g_cd == 0) {
             r_amount = Math.min(r_amount + 1, getMaxAmount());
