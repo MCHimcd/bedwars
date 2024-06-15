@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static mc.bedwars.game.GameState.*;
+import static mc.bedwars.BedWars.*;
 
 public class PlayerData {
     //目标
@@ -34,6 +36,7 @@ public class PlayerData {
     public List<Card> items = new ArrayList<>();
     //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
+
     public Node location = null;
     public Node target_location = null;
     //当前选择的保护床方块层数
@@ -66,6 +69,14 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.player = player;
         order = order_g++;
+        Team team = switch (order) {
+            case 1 -> red;
+            case 2 -> green;
+            case 3 -> blue;
+            case 4 -> yellow;
+            default -> null;
+        };
+        team.addPlayer(player);
         map.islands.stream().filter(node -> {
             if (node instanceof Bed bed) {
                 return bed.getOrder() == order;
@@ -74,7 +85,9 @@ public class PlayerData {
         }).findFirst().ifPresent(bed -> {
             location = bed;
             marker = player.getWorld().spawn(GameMap.getLocation(bed), ArmorStand.class, ar -> {
+                team.addEntity(ar);
                 ar.setMarker(true);
+                ar.setGlowing(true);
                 ar.getEquipment().setHelmet(new ItemStack(Material.PLAYER_HEAD) {{
                     editMeta(m -> {
                         if (m instanceof SkullMeta meta) meta.setOwningPlayer(player);
@@ -101,6 +114,10 @@ public class PlayerData {
 
     public void addMoney(int amount) {
         money = Math.min(money + amount, 64);
+    }
+
+    public int getMoney() {
+        return money;
     }
 
     public void addDpower(int amount) {
@@ -173,7 +190,7 @@ public class PlayerData {
     }
 
     public int getPower() {
-        return getMaxPower() * ((health + 1) / 100) + Dpower;
+        return getMaxPower() * (health / 100) + Dpower;
     }
 
     public int getHealth() {
@@ -186,6 +203,14 @@ public class PlayerData {
 
     public boolean getNeedSpawn() {
         return needSpawn;
+    }
+
+    public void spawn() {
+        map.islands.stream().filter(i -> {
+            return i instanceof Bed b && b.getOrder() == order;
+        }).findFirst().ifPresent(island -> marker.teleport(GameMap.getLocation(island)));
+        needSpawn = false;
+        action = 0;
     }
 
     public int getMaxPower() {
@@ -269,6 +294,8 @@ public class PlayerData {
         if (location.players.size() > 2) {
             items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("选择目标")).getItem());
         }
+        //跳过回合
+        items.add(ItemCreator.create(Material.PAPER).data(60011).name(Component.text("跳过回合")).getItem());
 
         return items;
     }

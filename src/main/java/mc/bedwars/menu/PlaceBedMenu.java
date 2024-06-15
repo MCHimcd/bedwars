@@ -24,7 +24,6 @@ public class PlaceBedMenu extends SlotMenu{
             if (card instanceof isBlock) {
                 setSlot(i, ItemCreator.create(Material.PAPER).name(card
                                         .Name())
-                                .amount(card.itemMaxCount())
                                 .data(card.CustomModelData())
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),

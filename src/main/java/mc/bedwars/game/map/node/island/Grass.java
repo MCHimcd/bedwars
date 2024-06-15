@@ -7,7 +7,7 @@ public class Grass extends Island {
 
     @Override
     public String getType() {
-        return "grass";
+        return "艹";
     }
 
 }

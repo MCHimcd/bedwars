@@ -22,7 +22,7 @@ public class Fireball extends Card implements Prop {
                         case Material.CRIMSON_PLANKS -> true;
                         default -> false;
                     }) map.breakRoad(player, road);
-                }
+                }//不知道   等把桥的材质可以坏了 到时候看看吧
         );
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1火球".formatted(player.getName())));
     }

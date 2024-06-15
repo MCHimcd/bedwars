@@ -1,7 +1,10 @@
 package mc.bedwars.game;
 
 import mc.bedwars.BedWars;
+import mc.bedwars.game.card.boost.HealingSpring;
+import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.GameMap;
+import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.JoinPVPMenu;
 import net.kyori.adventure.text.Component;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import static mc.bedwars.BedWars.*;
 
 public final class GameState {
     public static boolean started = false;
@@ -23,10 +27,15 @@ public final class GameState {
 
     public static void reset() {
         //重置
+        players_data.values().forEach(p->p.getMarker().remove());
         players_data.clear();
         order = 0;
         if (map != null) map.markers.keySet().forEach(Entity::remove);
         map = new GameMap(Bukkit.getWorld("world"));
+        red.removeEntries(red.getEntries());
+        green.removeEntries(green.getEntries());
+        blue.removeEntries(blue.getEntries());
+        yellow.removeEntries(yellow.getEntries());
         started = false;
     }
 
@@ -39,7 +48,6 @@ public final class GameState {
         players.forEach(PlayerData::new);
         started = true;
         nextTurn();
-        nextPlayer();
     }
 
     public static void end() {
@@ -51,14 +59,21 @@ public final class GameState {
     public static void nextPlayer() {
         if (++order == 5) {
             nextTurn();
+            return;
         }
         players_data.forEach((p, d) -> {
             p.getInventory().clear();
             if (d.getOrder() == order) {
+                p.getServer().getOnlinePlayers().forEach(player -> {
+                    player.sendMessage("<S>     现在是%s的回合了".formatted(p.getName()));
+                });
                 var is = d.getActions();
                 for (int i = 0; i < is.size(); i++) {
                     p.getInventory().setItem(i, is.get(i));
                 }
+            }
+            if (d.location instanceof Resource r) {
+                r.giveMoney(p);
             }
         });
     }
@@ -75,12 +90,21 @@ public final class GameState {
             if (playerData.getHealth() < 50) playerData.setHealth(playerData.getHealth() + 10);
             //重置行动力
             playerData.resetAction();
+            //复活
             if (playerData.getNeedSpawn()) {
-                playerData.addAction(-1);
+                playerData.spawn();
             }
             //重置目标
             playerData.resetTarget();
+            var Hs =playerData.items.stream().filter(item -> item instanceof HealingSpring).findFirst();
+            //生命泉水
+            if (Hs.isPresent()){
+                if (playerData.location instanceof Bed bed && bed.getOrder()==playerData.getOrder()){
+                    playerData.addDpower(3);
+                }
+            }
         });
+        nextPlayer();
     }
 
     public static void pvp(List<Player> players, Player attacker, Player target) {

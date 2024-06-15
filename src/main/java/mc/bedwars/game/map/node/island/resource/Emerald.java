@@ -7,12 +7,12 @@ public class Emerald extends Resource{
 
     @Override
     public String getType() {
-        return "emerald";
+        return "绿宝石";
     }
 
     @Override
     int getMaxAmount() {
-        return 0;
+        return 2;
     }
 
     @Override

@@ -8,11 +8,14 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class start implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        GameState.start(new ArrayList<>(Bukkit.getOnlinePlayers()));
+        var ps=new ArrayList<>(Bukkit.getOnlinePlayers());
+        Collections.shuffle(ps);
+        GameState.start(new ArrayList<>(ps));
         return true;
     }
 }

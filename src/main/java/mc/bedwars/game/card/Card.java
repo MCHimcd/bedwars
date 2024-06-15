@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 
-public abstract class Card {
+public abstract class Card{
     abstract public void effect(Player player);
     abstract public int power();
     abstract public int costMoney();

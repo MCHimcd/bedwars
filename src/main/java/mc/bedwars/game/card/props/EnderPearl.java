@@ -2,6 +2,8 @@ package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.GameState;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.GameMap;
+import mc.bedwars.game.map.node.island.resource.Bed;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -18,7 +20,15 @@ public class EnderPearl extends Card implements Prop {
 
     }
 
-    ;
+    public void backHome(Player player){
+        var pd = GameState.players_data.get(player);
+        map.islands.stream().filter(island -> {
+            return island instanceof Bed b && b.getOrder()==pd.getOrder();
+        }).findFirst().ifPresent(island -> {
+            pd.location=island;
+            pd.getMarker().teleport(GameMap.getLocation(island));
+        });
+    }
 
     @Override
     public int power() {

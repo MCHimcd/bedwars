@@ -37,7 +37,6 @@ public abstract class SlotMenu implements InventoryHolder {
         if (slotFunctions.containsKey(slot)) {
             player.closeInventory();
             slotFunctions.get(slot).accept(inventory.getItem(slot), player);
-            player.playSound(player, Sound.UI_BUTTON_CLICK,1f,1f);
         }
     }
 

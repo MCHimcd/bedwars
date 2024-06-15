@@ -7,6 +7,7 @@ import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Grass;
 import mc.bedwars.game.map.node.island.Island;
+import mc.bedwars.game.map.node.island.Platform;
 import mc.bedwars.game.map.node.island.resource.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -51,6 +52,14 @@ public class GameMap {
             new Grass(1, 2),
             new Grass(3, 2),
             new Grass(2, 3),
+            new Platform(0,1),
+            new Platform(0,3),
+            new Platform(1,0),
+            new Platform(3,0),
+            new Platform(1,4),
+            new Platform(3,4),
+            new Platform(4,1),
+            new Platform(4,3),
             new Emerald(2, 2)
     ));
 
@@ -65,7 +74,7 @@ public class GameMap {
         var pd = players_data.get(p);
         var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
         if (ep.isPresent()) {
-            ep.get().effect(p);
+            ((EnderPearl)ep.get()).backHome(p);
         } else pd.die(List.of(causer));
     }
 
@@ -98,57 +107,30 @@ public class GameMap {
 
     public boolean move(Player p, Node start, Node end) {
         PlayerData pd = players_data.get(p);
-        var road = roads.stream().filter(r -> r.getMaterial() != Material.AIR && r.hasNode(start) && r.hasNode(end)).findFirst();
-        if (road.isPresent()) {
-            pd.addAction(-1);
-            //单个桥
-            if (start instanceof Island i1) {
-                i1.players.remove(p);
+        if (start.equals(end)) {
+            start.players.remove(p);
+            moveTo(p, end);//获得钱
+            return true;
+        } else if (pd.location instanceof Island island) {
+            //在岛上
+            var road = roads.stream().filter(r -> r.getMaterial() != Material.AIR && r.hasNode(start) && r.hasNode(end)).findFirst();
+            if (road.isPresent()) {
+                island.players.remove(p);
                 moveTo(p, road.get());
-                var l1 = GameMap.getLocation(i1);
+                var l1 = GameMap.getLocation(island);
                 var l2 = GameMap.getLocation((Island) end);
                 var l3 = new Location(l1.getWorld(), (l1.x() + l2.x()) / 2, 1, (l1.z() + l2.z()) / 2);
                 pd.getMarker().teleport(l3);
-            } else if (start instanceof Road r) {
+                return true;
+            }
+        } else if (start instanceof Road r) {
+            //在桥上
+            if (r.hasNode(end)){
                 r.players.remove(p);
                 moveTo(p, end);
                 var l = GameMap.getLocation((Island) end);
                 pd.getMarker().teleport(l);
-            }
-            return true;
-        } else if (start.equals(end)) {
-            //原地
-            pd.addAction(-1);
-            start.players.remove(p);
-            moveTo(p, end);
-        } else {
-            pd.addAction(-1);
-            //多个桥
-            var r1 = roads.stream().filter(r -> r.getMaterial() != Material.AIR && r.hasNode(start)).findFirst();
-            if (r1.isPresent()) {
-                //start-桥1
-                if (start instanceof Island i1) {
-                    i1.players.remove(p);
-                    moveTo(p, r1.get());
-                    var l1 = GameMap.getLocation(i1);
-                    var l2 = GameMap.getLocation((Island) end);
-                    pd.distanceX=(l1.x() - l2.x()) / 3;
-                    pd.distanceZ =(l1.z() + l2.z()) / 3;
-                    var l3 = new Location(l1.getWorld(), l1.x()+pd.distanceX, 1, l1.z()+pd.distanceZ);
-                    pd.getMarker().teleport(l3);
-                    return true;
-                } else if (start instanceof Road) {
-                    var r2 = roads.stream().filter(r3 -> r3.getMaterial() != Material.AIR && r3.hasNode(end)).findFirst();
-                    if (r2.isPresent()) {
-                        //start-桥2
-                        r1.get().players.remove(p);
-                        moveTo(p, r2.get());
-                        var l2 = GameMap.getLocation((Island) end);
-                        var l3 = new Location(l2.getWorld(), l2.x()-pd.distanceX, 1, l2.z()-pd.distanceZ);
-                        pd.getMarker().teleport(l3);
-                        return true;
-                    }
-                }
+                return true;
             }
         }
         return false;
@@ -158,10 +140,10 @@ public class GameMap {
         PlayerData pd = players_data.get(p);
         pd.location = end;
         if (end instanceof Resource r) {
-            r.giveMoney(pd);
+            r.giveMoney(p);
         }
         end.players.add(p);
-        players_data.get(p).addAction(-1);
+        pd.addAction(-1);
     }
 
     public void breakRoad(Player p, Road r) {
