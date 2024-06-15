@@ -13,7 +13,7 @@ public class PotionofLeaping extends Card implements Duration, Prop {
         PlayerData playerData = players_data.get(player);
         playerData.addDpower(2);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §9跳跃药水".formatted(player.getName())));
-
+        return true;
     }
 
     ;

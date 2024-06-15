@@ -3,7 +3,6 @@ package mc.bedwars.game.card.props;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.map;

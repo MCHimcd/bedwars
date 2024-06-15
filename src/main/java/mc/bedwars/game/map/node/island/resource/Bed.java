@@ -10,7 +10,7 @@ public class Bed extends Resource {
 
     @Override
     public String getType() {
-        return "床-%d".formatted(order);
+        return "§7床-%d".formatted(order);
     }
 
     @Override

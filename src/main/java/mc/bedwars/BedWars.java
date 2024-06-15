@@ -11,16 +11,17 @@ import mc.bedwars.game.card.Card;
 import mc.bedwars.game.card.equips.IronAxe;
 import mc.bedwars.game.card.equips.Pickaxe;
 import mc.bedwars.game.card.equips.Scissors;
+import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.menu.*;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,7 +43,7 @@ import java.util.Objects;
 import static mc.bedwars.game.GameState.*;
 
 public final class BedWars extends JavaPlugin implements Listener {
-
+    public static BossBar bossbar;
     public static JavaPlugin instance;
     public static Scoreboard main_scoreboard;
     public static Team red, green,blue,yellow;
@@ -50,6 +51,7 @@ public final class BedWars extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        bossbar=BossBar.bossBar(Component.empty(),1, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS);
         main_scoreboard=Bukkit.getScoreboardManager().getMainScoreboard();
         red=main_scoreboard.getTeam("red");
         if (red == null) {
@@ -86,7 +88,10 @@ public final class BedWars extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         map.markers.keySet().forEach(Entity::remove);
-        players_data.values().forEach(p->p.getMarker().remove());
+        players_data.forEach((p,pd)-> {
+            p.hideBossBar(bossbar);
+            pd.getMarker().remove();
+        });
     }
 
     @EventHandler
@@ -126,7 +131,7 @@ public final class BedWars extends JavaPlugin implements Listener {
                             p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                         }
                     } else {
-                        p.showTitle(Title.title(Message.rMsg("<aque>请选择一个岛屿"),Message.rMsg(".")));
+                        p.showTitle(Title.title(Message.rMsg("<aqua>请选择一个岛屿"),Message.rMsg(".")));
                         p.playSound(p, Sound.ENTITY_VILLAGER_NO,1f,1f);
                     }
                 }
@@ -156,12 +161,12 @@ public final class BedWars extends JavaPlugin implements Listener {
                         pd.getTarget().playSound(pd.getTarget(),Sound.ENTITY_PLAYER_ATTACK_SWEEP,1f,1.5f);
                         p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Message.rMsg("         %s和%s进行了一场<red>pvp".formatted(p.getName(), t.getName()))));
                         GameState.pvp(pd.location.players, p, t);
-                        pd.addAction(-1);
                     }
                 }
                 case 60006 -> {
                     //破坏
                     if (pd.target_location != null) {
+                        if(pd.location instanceof Road) break;
                         Island i1 = (Island) pd.location;
                         Island i2 = (Island) pd.target_location;
                         if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
@@ -189,6 +194,9 @@ public final class BedWars extends JavaPlugin implements Listener {
                             p.showTitle(Title.title(Message.rMsg("<aqua> 请选择一个就近岛屿 "),Message.rMsg(".")));
                             p.playSound(p,Sound.ENTITY_VILLAGER_NO,1f,1f);
                         }
+                    }else {
+                        p.showTitle(Title.title(Message.rMsg("<aqua> 请选择一个就近岛屿 "),Message.rMsg(".")));
+                        p.playSound(p,Sound.ENTITY_VILLAGER_NO,1f,1f);
                     }
                 }
                 case 60005 -> //商店
@@ -222,11 +230,13 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player player)) return;
-        if(e.getInventory().getHolder() instanceof SlotMenu m) m.handleClick(e.getSlot());
-        else if(started&&e.getInventory().getHolder().equals(player)){
-            player.getInventory().setItemInOffHand(e.getCursor());
-            e.setCancelled(true);
+        if (started){
+            if (!(e.getWhoClicked() instanceof Player player)) return;
+            if(e.getInventory().getHolder() instanceof SlotMenu m) m.handleClick(e.getSlot());
+            else if(started&&e.getInventory().getHolder().equals(player)){
+                player.getInventory().setItemInOffHand(e.getCursor());
+                e.setCancelled(true);
+            }
         }
     }
 
@@ -238,27 +248,29 @@ public final class BedWars extends JavaPlugin implements Listener {
     }
     @EventHandler
     public void openInv(InventoryOpenEvent event) {
-        Player player = (Player) event.getPlayer();
-        PlayerData playerData = players_data.get(player);
-        List<Card> equipments = playerData.equipments;
-        for (int i = 0; i < equipments.size(); i++) {
-            Card card = equipments.get(i);
-            player.getInventory().setItem(9+i, ItemCreator.create(Material.PAPER).name(card
-                            .Name())
-                    .amount(1)
-                    .data(card.CustomModelData())
-                    .lore(card.Introduction())
-                    .hideAttributes().getItem());
-        }
-        List<Card> items = playerData.items;
-        for (int i = 0; i < items.size(); i++) {
-            Card card = items.get(i);
-            player.getInventory().setItem(35-i, ItemCreator.create(Material.PAPER).name(card
-                            .Name())
-                    .amount(1)
-                    .data(card.CustomModelData())
-                    .lore(card.Introduction())
-                    .hideAttributes().getItem());
+        if (started){
+            Player player = (Player) event.getPlayer();
+            PlayerData playerData = players_data.get(player);
+            List<Card> equipments = playerData.equipments;
+            for (int i = 0; i < equipments.size(); i++) {
+                Card card = equipments.get(i);
+                player.getInventory().setItem(9+i, ItemCreator.create(Material.PAPER).name(card
+                                .Name())
+                        .amount(1)
+                        .data(card.CustomModelData())
+                        .lore(card.Introduction())
+                        .hideAttributes().getItem());
+            }
+            List<Card> items = playerData.items;
+            for (int i = 0; i < items.size(); i++) {
+                Card card = items.get(i);
+                player.getInventory().setItem(35-i, ItemCreator.create(Material.PAPER).name(card
+                                .Name())
+                        .amount(1)
+                        .data(card.CustomModelData())
+                        .lore(card.Introduction())
+                        .hideAttributes().getItem());
+            }
         }
     }
 }

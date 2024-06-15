@@ -13,6 +13,7 @@ public class KbtStick extends Card implements Prop, NeedTarget {
         var target=pd.getTarget();
         GameMap.intoVoid(player,target);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1击退棒".formatted(player.getName())));
+        return true;
     }
 
     @Override

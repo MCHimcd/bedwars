@@ -7,7 +7,7 @@ public class Platform extends Island{
 
     @Override
     public String getType() {
-        return "平台";
+        return "§5平台";
     }
 
 }

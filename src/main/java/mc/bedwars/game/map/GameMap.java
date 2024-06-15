@@ -11,12 +11,12 @@ import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.Platform;
 import mc.bedwars.game.map.node.island.resource.*;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Marker;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.util.Transformation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import static mc.bedwars.game.GameState.players_data;
+import static mc.bedwars.game.GameState.map;
 
 //游戏地图
 public class GameMap {
     private static final List<Material> materials=new ArrayList<>(List.of(Material.WHITE_WOOL,Material.CRIMSON_PLANKS,Material.END_STONE,Material.OBSIDIAN,Material.BARRIER));
-    public final Map<Marker, Node> markers = new HashMap<>();
+    public final Map<TextDisplay, Node> markers = new HashMap<>();
     public final List<Road> roads = new ArrayList<>();
     /*
     金。绿。金
@@ -95,7 +96,7 @@ public class GameMap {
     }
 
     public static Location getLocation(Island island) {
-        return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20, 1, (island.getY() - 2) * 20);
+        return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20+0.5, 1, (island.getY() - 2) * 20+0.5);
     }
 
     public void buildRoad(Island start, Island end, Material material) {
@@ -182,8 +183,8 @@ public class GameMap {
         p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("<S>     %s破坏了一座桥;".formatted(p.getName()))));
     }
 
-    private Island getIsland(int x, int y) {
-        var i = islands.stream().filter(island -> island.getX() == x && island.getY() == y).findFirst();
+    public static Island getIsland(int x, int y) {
+        var i = map.islands.stream().filter(island -> island.getX() == x && island.getY() == y).findFirst();
         return i.orElse(null);
     }
 }

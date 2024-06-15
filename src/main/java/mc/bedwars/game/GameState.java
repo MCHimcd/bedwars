@@ -10,6 +10,7 @@ import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.JoinPVPMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,6 +42,7 @@ public final class GameState {
         //重置
         players_data.values().forEach(p -> p.getMarker().remove());
         Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+            player.hideBossBar(bossbar);
             player.teleport(new Location(player.getWorld(), 0, 66, 0));
             player.sendMessage(Component.text("               §c§l 游戏已重置!"));
             player.getInventory().clear();

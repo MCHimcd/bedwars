@@ -15,6 +15,7 @@ public class GoldenApple extends Card implements Prop {
         if (playerData.getPower()<playerData.getMaxPower()){
             playerData.setHealth(100);
         }else playerData.addDpower(2);
+        return true;
     }
 
     ;

@@ -13,6 +13,7 @@ public class PotionofSwiftness extends Card implements Prop {
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §b迅捷药水".formatted(player.getName())));
         PlayerData playerData = players_data.get(player);
         playerData.addAction(1);
+        return true;
     }
 
     ;

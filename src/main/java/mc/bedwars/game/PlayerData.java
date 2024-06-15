@@ -13,7 +13,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -44,6 +43,7 @@ public class PlayerData {
 
     public Node location = null;
     public Node target_location = null;
+    public Node target_location_1 = null;
     //当前选择的保护床方块层数
     private int protectBed = 1;
     //左1层床保护方块
@@ -100,6 +100,8 @@ public class PlayerData {
                 team.addEntity(ar);
                 ar.setMarker(true);
                 ar.setGlowing(true);
+                ar.setCustomNameVisible(true);
+                ar.customName(Message.rMsg("<rainbow>%s的棋子".formatted(player.getName())));
                 ar.getEquipment().setHelmet(new ItemStack(Material.PLAYER_HEAD) {{
                     editMeta(m -> {
                         if (m instanceof SkullMeta meta) meta.setOwningPlayer(player);
@@ -158,6 +160,7 @@ public class PlayerData {
 
     public void resetTarget() {
         target = null;
+        target_location_1=null;
     }
 
     public Player getTarget() {
@@ -177,22 +180,22 @@ public class PlayerData {
     }
 
     public Material protectBedBlockMaterial(int amount) {
-        if (amount == 0) {
+        if (amount == 1) {
             return LfirstBedBlock;
         }
-        if (amount == 1) {
+        if (amount == 2) {
             return LsecondBedBlock;
         }
-        if (amount == 2) {
+        if (amount == 3) {
             return LthirdBedBlock;
         }
-        if (amount == 3) {
+        if (amount == 4) {
             return RthirdBedBlock;
         }
-        if (amount == 4) {
+        if (amount == 5) {
             return RsecondBedBlock;
         }
-        if (amount == 5) {
+        if (amount == 6) {
             return RfirstBedBlock;
         }
         return Material.AIR;
@@ -329,7 +332,7 @@ public class PlayerData {
             }
         }
         //选择目标 60009
-        if (location.players.size() > 2) {
+        if (location.players.size() > 1) {
             items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("选择目标")).getItem());
         }
         //跳过回合

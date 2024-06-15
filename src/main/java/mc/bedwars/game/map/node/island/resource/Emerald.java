@@ -7,7 +7,7 @@ public class Emerald extends Resource{
 
     @Override
     public String getType() {
-        return "绿宝石";
+        return "§a绿宝石";
     }
 
     @Override

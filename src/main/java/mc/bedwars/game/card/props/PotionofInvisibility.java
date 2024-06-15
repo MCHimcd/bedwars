@@ -14,6 +14,7 @@ public class PotionofInvisibility extends Card implements Duration, Prop {
         PlayerData playerData = players_data.get(player);
         playerData.addDpower(2);
         playerData.addAction(1);
+        return true;
     }
 
     ;

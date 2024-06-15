@@ -32,19 +32,21 @@ public class CardMenu extends SlotMenu {
                             Island i2 = (Island) pd.target_location;
                             switch (card) {
                                 case NeedTarget needTarget -> {
-                                    if (players_data.get(p).getTarget() != null) {
-                                        card.effect(pl);
-                                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                        players_data.get(p).items.remove(card);
+                                    if (players_data.get(p).getTarget() != null){
+                                            if(card.effect(pl)) {
+                                                p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                                                players_data.get(p).items.remove(card);
+                                            }
                                     } else {
                                         p.sendMessage(Component.text("<S>      你需要一个目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
                                 case BridgeEgg bridgeEgg -> {
                                     if (pd.target_location != null) {
-                                        card.effect(pl);
-                                        p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                        players_data.get(p).items.remove(card);
+                                        if(card.effect(pl)){
+                                            p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
+                                            players_data.get(p).items.remove(card);
+                                        }
                                     } else {
                                         p.sendMessage(Component.text("<S>      你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }

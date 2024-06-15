@@ -7,7 +7,7 @@ public class Gold extends Resource{
 
     @Override
     public String getType() {
-        return "金";
+        return "§6金";
     }
 
     @Override

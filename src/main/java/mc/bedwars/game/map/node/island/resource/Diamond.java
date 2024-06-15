@@ -7,7 +7,7 @@ public class Diamond extends Resource{
 
     @Override
     public String getType() {
-        return "钻石";
+        return "§b钻石";
     }
 
     @Override

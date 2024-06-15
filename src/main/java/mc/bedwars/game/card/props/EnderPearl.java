@@ -17,7 +17,7 @@ public class EnderPearl extends Card implements Prop {
         pd.location = pd.target_location;
         map.move(player, pd.location, pd.target_location);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §7末影之眼".formatted(player.getName())));
-
+        return true;
     }
 
     public void backHome(Player player){
