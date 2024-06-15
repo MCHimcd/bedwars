@@ -1,9 +1,12 @@
 package mc.bedwars.game.map.node;
 
+import mc.bedwars.game.map.GameMap;
+import mc.bedwars.game.map.node.island.Island;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.List;
+import static mc.bedwars.game.map.GameMap.*;
 
 public class Road extends Node {
     private final List<Node> nodes = new ArrayList<>();
@@ -24,6 +27,11 @@ public class Road extends Node {
 
     public void setMaterial(Material m) {
         material = m;
+        if(m==Material.AIR){
+            replaceBlock(getLocation((Island) nodes.get(0)),getLocation((Island) nodes.get(1)),Material.BARRIER);
+            if(nodes.size()>2)
+                replaceBlock(getLocation((Island) nodes.get(2)),getLocation((Island) nodes.get(3)),Material.BARRIER);
+        }
     }
 
     public void setEnd(Node node) {

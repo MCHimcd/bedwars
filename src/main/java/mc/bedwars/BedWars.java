@@ -222,8 +222,12 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player) || !(e.getInventory().getHolder() instanceof SlotMenu m)) return;
-        m.handleClick(e.getSlot());
+        if (!(e.getWhoClicked() instanceof Player player)) return;
+        if(e.getInventory().getHolder() instanceof SlotMenu m) m.handleClick(e.getSlot());
+        else if(started&&e.getInventory().getHolder().equals(player)){
+            player.getInventory().setItemInOffHand(e.getCursor());
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler

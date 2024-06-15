@@ -26,6 +26,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 //游戏地图
 public class GameMap {
+    private static final List<Material> materials=new ArrayList<>(List.of(Material.WHITE_WOOL,Material.CRIMSON_PLANKS,Material.END_STONE,Material.OBSIDIAN,Material.BARRIER));
     public final Map<Marker, Node> markers = new HashMap<>();
     public final List<Road> roads = new ArrayList<>();
     /*
@@ -68,6 +69,14 @@ public class GameMap {
         for (var i : islands) {
             markers.put(world.spawn(getLocation(i), Marker.class), i);
         }
+        //重置地图
+        for (int i = -40; i<41; i++) {
+            for (int j = -40; j < 41; j++) {
+                var b=new Location(world,i,0,j).getBlock();
+                if(b.getType()==Material.BARRIER) continue;
+                else if(materials.contains(b.getType())) b.setType(Material.BARRIER);
+            }
+        }
     }
 
     public static void intoVoid(Player causer, Player p) {
@@ -83,26 +92,33 @@ public class GameMap {
     }
 
     public void buildRoad(Island start, Island end, Material material) {
-        if ((start instanceof Bed && end instanceof Gold) || (start instanceof Gold && end instanceof Bed)) {
-            var r = roads.stream().filter(road -> road.hasNode(start)).findFirst();
-            if (r.isPresent()) {
-                roads.add(new Road(material, r.get(), end));
-            } else {
-                var r1 = new Road(material, start, end);
-                var r2 = new Road(Material.AIR, r1, end);
-                r1.setEnd(r2);
-                roads.add(r1);
-                roads.add(r2);
-            }
-        } else if (
-                (start instanceof Grass && end instanceof Grass)
-                        || (start instanceof Diamond && end instanceof Emerald)
-                        || (start instanceof Emerald && end instanceof Diamond)
-        ) {
-            roads.add(new Road(material, start, end, getIsland(2 * start.getX() - end.getX(), 2 * start.getY() - end.getY())));
-        } else {
+//         if (
+//                (start instanceof Grass && end instanceof Grass)
+//                        || (start instanceof Diamond && end instanceof Emerald)
+//                        || (start instanceof Emerald && end instanceof Diamond)
+//        ) {
+//            roads.add(new Road(material, start, end, getIsland(2 * start.getX() - end.getX(), 2 * start.getY() - end.getY())));
+//        } else
+             var l1 = getLocation(start);
+             var l2 = getLocation(end);
+            replaceBlock(l1,l2,material);
             roads.add(new Road(material, start, end));
+
+    }
+
+    public static void replaceBlock(Location l1,Location l2,Material material) {
+        l1.setY(0);
+        l2.setY(0);
+        var v1=l2.clone().subtract(l1).toVector().normalize();
+        while (l1.getBlockX()!=l2.getBlockX()||l1.getBlockZ()!=l2.getBlockZ()){
+            var block=l1.getBlock();
+//            Bukkit.broadcast(Component.text( "%d %d".formatted(block.getX(),block.getZ())));
+            if(materials.contains(block.getType())){
+                block.setType(material);
+            }
+            l1.add(v1);
         }
+
     }
 
     public boolean move(Player p, Node start, Node end) {

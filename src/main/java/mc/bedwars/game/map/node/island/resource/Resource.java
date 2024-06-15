@@ -28,7 +28,6 @@ public abstract class Resource extends Island {
             p.sendMessage("<S>     获得 %d 钱".formatted(r_amount * getMoneyOfEach()));
             r_amount = 0;
         }
-        else p.sendMessage("giveMoney%d".formatted(r_amount));
 
     }
 
@@ -36,7 +35,6 @@ public abstract class Resource extends Island {
         if (--g_cd == 0) {
             r_amount = Math.min(r_amount + 1, getMaxAmount());
             g_cd = getGenerationCD();
-            Bukkit.broadcast(Component.text("生成%s".formatted(r_amount)));//每个资源点的量
         }
     }
 }
