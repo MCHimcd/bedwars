@@ -20,30 +20,37 @@ public class PotionOfSwiftness extends Card implements Prop {
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 10;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 20006;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("迅捷药水");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return true;
     }
+
     @Override
     public Component Introduction() {
         return Component.text("立即获得1点行动值");

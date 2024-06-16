@@ -33,8 +33,8 @@ public final class GameState {
     public static GameMap map = null;
     public static int order = 1;
 
-    public static void resetPlayer(Player player){
-        var team=main_scoreboard.getEntityTeam(player);
+    public static void resetPlayer(Player player) {
+        var team = main_scoreboard.getEntityTeam(player);
         if (team != null) {
             team.removeEntity(player);
         }
@@ -49,12 +49,12 @@ public final class GameState {
     public static void reset() {
         GameState.turn = 0;
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR_TEAM_AQUA);
-        changeSidebarEntries(5,"§6-------------§1");
-        changeSidebarEntries(4,"§c红队床:§2 ✔");
-        changeSidebarEntries(3,"§a绿队床:§2 ✔");
-        changeSidebarEntries(2,"§9蓝队床:§2 ✔");
-        changeSidebarEntries(1,"§e黄队床:§2 ✔");
-        changeSidebarEntries(0,"§6-------------§2");
+        changeSidebarEntries(5, "§6-------------§1");
+        changeSidebarEntries(4, "§c红队床:§2 ✔");
+        changeSidebarEntries(3, "§a绿队床:§2 ✔");
+        changeSidebarEntries(2, "§9蓝队床:§2 ✔");
+        changeSidebarEntries(1, "§e黄队床:§2 ✔");
+        changeSidebarEntries(0, "§6-------------§2");
         //重置
         players_data.values().forEach(p -> p.getMarker().remove());
         Bukkit.getServer().getOnlinePlayers().forEach(player -> {
@@ -85,28 +85,29 @@ public final class GameState {
                     players.forEach(player -> {
                         player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f);
                         player.showTitle(Title.title(Message.rMsg("<rainbow> --游戏加载中--"),
-                                Message.rMsg("<gold>" + "■".repeat(t/10) + "<white>" + "□".repeat(10 - t/10)),
-                                Title.Times.times(Duration.ZERO,Duration.ofMillis(1100),Duration.ZERO)));
+                                Message.rMsg("<gold>" + "■".repeat(t / 10) + "<white>" + "□".repeat(10 - t / 10)),
+                                Title.Times.times(Duration.ZERO, Duration.ofMillis(1100), Duration.ZERO)));
                     });
                 }
-                if(t<=81){
+                if (t <= 81) {
                     //重置地图
-                    for (int i = -40; i<41; i++) {
-                            var b=new Location(Bukkit.getWorld("world"),i,0,t-41).getBlock();
-                            if(b.getType()!= Material.BARRIER&&materials.contains(b.getType())) b.setType(Material.BARRIER);
-                        }
+                    for (int i = -40; i < 41; i++) {
+                        var b = new Location(Bukkit.getWorld("world"), i, 0, t - 41).getBlock();
+                        if (b.getType() != Material.BARRIER && materials.contains(b.getType()))
+                            b.setType(Material.BARRIER);
+                    }
                 }
                 if (t >= 100) {
                     cancel();
                     //开始
                     players.forEach(player -> {
-                        var pd=new PlayerData(player);
+                        var pd = new PlayerData(player);
                         player.setGameMode(GameMode.ADVENTURE);
                         player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
-                        player.teleport(pd.getMarker().getLocation().clone().add(0,21,0));
+                        player.teleport(pd.getMarker().getLocation().clone().add(0, 21, 0));
                         player.showBossBar(bossbar);
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5,false,false));
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5,false,false));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5, false, false));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5, false, false));
                     });
                     sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
                     started = true;
@@ -118,7 +119,7 @@ public final class GameState {
 
     public static void end() {
         //结束
-        players_data.keySet().stream().filter(p->!players_data.get(p).needRespawn()) .findFirst().ifPresent(winner -> {
+        players_data.keySet().stream().filter(p -> !players_data.get(p).needRespawn()).findFirst().ifPresent(winner -> {
             Bukkit.broadcast(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
             winner.playSound(winner, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1f);
         });
@@ -134,12 +135,12 @@ public final class GameState {
             p.getInventory().clear();
             d.resetInventoryItems();
             if (d.getOrder() == order) {
-                if(d.needRespawn()) {
+                if (d.needRespawn()) {
                     d.respawn();
                 }
                 d.setTarget(null);
                 p.getServer().getOnlinePlayers().forEach(player ->
-                    player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())))
+                        player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())))
                 );
                 bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
                 p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
@@ -194,15 +195,15 @@ public final class GameState {
     }
 
     public static void pvp(Player attacker, Player target) {
-        if(attacker.equals(target)) return;
+        if (attacker.equals(target)) return;
         int power1 = PlayerData.power(attacker);
         int power2 = PlayerData.power(target);
         while (power1 == power2) {
             power1 = PlayerData.power(attacker);
             power2 = PlayerData.power(target);
         }
-        attacker.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power1,power2)));
-        target.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power2,power1)));
+        attacker.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power1, power2)));
+        target.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power2, power1)));
         var winner = power1 > power2 ? attacker : target;
         var loser = power1 > power2 ? target : attacker;
         loser.sendMessage(Message.rMsg("          <gray>你输了~"));
@@ -210,7 +211,7 @@ public final class GameState {
         players_data.get(winner).hurt(players_data.get(loser).getPower());
         var ld = players_data.get(loser);
         var total_money = players_data.get(loser).die(winner);
-        var final_dead = !ld.hasBed()&&ld.needRespawn();
+        var final_dead = !ld.hasBed() && ld.needRespawn();
         if (total_money <= 16) {
             players_data.get(winner).addMoney(PlayerData.finalMoney(total_money));
         } else if (total_money <= 32) {

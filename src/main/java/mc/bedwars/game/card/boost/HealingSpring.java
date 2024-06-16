@@ -9,32 +9,39 @@ public class HealingSpring extends Card {
     public boolean effect(Player player) {
         return true;
     }
+
     @Override
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 16;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 30003;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return false;
     }
+
     @Override
     public Component Name() {
         return Component.text("治疗泉");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return false;
     }
 

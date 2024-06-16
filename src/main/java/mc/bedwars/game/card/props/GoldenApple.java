@@ -12,9 +12,9 @@ public class GoldenApple extends Card implements Prop {
     public boolean effect(Player player) {
         PlayerData playerData = players_data.get(player);
         player.getWorld().sendMessage(Component.text("           §l%s使用了 §6金苹果".formatted(player.getName())));
-        if (playerData.getPower()<playerData.getMaxPower()){
+        if (playerData.getPower() < playerData.getMaxPower()) {
             playerData.setHealth(100);
-        }else playerData.addDpower(2);
+        } else playerData.addDpower(2);
         return true;
     }
 
@@ -22,30 +22,37 @@ public class GoldenApple extends Card implements Prop {
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 6;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 20007;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("金苹果");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return true;
     }
+
     @Override
     public Component Introduction() {
         return Component.text("当血量未满时将血量回满，当血量已满时增加2点临时战力。");

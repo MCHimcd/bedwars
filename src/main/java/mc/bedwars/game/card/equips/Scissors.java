@@ -14,30 +14,37 @@ public class Scissors extends Card implements Tool, Equip {
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 2;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 10004;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("剪刀");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return false;
     }
+
     @Override
     public Component Introduction() {
         return Component.text("破坏羊毛.");

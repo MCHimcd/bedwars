@@ -1,6 +1,6 @@
 package mc.bedwars.game.map.node.island;
 
-public class Platform extends Island{
+public class Platform extends Island {
     public Platform(int x, int y) {
         super(x, y);
     }

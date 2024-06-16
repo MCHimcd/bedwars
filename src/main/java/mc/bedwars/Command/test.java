@@ -1,18 +1,11 @@
 package mc.bedwars.Command;
 
-import mc.bedwars.factory.ItemCreator;
-import mc.bedwars.factory.particle;
 import mc.bedwars.game.GameState;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class test implements CommandExecutor {
     @Override

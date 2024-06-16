@@ -2,11 +2,12 @@ package mc.bedwars.menu;
 
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.game.card.Blocks.*;
-import mc.bedwars.game.card.boost.*;
+import mc.bedwars.game.card.Card;
+import mc.bedwars.game.card.boost.HealingSpring;
+import mc.bedwars.game.card.boost.Protection;
+import mc.bedwars.game.card.boost.Sharp;
 import mc.bedwars.game.card.equips.*;
 import mc.bedwars.game.card.props.*;
-
-import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,7 +28,7 @@ public class ShopMenu extends SlotMenu {
             put(new Wool(), ItemCreator.create(Material.PAPER).data(40003).name(Component.text("§c§l羊毛")).getItem());
             put(new Plank(), ItemCreator.create(Material.PAPER).data(40001).name(Component.text("§c§l木板")).getItem());
             put(new EndStone(), ItemCreator.create(Material.PAPER).data(40002).name(Component.text("§c§l末地石")).getItem());
-            put(new ExplosionproofGlass(), ItemCreator.create(Material.PAPER).data(40004).name(Component.text("§c§l防爆玻璃")).getItem());
+            put(new ExplosionProofGlass(), ItemCreator.create(Material.PAPER).data(40004).name(Component.text("§c§l防爆玻璃")).getItem());
             put(new Obsidian(), ItemCreator.create(Material.PAPER).data(40005).name(Component.text("§c§l黑曜石")).getItem());
             put(new HealingSpring(), ItemCreator.create(Material.PAPER).data(30003).name(Component.text("§c§l生命泉水")).getItem());
             put(new Protection(), ItemCreator.create(Material.PAPER).data(30002).name(Component.text("§c§l保护")).getItem());
@@ -54,31 +55,31 @@ public class ShopMenu extends SlotMenu {
             setSlot(i.get(), itemStack, (it, pl) -> {
                 var pd = players_data.get(pl);
                 if (card instanceof Equip) {
-                    if (pd.equipments.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()){
+                    if (pd.equipments.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()) {
                         p.sendMessage(Component.text("             §a持有%s超过上限。".formatted(card.Name().toString())));
                         p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                    }else {
+                    } else {
                         if (pd.removeMoney(card.costMoney())) {
                             pd.equipments.add(card);
-                            p.playSound(p,Sound.ENTITY_ITEM_PICKUP,1f,2f);
+                            p.playSound(p, Sound.ENTITY_ITEM_PICKUP, 1f, 2f);
                             p.sendMessage(Component.text("           §6购买成功。"));
                             pd.resetInventoryItems();
-                        }else {
+                        } else {
                             p.sendMessage(Component.text("           §6金钱不足。"));
                             p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                         }
                     }
-                }else {
+                } else {
                     if (pd.items.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()) {
                         p.sendMessage(Component.text("             §a持有%s超过上限。".formatted(card.Name().toString())));
                         p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                    }else {
+                    } else {
                         if (pd.removeMoney(card.costMoney())) {
-                            p.playSound(p,Sound.ENTITY_ITEM_PICKUP,1f,2f);
+                            p.playSound(p, Sound.ENTITY_ITEM_PICKUP, 1f, 2f);
                             p.sendMessage(Component.text("           §6购买成功。"));
                             pd.items.add(card);
                             pd.resetInventoryItems();
-                        }else {
+                        } else {
                             p.sendMessage(Component.text("           §6金钱不足。"));
                             p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                         }

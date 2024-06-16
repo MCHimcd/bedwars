@@ -1,6 +1,6 @@
 package mc.bedwars.game.map.node.island.resource;
 
-public class Emerald extends Resource{
+public class Emerald extends Resource {
     public Emerald(int x, int y) {
         super(x, y);
     }

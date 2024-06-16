@@ -6,15 +6,12 @@ import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class PlaceBedMenu extends SlotMenu{
+public class PlaceBedMenu extends SlotMenu {
     public PlaceBedMenu(Player p) {
         super(27, Component.text("选择放置的层数"), p);
         var pd = players_data.get(p);
@@ -28,9 +25,9 @@ public class PlaceBedMenu extends SlotMenu{
                                 .lore(card.Introduction())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
-                    pd.placeBedBlock(((isBlock) card).material());
+                            pd.placeBedBlock(((isBlock) card).material());
                             pd.items.remove(card);
-                            p.sendMessage(Component.text("         %s放置%s成功".formatted(pd.getProtectBed(),((isBlock) card).material())));
+                            p.sendMessage(Component.text("         %s放置%s成功".formatted(pd.getProtectBed(), ((isBlock) card).material())));
                             pd.addAction(-1);
                         });
             }

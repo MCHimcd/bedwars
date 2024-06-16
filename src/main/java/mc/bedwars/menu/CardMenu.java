@@ -29,7 +29,7 @@ public class CardMenu extends SlotMenu {
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
                             Island i1 = (Island) pd.location;
-                            Island i2 = (Island) pd.target_location;
+                            Island i2 = pd.target_location;
                             switch (card) {
                                 case NeedTarget needTarget -> {
                                     if (players_data.get(p).getTarget() != null){

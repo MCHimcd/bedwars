@@ -11,18 +11,18 @@ public class Bed extends Resource {
     @Override
     public String getType() {
         return "§%s%s队床".formatted(
-                switch (order){
-                    case 1->"c";
-                    case 2->"a";
-                    case 3->"9";
-                    case 4->"e";
+                switch (order) {
+                    case 1 -> "c";
+                    case 2 -> "a";
+                    case 3 -> "9";
+                    case 4 -> "e";
                     default -> "f";
                 },
-                switch (order){
-                    case 1->"红";
-                    case 2->"绿";
-                    case 3->"蓝";
-                    case 4->"黄";
+                switch (order) {
+                    case 1 -> "红";
+                    case 2 -> "绿";
+                    case 3 -> "蓝";
+                    case 4 -> "黄";
                     default -> "null";
                 }
         );

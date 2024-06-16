@@ -21,12 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static mc.bedwars.game.GameState.players_data;
 import static mc.bedwars.game.GameState.map;
+import static mc.bedwars.game.GameState.players_data;
 
 //游戏地图
 public class GameMap {
-    public static final List<Material> materials=new ArrayList<>(List.of(
+    public static final List<Material> materials = new ArrayList<>(List.of(
             Material.WHITE_WOOL,
             Material.CRIMSON_PLANKS,
             Material.END_STONE,
@@ -60,14 +60,14 @@ public class GameMap {
             new Grass(1, 2),
             new Grass(3, 2),
             new Grass(2, 3),
-            new Platform(0,1),
-            new Platform(0,3),
-            new Platform(1,0),
-            new Platform(3,0),
-            new Platform(1,4),
-            new Platform(3,4),
-            new Platform(4,1),
-            new Platform(4,3),
+            new Platform(0, 1),
+            new Platform(0, 3),
+            new Platform(1, 0),
+            new Platform(3, 0),
+            new Platform(1, 4),
+            new Platform(3, 4),
+            new Platform(4, 1),
+            new Platform(4, 3),
             new Emerald(2, 2)
     ));
 
@@ -75,8 +75,8 @@ public class GameMap {
         //生成markers
         for (var i : islands) {
             markers.put(world.spawn(getLocation(i), TextDisplay.class, marker -> {
-                var t=marker.getTransformation();
-                marker.setTransformation(new Transformation(t.getTranslation().add(0,5,0),t.getLeftRotation(),t.getScale().mul(4),t.getRightRotation()));
+                var t = marker.getTransformation();
+                marker.setTransformation(new Transformation(t.getTranslation().add(0, 5, 0), t.getLeftRotation(), t.getScale().mul(4), t.getRightRotation()));
                 marker.setBillboard(Display.Billboard.CENTER);
                 marker.setDefaultBackground(true);
                 marker.text(Component.text("%s岛".formatted(i.getType())));
@@ -89,38 +89,43 @@ public class GameMap {
         var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
         if (ep.isPresent()) {
             Bukkit.broadcast(Component.text("          %s使用了末影珍珠防止掉落虚空;".formatted(p.getName())));
-            ((EnderPearl)ep.get()).backHome(p);
+            ((EnderPearl) ep.get()).backHome(p);
         } else pd.die(causer);
     }
 
     public static Location getLocation(Island island) {
-        return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20+0.5, 1, (island.getY() - 2) * 20+0.5);
+        return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20 + 0.5, 1, (island.getY() - 2) * 20 + 0.5);
     }
 
-    public static void replaceBlock(Location l1,Location l2,Material material) {
+    public static void replaceBlock(Location l1, Location l2, Material material) {
         l1.setY(0);
         l2.setY(0);
-        var v1=l2.clone().subtract(l1).toVector().normalize();
-        for (;l1.distance(l2)>1;l1.add(v1)){
-            var block=l1.getBlock();
-            if(materials.contains(block.getType())){
-                if(material==Material.AIR){
+        var v1 = l2.clone().subtract(l1).toVector().normalize();
+        for (; l1.distance(l2) > 1; l1.add(v1)) {
+            var block = l1.getBlock();
+            if (materials.contains(block.getType())) {
+                if (material == Material.AIR) {
                     //破坏
-                    Bukkit.getWorld("world").spawnParticle(Particle.CLOUD,l1.clone().add(0,1,0),100,0.2,0.2,0.2,0.4,null,true);
-                    material=Material.BARRIER;
-                } else{
+                    Bukkit.getWorld("world").spawnParticle(Particle.CLOUD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
+                    material = Material.BARRIER;
+                } else {
                     //搭建
-                    Bukkit.getWorld("world").spawnParticle(Particle.END_ROD,l1.clone().add(0,1,0),100,0.2,0.2,0.2,0.4,null,true);
+                    Bukkit.getWorld("world").spawnParticle(Particle.END_ROD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
                 }
                 block.setType(material);
             }
         }
     }
 
+    public static Island getIsland(int x, int y) {
+        var i = map.islands.stream().filter(island -> island.getX() == x && island.getY() == y).findFirst();
+        return i.orElse(null);
+    }
+
     public boolean tryMove(Player p, Node start, Node end) {
         PlayerData pd = players_data.get(p);
-        var order=pd.getOrder();
-        var dxz=order<=2?(order-3)*0.5:(order-2)*0.5;
+        var order = pd.getOrder();
+        var dxz = order <= 2 ? (order - 3) * 0.5 : (order - 2) * 0.5;
         if (start.equals(end)) {
             start.players.remove(p);
             pd.die(p);
@@ -135,16 +140,16 @@ public class GameMap {
                 var l2 = GameMap.getLocation((Island) end);
                 var l3 = new Location(l1.getWorld(), (l1.x() + l2.x()) / 2, 1, (l1.z() + l2.z()) / 2);
                 l3.setDirection(l2.toVector().subtract(l1.toVector()));
-                dxz*=0.5;
-                pd.getMarker().teleport(l3.add(dxz,0,dxz));
+                dxz *= 0.5;
+                pd.getMarker().teleport(l3.add(dxz, 0, dxz));
                 return true;
             }
         } else if (start instanceof Road r) {
             //在桥上
-            if (r.hasNode(end)){
+            if (r.hasNode(end)) {
                 r.players.remove(p);
                 moveTo(p, end);
-                var l = GameMap.getLocation((Island) end).add(dxz,0,dxz);
+                var l = GameMap.getLocation((Island) end).add(dxz, 0, dxz);
                 pd.getMarker().teleport(l);
                 return true;
             }
@@ -179,10 +184,5 @@ public class GameMap {
                 players_data.get(p).resetInventoryItems();
             } else intoVoid(p, player);
         });
-    }
-
-    public static Island getIsland(int x, int y) {
-        var i = map.islands.stream().filter(island -> island.getX() == x && island.getY() == y).findFirst();
-        return i.orElse(null);
     }
 }

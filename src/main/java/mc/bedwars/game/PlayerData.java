@@ -296,11 +296,8 @@ public class PlayerData {
             Bukkit.broadcast(Message.rMsg("             <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
             player.teleport(new Location(player.getWorld(), 0, 22, 0));
             player.showTitle(Title.title(Message.rMsg("<aqua>观战"), Message.rMsg("<rainbow>--------")));
-            needSpawn = true;
-//            nextPlayer();
-        } else {
-            needSpawn = true;
         }
+        needSpawn = true;
         //检测结束
         if(players_data.values().stream().filter(pd-> !pd.has_bed && pd.needSpawn).count()==3) {
             new BukkitRunnable() {
@@ -337,7 +334,7 @@ public class PlayerData {
         //破坏60006
         items.add(ItemCreator.create(Material.PAPER).data(60006).name(Component.text("§1破坏桥")).getItem());
         //商店60005、床60004  他人60010
-        if (location instanceof Bed b) {
+        if (location instanceof Bed) {
             //商店
             items.add(ItemCreator.create(Material.PAPER).data(60005).name(Component.text("§6商店")).getItem());
             items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("§3与床互动")).getItem());

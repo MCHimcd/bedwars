@@ -8,7 +8,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -45,7 +44,7 @@ public class TickRunner extends BukkitRunnable {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 1, 255, false, false));
                     if (pd.snakeTime % 5 == 0) {
                         graph(player).forEach(location ->
-                            player.spawnParticle(Particle.DUST_COLOR_TRANSITION, location, 1, 0, 0, 0, 0, new Particle.DustTransition(Color.BLUE, Color.AQUA, 1f))
+                                player.spawnParticle(Particle.DUST_COLOR_TRANSITION, location, 1, 0, 0, 0, 0, new Particle.DustTransition(Color.BLUE, Color.AQUA, 1f))
                         );
                         player.showTitle(Title.title(Message.rMsg("<rainbow> --传送中--"),
                                 Message.rMsg("<gold>" + "■".repeat(pd.snakeTime / 5) + "<white>" + "□".repeat(4 - pd.snakeTime / 5)),
@@ -80,7 +79,7 @@ public class TickRunner extends BukkitRunnable {
                     .append(Component.text("|§d当前目标"))
                     .append(pd.getTarget() == null ? Component.text("无", NamedTextColor.DARK_GRAY) : pd.getTarget().teamDisplayName())
                     .append(Component.text("§a目标岛屿：%s岛 §b战力值：%s/%s§c血量值: %s §6经济:%s/64 §9行动力:%s".formatted(
-                            pd.target_location==null?"§8无":pd.target_location,
+                            pd.target_location == null ? "§8无" : pd.target_location,
                             pd.getPower(),
                             pd.getMaxPower(),
                             pd.getHealth(),

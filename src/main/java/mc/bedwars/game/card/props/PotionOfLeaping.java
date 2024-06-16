@@ -20,34 +20,42 @@ public class PotionOfLeaping extends Card implements Duration, Prop {
     public int DurationRound() {
         return 1;
     }
+
     @Override
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 10;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 20005;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("跳跃药水");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return true;
     }
+
     @Override
     public Component Introduction() {
         return Component.text("获得两点临时战力;");

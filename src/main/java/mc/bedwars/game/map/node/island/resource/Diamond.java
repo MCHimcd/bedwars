@@ -1,6 +1,6 @@
 package mc.bedwars.game.map.node.island.resource;
 
-public class Diamond extends Resource{
+public class Diamond extends Resource {
     public Diamond(int x, int y) {
         super(x, y);
     }

@@ -14,28 +14,34 @@ public class DiamondSword extends Card implements Equip {
     public int power() {
         return 4;
     }
+
     @Override
     public int costMoney() {
         return 8;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 10006;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("钻石剑");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return false;
     }
 

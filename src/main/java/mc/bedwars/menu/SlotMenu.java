@@ -2,7 +2,6 @@ package mc.bedwars.menu;
 
 import mc.bedwars.BedWars;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

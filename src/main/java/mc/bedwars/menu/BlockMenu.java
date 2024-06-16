@@ -5,7 +5,6 @@ import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Blocks.isBlock;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.Road;
-import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -32,9 +31,9 @@ public class BlockMenu extends SlotMenu {
                         (it, pl) -> {
                             var pd1 = players_data.get(p);
                             pd1.items.remove(card);
-                            map.roads.add(new Road(((isBlock) card).material(),pd1.location, pd1.target_location));
-                            p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BIT,1f,1.5f);
+                            map.roads.add(new Road(((isBlock) card).material(), pd1.location, pd1.target_location));
+                            p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.5f);
+                            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1.5f);
                             pd1.addAction(-1);
                         }
                 );

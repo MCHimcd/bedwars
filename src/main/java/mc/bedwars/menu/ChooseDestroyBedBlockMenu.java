@@ -33,7 +33,7 @@ public class ChooseDestroyBedBlockMenu extends SlotMenu {
                                     } else {
                                         isnull.getAndIncrement();
                                     }
-                                    if (isnull.get()==3){
+                                    if (isnull.get() == 3) {
                                         pld.destroyBed();
                                     }
                                 }
@@ -57,7 +57,7 @@ public class ChooseDestroyBedBlockMenu extends SlotMenu {
                                     } else {
                                         isnull.getAndIncrement();
                                     }
-                                    if (isnull.get()==3){
+                                    if (isnull.get() == 3) {
                                         pld.destroyBed();
                                     }
                                 }

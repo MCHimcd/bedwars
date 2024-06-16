@@ -19,21 +19,21 @@ public class EnderPearl extends Card implements Prop {
         pd.location.players.remove(player);
         pd.location = pd.target_location;
         map.moveTo(player, pd.target_location);
-        player.getWorld().spawnParticle(Particle.WITCH,pd.getMarker().getLocation(),100,0.5,1,0.5,0.3,null,true);
-        var dxz=pd.getOrder()<=2?(pd.getOrder()-3)*0.5:(pd.getOrder()-2)*0.5;
-        pd.getMarker().teleport(GameMap.getLocation(pd.target_location).add(dxz,0,dxz));
-        player.getWorld().spawnParticle(Particle.WITCH,pd.getMarker().getLocation(),100,0.5,1,0.5,0.3,null,true);
-        player.playSound(player, Sound.ENTITY_ENDER_PEARL_THROW,1f,1f);
+        player.getWorld().spawnParticle(Particle.WITCH, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
+        var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
+        pd.getMarker().teleport(GameMap.getLocation(pd.target_location).add(dxz, 0, dxz));
+        player.getWorld().spawnParticle(Particle.WITCH, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
+        player.playSound(player, Sound.ENTITY_ENDER_PEARL_THROW, 1f, 1f);
         player.getWorld().sendMessage(Component.text("                 §l%s使用了 §7末影之眼".formatted(player.getName())));
         return true;
     }
 
-    public void backHome(Player player){
+    public void backHome(Player player) {
         var pd = GameState.players_data.get(player);
-        map.islands.stream().filter(island -> island instanceof Bed b && b.getOrder()==pd.getOrder()).findFirst().ifPresent(island -> {
-            pd.location=island;
-            var dxz=pd.getOrder()<=2?(pd.getOrder()-3)*0.5:(pd.getOrder()-2)*0.5;
-            pd.getMarker().teleport(GameMap.getLocation(island).add(dxz,0,dxz));
+        map.islands.stream().filter(island -> island instanceof Bed b && b.getOrder() == pd.getOrder()).findFirst().ifPresent(island -> {
+            pd.location = island;
+            var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
+            pd.getMarker().teleport(GameMap.getLocation(island).add(dxz, 0, dxz));
             pd.items.remove(this);
             pd.resetInventoryItems();
         });

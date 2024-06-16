@@ -21,34 +21,42 @@ public class PotionOfInvisibility extends Card implements Duration, Prop {
     public int DurationRound() {
         return 1;
     }
+
     @Override
     public int power() {
         return 0;
     }
+
     @Override
     public int costMoney() {
         return 10;
     }
+
     @Override
     public int itemMaxCount() {
         return 1;
     }
+
     @Override
     public int CustomModelData() {
         return 20008;
     }
+
     @Override
-    public boolean CanDrop(){
+    public boolean CanDrop() {
         return true;
     }
+
     @Override
     public Component Name() {
         return Component.text("隐身药水");
     }
+
     @Override
-    public boolean CanUse(){
+    public boolean CanUse() {
         return true;
     }
+
     @Override
     public Component Introduction() {
         return Component.text("立即获得一点行动值和2点临时战力");
