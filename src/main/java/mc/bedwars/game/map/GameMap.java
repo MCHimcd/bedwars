@@ -1,6 +1,5 @@
 package mc.bedwars.game.map;
 
-import mc.bedwars.factory.Message;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Blocks.Wool;
 import mc.bedwars.game.card.props.EnderPearl;
@@ -13,7 +12,6 @@ import mc.bedwars.game.map.node.island.resource.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Display;
-import org.bukkit.entity.Marker;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.util.Transformation;
@@ -28,7 +26,14 @@ import static mc.bedwars.game.GameState.map;
 
 //游戏地图
 public class GameMap {
-    private static final List<Material> materials=new ArrayList<>(List.of(Material.WHITE_WOOL,Material.CRIMSON_PLANKS,Material.END_STONE,Material.OBSIDIAN,Material.BARRIER));
+    public static final List<Material> materials=new ArrayList<>(List.of(
+            Material.WHITE_WOOL,
+            Material.CRIMSON_PLANKS,
+            Material.END_STONE,
+            Material.OBSIDIAN,
+            Material.BARRIER,
+            Material.BLACK_STAINED_GLASS
+    ));
     public final Map<TextDisplay, Node> markers = new HashMap<>();
     public final List<Road> roads = new ArrayList<>();
     /*
@@ -77,63 +82,48 @@ public class GameMap {
                 marker.text(Component.text("%s岛".formatted(i.getType())));
             }), i);
         }
-        //重置地图
-        for (int i = -40; i<41; i++) {
-            for (int j = -40; j < 41; j++) {
-                var b=new Location(world,i,0,j).getBlock();
-                if(b.getType()==Material.BARRIER) continue;
-                else if(materials.contains(b.getType())) b.setType(Material.BARRIER);
-            }
-        }
     }
 
     public static void intoVoid(Player causer, Player p) {
         var pd = players_data.get(p);
         var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
         if (ep.isPresent()) {
+            Bukkit.broadcast(Component.text("          %s使用了末影珍珠防止掉落虚空;".formatted(p.getName())));
             ((EnderPearl)ep.get()).backHome(p);
-        } else pd.die(List.of(causer));
+        } else pd.die(causer);
     }
 
     public static Location getLocation(Island island) {
         return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20+0.5, 1, (island.getY() - 2) * 20+0.5);
     }
 
-    public void buildRoad(Island start, Island end, Material material) {
-//         if (
-//                (start instanceof Grass && end instanceof Grass)
-//                        || (start instanceof Diamond && end instanceof Emerald)
-//                        || (start instanceof Emerald && end instanceof Diamond)
-//        ) {
-//            roads.add(new Road(material, start, end, getIsland(2 * start.getX() - end.getX(), 2 * start.getY() - end.getY())));
-//        } else
-             var l1 = getLocation(start);
-             var l2 = getLocation(end);
-            replaceBlock(l1,l2,material);
-            roads.add(new Road(material, start, end));
-
-    }
-
     public static void replaceBlock(Location l1,Location l2,Material material) {
         l1.setY(0);
         l2.setY(0);
         var v1=l2.clone().subtract(l1).toVector().normalize();
-        while (l1.getBlockX()!=l2.getBlockX()||l1.getBlockZ()!=l2.getBlockZ()){
+        for (;l1.distance(l2)>1;l1.add(v1)){
             var block=l1.getBlock();
-//            Bukkit.broadcast(Component.text( "%d %d".formatted(block.getX(),block.getZ())));
             if(materials.contains(block.getType())){
+                if(material==Material.AIR){
+                    //破坏
+                    Bukkit.getWorld("world").spawnParticle(Particle.CLOUD,l1.clone().add(0,1,0),100,0.2,0.2,0.2,0.4,null,true);
+                    material=Material.BARRIER;
+                } else{
+                    //搭建
+                    Bukkit.getWorld("world").spawnParticle(Particle.END_ROD,l1.clone().add(0,1,0),100,0.2,0.2,0.2,0.4,null,true);
+                }
                 block.setType(material);
             }
-            l1.add(v1);
         }
-
     }
 
-    public boolean move(Player p, Node start, Node end) {
+    public boolean tryMove(Player p, Node start, Node end) {
         PlayerData pd = players_data.get(p);
+        var order=pd.getOrder();
+        var dxz=order<=2?(order-3)*0.5:(order-2)*0.5;
         if (start.equals(end)) {
             start.players.remove(p);
-            moveTo(p, end);//获得钱
+            pd.die(p);
             return true;
         } else if (start instanceof Island island) {
             //在岛上
@@ -144,7 +134,9 @@ public class GameMap {
                 var l1 = GameMap.getLocation(island);
                 var l2 = GameMap.getLocation((Island) end);
                 var l3 = new Location(l1.getWorld(), (l1.x() + l2.x()) / 2, 1, (l1.z() + l2.z()) / 2);
-                pd.getMarker().teleport(l3);
+                l3.setDirection(l2.toVector().subtract(l1.toVector()));
+                dxz*=0.5;
+                pd.getMarker().teleport(l3.add(dxz,0,dxz));
                 return true;
             }
         } else if (start instanceof Road r) {
@@ -152,7 +144,7 @@ public class GameMap {
             if (r.hasNode(end)){
                 r.players.remove(p);
                 moveTo(p, end);
-                var l = GameMap.getLocation((Island) end);
+                var l = GameMap.getLocation((Island) end).add(dxz,0,dxz);
                 pd.getMarker().teleport(l);
                 return true;
             }
@@ -160,9 +152,13 @@ public class GameMap {
         return false;
     }
 
-    private void moveTo(Player p, Node end) {
+    public void moveTo(Player p, Node end) {
         PlayerData pd = players_data.get(p);
         pd.location = end;
+        var is = pd.getActions();
+        for (int i = 0; i < is.size(); i++) {
+            p.getInventory().setItem(i, is.get(i));
+        }
         if (end instanceof Resource r) {
             r.giveMoney(p);
         }
@@ -171,16 +167,18 @@ public class GameMap {
     }
 
     public void breakRoad(Player p, Road r) {
+        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("         %s破坏了一座桥;".formatted(p.getName()))));
         r.setMaterial(Material.AIR);
         r.players.forEach(player -> {
             PlayerData pd = players_data.get(player);
             var wool = pd.items.stream().filter(item -> item instanceof Wool).findFirst();
             if (wool.isPresent()) {
+                Bukkit.broadcast(Component.text("          %s使用羊毛防止掉落虚空;".formatted(player.getName())));
                 r.setMaterial(Material.WHITE_WOOL);
                 pd.items.remove(wool.get());
+                players_data.get(p).resetInventoryItems();
             } else intoVoid(p, player);
         });
-        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("<S>     %s破坏了一座桥;".formatted(p.getName()))));
     }
 
     public static Island getIsland(int x, int y) {

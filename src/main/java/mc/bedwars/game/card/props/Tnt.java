@@ -1,8 +1,14 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.map;
@@ -42,7 +48,6 @@ public class Tnt extends Card implements Prop {
         return false;
     }
 
-    ;
     @Override
     public int power() {
         return 0;

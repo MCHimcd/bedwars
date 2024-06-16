@@ -1,6 +1,7 @@
 package mc.bedwars.game.card.props;
 
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -17,7 +18,7 @@ public class BridgeEgg extends Card implements Prop {
     public boolean effect(Player player) {
         var pd=players_data.get(player);
         Island i1 = (Island) pd.location;
-        Island i2 = (Island) pd.target_location;
+        Island i2 = pd.target_location;
         if (Math.abs(i1.getX() - i2.getX()) > 2 || Math.abs(i1.getY() - i2.getY()) > 2) return false;
         if(Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
             map.roads.add(new Road(Material.WHITE_WOOL,i1,i2));
@@ -29,8 +30,8 @@ public class BridgeEgg extends Card implements Prop {
         }
         else if(Math.abs(i1.getX() - i2.getX()) == 2 || Math.abs(i1.getY() - i2.getY()) == 2){
             Island middle;
-            if(Math.abs(i1.getX() - i2.getX()) == 2) middle=getIsland(i1.getX()+(i2.getX()-i1.getX())/2,i2.getY());
-            else if(Math.abs(i1.getY() - i2.getY()) == 2) middle=getIsland(i2.getX(),i1.getY()+(i2.getY()-i1.getY())/2);
+            if(Math.abs(i1.getX() - i2.getX()) == 2&&Math.abs(i1.getY() - i2.getY()) != 2) middle=getIsland(i1.getX()+(i2.getX()-i1.getX())/2,i2.getY());
+            else if(Math.abs(i1.getY() - i2.getY()) == 2&&Math.abs(i1.getX() - i2.getX()) != 2) middle=getIsland(i2.getX(),i1.getY()+(i2.getY()-i1.getY())/2);
             else middle=getIsland(i1.getX()+(i2.getX()-i1.getX())/2,i1.getY()+(i2.getY()-i1.getY())/2);
             map.roads.add(new Road(Material.WHITE_WOOL,i1,middle));
             map.roads.add(new Road(Material.WHITE_WOOL,middle,i2));
@@ -43,7 +44,6 @@ public class BridgeEgg extends Card implements Prop {
         return false;
     }
 
-    ;
     @Override
     public int power() {
         return 0;

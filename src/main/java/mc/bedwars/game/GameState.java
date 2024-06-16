@@ -1,34 +1,30 @@
 package mc.bedwars.game;
 
-import mc.bedwars.BedWars;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.boost.HealingSpring;
-import mc.bedwars.game.card.props.EnderPearl;
 import mc.bedwars.game.map.GameMap;
-import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
-import mc.bedwars.menu.JoinPVPMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.checkerframework.checker.units.qual.C;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static mc.bedwars.BedWars.*;
+import static mc.bedwars.game.map.GameMap.materials;
+import static org.bukkit.attribute.Attribute.GENERIC_JUMP_STRENGTH;
 
 public final class GameState {
     public static boolean started = false;
@@ -37,26 +33,38 @@ public final class GameState {
     public static GameMap map = null;
     public static int order = 1;
 
+    public static void resetPlayer(Player player){
+        var team=main_scoreboard.getEntityTeam(player);
+        if (team != null) {
+            team.removeEntity(player);
+        }
+        player.hideBossBar(bossbar);
+        player.teleport(new Location(player.getWorld(), 0, 66, 0));
+        player.getInventory().clear();
+        player.clearActivePotionEffects();
+        player.setGameMode(GameMode.ADVENTURE);
+        Objects.requireNonNull(player.getAttribute(GENERIC_JUMP_STRENGTH)).setBaseValue(0.5);
+    }
+
     public static void reset() {
-        GameState.turn=0;
+        GameState.turn = 0;
+        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR_TEAM_AQUA);
+        changeSidebarEntries(5,"§6-------------§1");
+        changeSidebarEntries(4,"§c红队床:§2 ✔");
+        changeSidebarEntries(3,"§a绿队床:§2 ✔");
+        changeSidebarEntries(2,"§9蓝队床:§2 ✔");
+        changeSidebarEntries(1,"§e黄队床:§2 ✔");
+        changeSidebarEntries(0,"§6-------------§2");
         //重置
         players_data.values().forEach(p -> p.getMarker().remove());
         Bukkit.getServer().getOnlinePlayers().forEach(player -> {
-            player.hideBossBar(bossbar);
-            player.teleport(new Location(player.getWorld(), 0, 66, 0));
+            resetPlayer(player);
             player.sendMessage(Component.text("               §c§l 游戏已重置!"));
-            player.getInventory().clear();
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,100000,5));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,100000,5));
         });
         players_data.clear();
         order = 0;
         if (map != null) map.markers.keySet().forEach(Entity::remove);
         map = new GameMap(Bukkit.getWorld("world"));
-        red.removeEntries(red.getEntries());
-        green.removeEntries(green.getEntries());
-        blue.removeEntries(blue.getEntries());
-        yellow.removeEntries(yellow.getEntries());
         started = false;
     }
 
@@ -68,28 +76,39 @@ public final class GameState {
         new BukkitRunnable() {
             int t = 0;
             int a = 0;
+
             @Override
             public void run() {
                 t++;
-                if (t % 20 == 0) {
+                if (t % 10 == 0) {
                     a++;
-                    players.forEach(player -> player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f));
                     players.forEach(player -> {
+                        player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f);
                         player.showTitle(Title.title(Message.rMsg("<rainbow> --游戏加载中--"),
-                                Message.rMsg("<gold>" + "■".repeat(a) + "<white>" + "□".repeat(5 - a)),
-                                Title.Times.times(Duration.ofMillis(1000), Duration.ZERO, Duration.ZERO)));
+                                Message.rMsg("<gold>" + "■".repeat(t/10) + "<white>" + "□".repeat(10 - t/10)),
+                                Title.Times.times(Duration.ZERO,Duration.ofMillis(1100),Duration.ZERO)));
                     });
+                }
+                if(t<=81){
+                    //重置地图
+                    for (int i = -40; i<41; i++) {
+                            var b=new Location(Bukkit.getWorld("world"),i,0,t-41).getBlock();
+                            if(b.getType()!= Material.BARRIER&&materials.contains(b.getType())) b.setType(Material.BARRIER);
+                        }
                 }
                 if (t >= 100) {
                     cancel();
                     //开始
-
                     players.forEach(player -> {
-                        new PlayerData(player);
+                        var pd=new PlayerData(player);
+                        player.setGameMode(GameMode.ADVENTURE);
                         player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
-                        player.teleport(new Location(player.getWorld(), 0, 22, 0));
+                        player.teleport(pd.getMarker().getLocation().clone().add(0,21,0));
                         player.showBossBar(bossbar);
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5,false,false));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5,false,false));
                     });
+                    sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
                     started = true;
                     nextTurn();
                 }
@@ -99,11 +118,9 @@ public final class GameState {
 
     public static void end() {
         //结束
-        players_data.keySet().stream().findFirst().ifPresent(winner -> {
-            Bukkit.getServer().getOnlinePlayers().forEach(player -> {
-                player.sendMessage(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
-                winner.playSound(winner,Sound.ENTITY_FIREWORK_ROCKET_BLAST,1f,1f);
-            });
+        players_data.keySet().stream().filter(p->!players_data.get(p).needRespawn()) .findFirst().ifPresent(winner -> {
+            Bukkit.broadcast(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
+            winner.playSound(winner, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1f);
         });
         reset();
     }
@@ -115,12 +132,17 @@ public final class GameState {
         }
         players_data.forEach((p, d) -> {
             p.getInventory().clear();
+            d.resetInventoryItems();
             if (d.getOrder() == order) {
-                p.getServer().getOnlinePlayers().forEach(player -> {
-                    player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())));
-                });
-                bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(),turn)));
-                p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,2f,2f);
+                if(d.needRespawn()) {
+                    d.respawn();
+                }
+                d.setTarget(null);
+                p.getServer().getOnlinePlayers().forEach(player ->
+                    player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())))
+                );
+                bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
+                p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
                 var is = d.getActions();
                 for (int i = 0; i < is.size(); i++) {
                     p.getInventory().setItem(i, is.get(i));
@@ -129,11 +151,11 @@ public final class GameState {
             if (d.location instanceof Resource r) {
                 r.giveMoney(p);
             }
-            for (var i :map.islands){
-                if(i instanceof Resource r) {
-                    map.markers.forEach((m,n)->{
-                        if(r.equals(n)){
-                            m.text(Component.text("%s岛".formatted(i.getType())).append(Component.text("\n%s存有数量:%d".formatted(i.getType().substring(2),r.getAmount()), NamedTextColor.RED)));
+            for (var i : map.islands) {
+                if (i instanceof Resource r) {
+                    map.markers.forEach((m, n) -> {
+                        if (r.equals(n)) {
+                            m.text(Component.text("%s岛".formatted(i.getType())).append(Component.text("\n%s存有数量:%d".formatted(i.getType().substring(2), r.getAmount()), NamedTextColor.RED)));
                         }
                     });
                 }
@@ -155,9 +177,9 @@ public final class GameState {
             //重置行动力
             playerData.resetAction();
             //复活
-            if (playerData.getNeedSpawn()) {
-                playerData.spawn();
-            }
+//            if (playerData.needRespawn()&&playerData.hasBed()) {
+//                playerData.respawn();
+//            }
             //重置目标
             playerData.resetTarget();
             var Hs = playerData.items.stream().filter(item -> item instanceof HealingSpring).findFirst();
@@ -171,75 +193,36 @@ public final class GameState {
         nextPlayer();
     }
 
-    public static void pvp(List<Player> players, Player attacker, Player target) {
-        var p1 = new ArrayList<Player>();
-        p1.add(attacker);
-        var p2 = new ArrayList<Player>();
-        p2.add(target);
-        //选择队伍
-        new BukkitRunnable() {
-            private int t = 0;
-
-            @Override
-            public void run() {
-                if (t++ >= 300) {
-                    //计算战力
-                    int power1 = PlayerData.power(p1);
-                    int power2 = PlayerData.power(p2);
-                    while (power1 == power2) {
-                        power1 = PlayerData.power(p1);
-                        power2 = PlayerData.power(p2);
-                    }
-                    List<Player> winners = power1 > power2 ? p1 : p2;
-                    List<Player> losers = power1 > power2 ? p2 : p1;
-            /*
-            winners扣血机制:
-            1.若胜利者(以下简称为W）队伍与失败者（以下简称为L) 队伍都只有一人;  则 W收到的伤害为L的战力值
-            2.若W队伍中有多人，L中只有一人 则W中两人平分 等同于L的战力值的伤害
-            3.若W队伍中只有一人 L中有多人， 则W受到的伤害值 为 L中个人战力x1/n (n为队伍人数) 然后求和
-            4.若多对多  则先求L中个人战力x1/n (n为队伍人数)的和   然后胜利者队伍的玩家均摊;
-            */
-                    int hurt_amount = losers.stream().mapToInt(loser -> players_data.get(loser).getPower()).sum() / losers.size() / winners.size();
-                    winners.forEach(winner -> players_data.get(winner).hurt(hurt_amount));
-                    //分钱
-                    losers.forEach(loser -> {
-                        var total_money = players_data.get(loser).die(winners);
-                        var ld = players_data.get(loser);
-                        var final_dead = ld == null;
-                        if (total_money <= 16) {
-                            players_data.get(winners.getFirst()).addMoney(PlayerData.finalMoney(total_money));
-
-                        } else if (total_money <= 32) {
-                            PlayerData w = players_data.get(winners.getFirst());
-                            w.addMoney(16);
-                            if (final_dead) {
-                                w.addMoney(PlayerData.finalMoney(total_money - 16));
-                            } else {
-                                ld.addMoney(PlayerData.finalMoney(total_money - 16));
-                            }
-                        } else {
-                            //大于32
-                            PlayerData w = players_data.get(winners.removeFirst());
-                            w.addMoney(16);
-                            if (final_dead) {
-                                w.addMoney(16);
-                            } else {
-                                ld.addMoney(16);
-                            }
-                            total_money -= 32;
-                            for (Player winner : winners) {
-                                if (total_money > 0) {
-                                    total_money = Math.max(total_money - 8, 0);
-                                    players_data.get(winner).addMoney(8);
-                                } else break;
-                            }
-                        }
-                    });
-                    players_data.get(attacker).addAction(-1);
-                    cancel();
-                }
+    public static void pvp(Player attacker, Player target) {
+        if(attacker.equals(target)) return;
+        int power1 = PlayerData.power(attacker);
+        int power2 = PlayerData.power(target);
+        while (power1 == power2) {
+            power1 = PlayerData.power(attacker);
+            power2 = PlayerData.power(target);
+        }
+        attacker.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power1,power2)));
+        target.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power2,power1)));
+        var winner = power1 > power2 ? attacker : target;
+        var loser = power1 > power2 ? target : attacker;
+        loser.sendMessage(Message.rMsg("          <gray>你输了~"));
+        winner.sendMessage(Message.rMsg("          <gold>你赢了~"));
+        players_data.get(winner).hurt(players_data.get(loser).getPower());
+        var ld = players_data.get(loser);
+        var total_money = players_data.get(loser).die(winner);
+        var final_dead = !ld.hasBed()&&ld.needRespawn();
+        if (total_money <= 16) {
+            players_data.get(winner).addMoney(PlayerData.finalMoney(total_money));
+        } else if (total_money <= 32) {
+            PlayerData w = players_data.get(winner);
+            w.addMoney(16);
+            if (final_dead) {
+                w.addMoney(PlayerData.finalMoney(total_money - 16));
+            } else {
+                ld.addMoney(PlayerData.finalMoney(total_money - 16));
             }
-        }.runTaskTimer(BedWars.instance, 0, 1);
-        players.stream().filter(p -> !p.equals(attacker) && !p.equals(target)).forEach(player -> player.openInventory(new JoinPVPMenu(player, p1, p2).getInventory()));
+        }
+        ld.addAction(-1);
+        players_data.get(winner).addAction(-1);
     }
 }

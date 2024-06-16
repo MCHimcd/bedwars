@@ -32,18 +32,16 @@ public class PlayerData {
     static public Player target = null;
     private static int order_g = 1;
     private final Player player;
-    //最大血量
-    private final int MaxHealth = 100;
-    public double distanceX = 0;
-    public double distanceZ = 0;
+    public int snakeTime = 0;
+    public boolean canTp = true;
     //可使用的卡牌
     public List<Card> items = new ArrayList<>();
     //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
 
     public Node location = null;
-    public Node target_location = null;
-    public Node target_location_1 = null;
+    public Island target_location = null;
+    public Island target_location_1 = null;
     //当前选择的保护床方块层数
     private int protectBed = 1;
     //左1层床保护方块
@@ -62,7 +60,7 @@ public class PlayerData {
     //将要破坏的层数
     private int destroyBedBlock = 1;
     private ArmorStand marker;
-    private int order = 0;
+    private final int order;
     //经济
     private int money = 8;
     //是否拥有床
@@ -71,9 +69,6 @@ public class PlayerData {
     private int action = 1;
     //当前血量
     private int health = 100;
-    //初始战力
-    private int power = 2;
-    private int max_power = getMaxPower();
     //临时战力
     private int Dpower = 0;
     private boolean needSpawn = false;
@@ -85,8 +80,7 @@ public class PlayerData {
             case 1 -> red;
             case 2 -> green;
             case 3 -> blue;
-            case 4 -> yellow;
-            default -> null;
+            default -> yellow;
         };
         team.addPlayer(player);
         map.islands.stream().filter(node -> {
@@ -117,9 +111,8 @@ public class PlayerData {
         return money == 0 ? 0 : Math.max(money, 8);
     }
 
-    public static int power(List<Player> players) {
-        var r = new Random();
-        return players.stream().mapToInt(p -> players_data.get(p).getPower() + r.nextInt(1, 7)).sum();
+    public static int power(Player p) {
+        return players_data.get(p).getPower() + new Random().nextInt(1, 7);
     }
 
     public void hurt(int amount) {
@@ -160,7 +153,7 @@ public class PlayerData {
 
     public void resetTarget() {
         target = null;
-        target_location_1=null;
+        target_location_1 = null;
     }
 
     public Player getTarget() {
@@ -223,7 +216,7 @@ public class PlayerData {
     }
 
     public int getPower() {
-        return getMaxPower() * (health / 100) + Dpower;
+        return (getMaxPower() * health / 100) + Dpower;
     }
 
     public int getHealth() {
@@ -234,24 +227,26 @@ public class PlayerData {
         health = amount;
     }
 
-    public boolean getNeedSpawn() {
-        return needSpawn;
+    public boolean hasBed(){
+        return has_bed;
     }
 
-    public void spawn() {
-        map.islands.stream().filter(i -> {
-            return i instanceof Bed b && b.getOrder() == order;
-        }).findFirst().ifPresent(island -> {
+    public boolean needRespawn() {
+        return !has_bed || needSpawn;
+    }
+
+    public void respawn() {
+        map.islands.stream().filter(i -> i instanceof Bed b && b.getOrder() == order).findFirst().ifPresent(island -> {
             marker.teleport(GameMap.getLocation(island));
-            map.move(player,players_data.get(player).location,island);
+            map.moveTo(player, island);
         });
         needSpawn = false;
-        player.sendMessage(Message.rMsg("          <green>你复活了"));
+        player.sendMessage(Message.rMsg("             <green>消耗 ① 行动点你复活了"));
         action = 0;
     }
 
     public int getMaxPower() {
-        return power + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
+        return 2 + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
 
     public int getAction() {
@@ -267,32 +262,47 @@ public class PlayerData {
     }
 
     public void destroyBed() {
-        if (has_bed){
+        if (has_bed) {
             has_bed = false;
-            Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
-                player1.sendMessage(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
-            });
+            changeSidebarEntries(5 - order, "%s队床:§4 ✘".formatted(switch (order) {
+                case 1 -> "§c红";
+                case 2 -> "§a绿";
+                case 3 -> "§9蓝";
+                case 4 -> "§e黄";
+                default -> "";
+            }));
+            Bukkit.broadcast(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
         }
     }
 
-    public int die(List<Player> killers) {
-        var m = money;
-        money = 0;
-        items.removeIf(Card::CanDrop);
-        equipments.removeIf(Card::CanDrop);
-        //最终击杀
+    public int die(Player killer) {
+        var m=0;
+        location.players.remove(player);
+        if (player.equals(killer)) {
+            Bukkit.broadcast(Component.text("               %s自杀了".formatted(player.getName())));
+            money/=4;
+            action=0;
+        } else {
+            Bukkit.broadcast(Component.text("               %s被%s杀了".formatted(player.getName(), killer.getName())));
+            m = money;
+            money = 0;
+            items.removeIf(Card::CanDrop);
+            equipments.removeIf(Card::CanDrop);
+            resetInventoryItems();
+            getMarker().teleport(new Location(player.getWorld(), 0, 255, 0));
+        }
         if (!has_bed) {
-            players_data.remove(player);
-            Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
-                player1.sendMessage(Message.rMsg("          <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
-            });
-            player.teleport(new Location(player.getWorld(),0,22,0));
-            player.showTitle(Title.title(Message.rMsg("<aqua>观战"),Message.rMsg("<rainbow>--------")));
+            //最终击杀
+            Bukkit.broadcast(Message.rMsg("             <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
+            player.teleport(new Location(player.getWorld(), 0, 22, 0));
+            player.showTitle(Title.title(Message.rMsg("<aqua>观战"), Message.rMsg("<rainbow>--------")));
+            needSpawn = true;
+//            nextPlayer();
         } else {
             needSpawn = true;
         }
         //检测结束
-        if (players_data.size() == 1) {
+        if(players_data.values().stream().filter(pd-> !pd.has_bed && pd.needSpawn).count()==3) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -303,6 +313,7 @@ public class PlayerData {
         return m;
     }
 
+
     public int getOrder() {
         return order;
     }
@@ -310,44 +321,57 @@ public class PlayerData {
     public List<ItemStack> getActions() {
         List<ItemStack> items = new ArrayList<>();
         //移动 60007
-        items.add(ItemCreator.create(Material.PAPER).data(60007).name(Component.text("移动")).getItem());
+        items.add(ItemCreator.create(Material.PAPER).data(60007).name(Component.text("§a移动")).getItem());
         //搭路 60003
         if (location instanceof Island) {
-            items.add(ItemCreator.create(Material.PAPER).data(60003).name(Component.text("搭路")).getItem());
+            items.add(ItemCreator.create(Material.PAPER).data(60003).name(Component.text("§b搭路")).getItem());
         }
+        //选择目标 60009
         //pvp 60002
-        if (location instanceof Island i) {
-            if (i.players.size() > 1) {
-                items.add(ItemCreator.create(Material.PAPER).data(60002).name(Component.text("PVP")).getItem());
-            }
+        if (location.players.size() > 1) {
+            items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("§7选择目标")).getItem());
+            items.add(ItemCreator.create(Material.PAPER).data(60002).name(Component.text("§cPVP")).getItem());
         }
         //使用道具 60008
-        items.add(ItemCreator.create(Material.PAPER).data(60008).name(Component.text("使用道具")).getItem());
+        items.add(ItemCreator.create(Material.PAPER).data(60008).name(Component.text("§d使用道具")).getItem());
         //破坏60006
-        items.add(ItemCreator.create(Material.PAPER).data(60006).name(Component.text("破坏桥")).getItem());
+        items.add(ItemCreator.create(Material.PAPER).data(60006).name(Component.text("§1破坏桥")).getItem());
         //商店60005、床60004  他人60010
         if (location instanceof Bed b) {
             //商店
-            items.add(ItemCreator.create(Material.PAPER).data(60005).name(Component.text("商店")).getItem());
-            if (b.getOrder() == order) {
-                //自己床
-                items.add(ItemCreator.create(Material.PAPER).data(60004).name(Component.text("守护床")).getItem());
-            } else {
-                //别人床
-                items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("破坏该床")).getItem());
-            }
-        }
-        //选择目标 60009
-        if (location.players.size() > 1) {
-            items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("选择目标")).getItem());
+            items.add(ItemCreator.create(Material.PAPER).data(60005).name(Component.text("§6商店")).getItem());
+            items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("§3与床互动")).getItem());
         }
         //跳过回合
-        items.add(ItemCreator.create(Material.PAPER).data(60011).name(Component.text("跳过回合")).getItem());
-
+        items.add(ItemCreator.create(Material.PAPER).data(60011).name(Component.text("§9跳过回合")).getItem());
         return items;
     }
 
     public ArmorStand getMarker() {
         return marker;
+    }
+
+    public void resetInventoryItems() {
+        PlayerData playerData = players_data.get(player);
+        List<Card> equipments = playerData.equipments;
+        for (int i = 0; i < equipments.size(); i++) {
+            Card card = equipments.get(i);
+            player.getInventory().setItem(9 + i, ItemCreator.create(Material.PAPER).name(card
+                            .Name())
+                    .amount(1)
+                    .data(card.CustomModelData())
+                    .lore(card.Introduction())
+                    .hideAttributes().getItem());
+        }
+        List<Card> items = playerData.items;
+        for (int i = 0; i < items.size(); i++) {
+            Card card = items.get(i);
+            player.getInventory().setItem(35 - i, ItemCreator.create(Material.PAPER).name(card
+                            .Name())
+                    .amount(1)
+                    .data(card.CustomModelData())
+                    .lore(card.Introduction())
+                    .hideAttributes().getItem());
+        }
     }
 }

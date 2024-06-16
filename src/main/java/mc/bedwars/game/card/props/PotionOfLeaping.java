@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class PotionofLeaping extends Card implements Duration, Prop {
+public class PotionOfLeaping extends Card implements Duration, Prop {
     @Override
     public boolean effect(Player player) {
         PlayerData playerData = players_data.get(player);
@@ -16,7 +16,6 @@ public class PotionofLeaping extends Card implements Duration, Prop {
         return true;
     }
 
-    ;
     @Override
     public int DurationRound() {
         return 1;

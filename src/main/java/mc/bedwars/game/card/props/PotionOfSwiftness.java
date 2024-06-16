@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class PotionofSwiftness extends Card implements Prop {
+public class PotionOfSwiftness extends Card implements Prop {
     @Override
     public boolean effect(Player player) {
         player.getWorld().sendMessage(Component.text("           §l%s使用了 §b迅捷药水".formatted(player.getName())));
@@ -16,7 +16,6 @@ public class PotionofSwiftness extends Card implements Prop {
         return true;
     }
 
-    ;
     @Override
     public int power() {
         return 0;

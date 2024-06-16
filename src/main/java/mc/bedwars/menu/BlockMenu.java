@@ -32,7 +32,7 @@ public class BlockMenu extends SlotMenu {
                         (it, pl) -> {
                             var pd1 = players_data.get(p);
                             pd1.items.remove(card);
-                            map.buildRoad((Island) pd1.location, (Island) pd1.target_location, ((isBlock) card).material());
+                            map.roads.add(new Road(((isBlock) card).material(),pd1.location, pd1.target_location));
                             p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                             p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BIT,1f,1.5f);
                             pd1.addAction(-1);

@@ -18,7 +18,6 @@ public class GoldenApple extends Card implements Prop {
         return true;
     }
 
-    ;
     @Override
     public int power() {
         return 0;

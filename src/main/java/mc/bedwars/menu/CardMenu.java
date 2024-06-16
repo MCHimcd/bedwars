@@ -35,38 +35,43 @@ public class CardMenu extends SlotMenu {
                                     if (players_data.get(p).getTarget() != null){
                                             if(card.effect(pl)) {
                                                 p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                                players_data.get(p).items.remove(card);
+                                                pd.items.remove(card);
+                                                pd.resetInventoryItems();
                                             }
                                     } else {
-                                        p.sendMessage(Component.text("<S>      你需要一个目标才可使用%s.".formatted(card.Name())));
+                                        p.sendMessage(Component.text("         你需要一个目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
                                 case BridgeEgg bridgeEgg -> {
                                     if (pd.target_location != null) {
                                         if(card.effect(pl)){
                                             p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                            players_data.get(p).items.remove(card);
+                                            pd.items.remove(card);
+                                            pd.resetInventoryItems();
                                         }
                                     } else {
-                                        p.sendMessage(Component.text("<S>      你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
+                                        p.sendMessage(Component.text("         你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
                                 case Fireball fireball -> {
                                     if (pd.target_location != null) {
-                                        card.effect(pl);
+                                        if(card.effect(pl)) {
+                                            pd.items.remove(card);
+                                            pd.resetInventoryItems();
+                                        }
                                         p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                        players_data.get(p).items.remove(card);
                                     } else {
-                                        p.sendMessage(Component.text("<S>      你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
+                                        p.sendMessage(Component.text("        你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
                                 case EnderPearl enderPearl -> {
                                     if (pd.target_location != null) {
                                         card.effect(pl);
                                         p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                        players_data.get(p).items.remove(card);
+                                        pd.items.remove(card);
+                                        pd.resetInventoryItems();
                                     } else {
-                                        p.sendMessage(Component.text("<S>      你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
+                                        p.sendMessage(Component.text("         你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
                                 case Tnt tnt -> {
@@ -74,16 +79,18 @@ public class CardMenu extends SlotMenu {
                                         if (pd.target_location != null) {
                                             card.effect(pl);
                                             p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
-                                            players_data.get(p).items.remove(card);
+                                            pd.items.remove(card);
+                                            pd.resetInventoryItems();
                                         } else {
-                                            p.sendMessage(Component.text("<S>      你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
+                                            p.sendMessage(Component.text("         你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                         }
-                                    }else p.sendMessage(Component.text("<S>      你需要选择相邻的岛屿目标才可使用%s.".formatted(card.Name())));
+                                    }else p.sendMessage(Component.text("   t      你需要选择相邻的岛屿目标才可使用%s.".formatted(card.Name())));
                                 }
                                 default -> {
                                     p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
                                     card.effect(pl);
-                                    players_data.get(p).items.remove(card);
+                                    pd.items.remove(card);
+                                    pd.resetInventoryItems();
                                 }
                             }
                         });
