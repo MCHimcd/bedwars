@@ -241,8 +241,12 @@ public class PlayerData {
     public void spawn() {
         map.islands.stream().filter(i -> {
             return i instanceof Bed b && b.getOrder() == order;
-        }).findFirst().ifPresent(island -> marker.teleport(GameMap.getLocation(island)));
+        }).findFirst().ifPresent(island -> {
+            marker.teleport(GameMap.getLocation(island));
+            map.move(player,players_data.get(player).location,island);
+        });
         needSpawn = false;
+        player.sendMessage(Message.rMsg("          <green>你复活了"));
         action = 0;
     }
 
@@ -263,10 +267,12 @@ public class PlayerData {
     }
 
     public void destroyBed() {
-        has_bed = false;
-        Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
-            player1.sendMessage(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
-        });
+        if (has_bed){
+            has_bed = false;
+            Bukkit.getServer().getOnlinePlayers().forEach(player1 -> {
+                player1.sendMessage(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
+            });
+        }
     }
 
     public int die(List<Player> killers) {

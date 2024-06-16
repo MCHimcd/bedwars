@@ -11,7 +11,7 @@ public class ChoosePlaceBedBlockMenu extends SlotMenu{
     public ChoosePlaceBedBlockMenu(Player p) {
         super(9, Component.text("选择放置的层数"), p);
         var pd = players_data.get(p);
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < 7; i++) {
             Material material = pd.protectBedBlockMaterial(i);
             if (material == Material.AIR){
                 material=Material.GLASS_PANE;

@@ -23,11 +23,11 @@ public class ChooseDestoryBedBlockMenu extends SlotMenu {
                         AtomicInteger isnull = new AtomicInteger();
                         if (b.getOrder() != pd.getOrder()) {
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
-                                for (int j = 1; j < 3; j++) {
+                                for (int j = 1; j < 4; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
                                         p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
-                                        p.sendMessage(Message.rMsg("     当前破坏的层数为%s".formatted(j)));
+                                        p.sendMessage(Message.rMsg("         当前破坏的层数为%s".formatted(j)));
                                         p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
                                         return;
                                     } else {
@@ -47,11 +47,11 @@ public class ChooseDestoryBedBlockMenu extends SlotMenu {
                         AtomicInteger isnull = new AtomicInteger();
                         if (b.getOrder() != pd.getOrder()) {
                             players_data.values().stream().filter(pld -> b.getOrder() == pld.getOrder()).findFirst().ifPresent(pld -> {
-                                for (int j = 4; j < 6; j++) {
+                                for (int j = 4; j < 7; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
                                         p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
-                                        p.sendMessage(Message.rMsg("     当前破坏的层数为%s".formatted(j)));
+                                        p.sendMessage(Message.rMsg("          当前破坏的层数为%s".formatted(j)));
                                         p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
                                         return;
                                     } else {

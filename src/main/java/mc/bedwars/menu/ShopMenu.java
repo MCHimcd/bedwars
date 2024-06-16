@@ -55,17 +55,30 @@ public class ShopMenu extends SlotMenu {
         items.forEach((card, itemStack) -> {
             setSlot(i.get(), itemStack, (it, pl) -> {
                 var pd = players_data.get(pl);
-                if (pd.items.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()) {
-                    p.sendMessage(Component.text("<S>      §a持有%s超过上限。".formatted(card.Name())));
-                    p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
-                } else if (pd.removeMoney(card.costMoney())) {
-                    if (card instanceof Equip) {
-                        pd.equipments.add(card);
-                    } else pd.items.add(card);
-                    p.playSound(p, Sound.ENTITY_VILLAGER_YES, 1f, 1f);
-                } else {
-                    p.sendMessage(Component.text("<S>      §6金钱不足。"));
-                    p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                if (card instanceof Equip) {
+                    if (pd.equipments.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()){
+                        p.sendMessage(Component.text("             §a持有%s超过上限。".formatted(card.Name().toString())));
+                        p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                    }else {
+                        if (pd.removeMoney(card.costMoney())) {
+                            pd.equipments.add(card);
+                        }else {
+                            p.sendMessage(Component.text("           §6金钱不足。"));
+                            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                        }
+                    }
+                }else {
+                    if (pd.equipments.stream().filter(c -> c.Name().equals(card.Name())).count() >= card.itemMaxCount()) {
+                        p.sendMessage(Component.text("             §a持有%s超过上限。".formatted(card.Name().toString())));
+                        p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                    }else {
+                        if (pd.removeMoney(card.costMoney())) {
+                            pd.items.add(card);
+                        }else {
+                            p.sendMessage(Component.text("           §6金钱不足。"));
+                            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                        }
+                    }
                 }
             });
             i.getAndIncrement();

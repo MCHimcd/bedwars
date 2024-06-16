@@ -39,13 +39,13 @@ public class DestoryBedMenu extends SlotMenu {
                                     default -> false;
                                 }) {
                                     pld.setProtectBed(j);
+                                    p.sendMessage(Component.text("            正确的的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
                                     pld.placeBedBlock(Material.AIR);
-                                    p.sendMessage(Component.text("         正确的的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
                                     p.closeInventory();
                                 } else {
                                     pd.addAction(-1);
                                     pd.equipments.remove(card);
-                                    p.sendMessage(Component.text("         错误的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
+                                    p.sendMessage(Component.text("            错误的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(),pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
                                     p.closeInventory();
                                 }
                             });

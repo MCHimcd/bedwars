@@ -135,7 +135,7 @@ public class GameMap {
             start.players.remove(p);
             moveTo(p, end);//获得钱
             return true;
-        } else if (pd.location instanceof Island island) {
+        } else if (start instanceof Island island) {
             //在岛上
             var road = roads.stream().filter(r -> r.getMaterial() != Material.AIR && r.hasNode(start) && r.hasNode(end)).findFirst();
             if (road.isPresent()) {
