@@ -6,6 +6,7 @@ import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public abstract class Resource extends Island {
@@ -31,6 +32,7 @@ public abstract class Resource extends Island {
         if(r_amount>0){
             pd.addMoney(r_amount * getMoneyOfEach());
             p.sendMessage(Message.rMsg("          获得 %d 钱".formatted(r_amount * getMoneyOfEach())));
+            p.playSound(p, Sound.ENTITY_ITEM_PICKUP,1f,2f);
             r_amount = 0;
         }
     }

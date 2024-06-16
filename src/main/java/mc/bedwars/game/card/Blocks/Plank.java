@@ -19,7 +19,7 @@ public class Plank extends Card implements isBlock{
     }
     @Override
     public int costMoney() {
-        return 12;
+        return 6;
     }
     @Override
     public int itemMaxCount() {

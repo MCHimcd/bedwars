@@ -4,6 +4,7 @@ import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Blocks.isBlock;
 import mc.bedwars.game.card.Card;
+import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -17,7 +18,7 @@ import static mc.bedwars.game.GameState.players_data;
 
 public class BlockMenu extends SlotMenu {
     public BlockMenu(Player p) {
-        super(9, Component.text("方块"), p);
+        super(27, Component.text("方块"), p);
         PlayerData pd = players_data.get(p);
         List<Card> cards = pd.items.stream().filter(card -> card instanceof isBlock).toList();
         for (int i = 0; i < cards.size(); i++) {

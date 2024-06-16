@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class ChooseDestoryBedBlockMenu extends SlotMenu {
-    public ChooseDestoryBedBlockMenu(Player p) {
+public class ChooseDestroyBedBlockMenu extends SlotMenu {
+    public ChooseDestroyBedBlockMenu(Player p) {
         super(9, Component.text("选择破坏的方向"), p);
         var pd = players_data.get(p);
         setSlot(0, ItemCreator.create(Material.PAPER).amount(1).name(Message.rMsg("<red><左边>")).getItem(),

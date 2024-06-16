@@ -4,6 +4,8 @@ import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import static mc.bedwars.game.GameState.map;
@@ -18,8 +20,10 @@ public class BridgeEgg extends Card implements Prop {
         Island i2 = (Island) pd.target_location;
         if (Math.abs(i1.getX() - i2.getX()) > 2 || Math.abs(i1.getY() - i2.getY()) > 2) return false;
         if(Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
-            map.buildRoad(i1,i2, Material.WHITE_WOOL);
-            player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1搭桥蛋".formatted(player.getName())));
+            map.roads.add(new Road(Material.WHITE_WOOL,i1,i2));
+            player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER,pd.getMarker().getLocation(),100,0.5,1,0.5,0.3,null,true);
+            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
+            player.playSound(player, Sound.ENTITY_EGG_THROW,1f,1f);
             pd.addAction(-1);
             return true;
         }
@@ -28,9 +32,11 @@ public class BridgeEgg extends Card implements Prop {
             if(Math.abs(i1.getX() - i2.getX()) == 2) middle=getIsland(i1.getX()+(i2.getX()-i1.getX())/2,i2.getY());
             else if(Math.abs(i1.getY() - i2.getY()) == 2) middle=getIsland(i2.getX(),i1.getY()+(i2.getY()-i1.getY())/2);
             else middle=getIsland(i1.getX()+(i2.getX()-i1.getX())/2,i1.getY()+(i2.getY()-i1.getY())/2);
-            map.buildRoad(i1,middle,Material.WHITE_WOOL);
-            map.buildRoad(middle,i2,Material.WHITE_WOOL);
-            player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §1搭桥蛋".formatted(player.getName())));
+            map.roads.add(new Road(Material.WHITE_WOOL,i1,middle));
+            map.roads.add(new Road(Material.WHITE_WOOL,middle,i2));
+            player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER,pd.getMarker().getLocation(),100,0.5,1,0.5,0.3,null,true);
+            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
+            player.playSound(player, Sound.ENTITY_EGG_THROW,1f,1f);
             pd.addAction(-1);
             return true;
         }

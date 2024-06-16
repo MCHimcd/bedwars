@@ -20,7 +20,7 @@ public class EndStone extends Card implements isBlock{
     }
     @Override
     public int costMoney() {
-        return 16;
+        return 8;
     }
     @Override
     public int itemMaxCount() {

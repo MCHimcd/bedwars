@@ -20,7 +20,7 @@ public class Wool extends Card implements isBlock{
     }
     @Override
     public int costMoney() {
-        return 8;
+        return 4;
     }
     @Override
     public int itemMaxCount() {
