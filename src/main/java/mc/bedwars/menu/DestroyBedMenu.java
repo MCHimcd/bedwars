@@ -16,8 +16,8 @@ import java.util.List;
 
 import static mc.bedwars.game.GameState.players_data;
 
-public class DestoryBedMenu extends SlotMenu {
-    public DestoryBedMenu(Player p, List<Card> cards, int j) {
+public class DestroyBedMenu extends SlotMenu {
+    public DestroyBedMenu(Player p, List<Card> cards, int j) {
         super(27, Message.rMsg("<red>选择工具破坏第<bold>%s</bold>层".formatted(j)), p);
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);

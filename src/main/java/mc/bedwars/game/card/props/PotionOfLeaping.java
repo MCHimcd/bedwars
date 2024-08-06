@@ -11,7 +11,7 @@ public class PotionOfLeaping extends Card implements Duration, Prop {
     @Override
     public boolean effect(Player player) {
         PlayerData playerData = players_data.get(player);
-        playerData.addDpower(2);
+        playerData.addTemporaryPower(2);
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §9跳跃药水".formatted(player.getName())));
         return true;
     }

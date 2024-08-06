@@ -31,7 +31,7 @@ public class CardMenu extends SlotMenu {
                             Island i1 = (Island) pd.location;
                             Island i2 = pd.target_location;
                             switch (card) {
-                                case NeedTarget needTarget -> {
+                                case NeedTarget ignored -> {
                                     if (players_data.get(p).getTarget() != null){
                                             if(card.effect(pl)) {
                                                 p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
@@ -42,7 +42,7 @@ public class CardMenu extends SlotMenu {
                                         p.sendMessage(Component.text("         你需要一个目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
-                                case BridgeEgg bridgeEgg -> {
+                                case BridgeEgg ignored -> {
                                     if (pd.target_location != null) {
                                         if(card.effect(pl)){
                                             p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
@@ -53,7 +53,7 @@ public class CardMenu extends SlotMenu {
                                         p.sendMessage(Component.text("         你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
-                                case Fireball fireball -> {
+                                case Fireball ignored -> {
                                     if (pd.target_location != null) {
                                         if(card.effect(pl)) {
                                             pd.items.remove(card);
@@ -64,7 +64,7 @@ public class CardMenu extends SlotMenu {
                                         p.sendMessage(Component.text("        你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
-                                case EnderPearl enderPearl -> {
+                                case EnderPearl ignored -> {
                                     if (pd.target_location != null) {
                                         card.effect(pl);
                                         p.playSound(p,Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1f,1.5f);
@@ -74,7 +74,7 @@ public class CardMenu extends SlotMenu {
                                         p.sendMessage(Component.text("         你需要一个岛屿目标才可使用%s.".formatted(card.Name())));
                                     }
                                 }
-                                case Tnt tnt -> {
+                                case Tnt ignored -> {
                                     if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
                                         if (pd.target_location != null) {
                                             card.effect(pl);

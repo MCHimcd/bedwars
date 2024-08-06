@@ -137,31 +137,29 @@ public final class GameState {
             if (d.getOrder() == order) {
                 if (d.needRespawn()) {
                     d.respawn();
+                } else {
+                    Bukkit.broadcast(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())));
+                    bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
+                    p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
+                    var is = d.getActions();
+                    for (int i = 0; i < is.size(); i++) {
+                        p.getInventory().setItem(i, is.get(i));
+                    }
                 }
-                d.setTarget(null);
-                p.getServer().getOnlinePlayers().forEach(player ->
-                        player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())))
-                );
-                bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
-                p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
-                var is = d.getActions();
-                for (int i = 0; i < is.size(); i++) {
-                    p.getInventory().setItem(i, is.get(i));
-                }
-            }
-            if (d.location instanceof Resource r) {
-                r.giveMoney(p);
-            }
-            for (var i : map.islands) {
-                if (i instanceof Resource r) {
-                    map.markers.forEach((m, n) -> {
-                        if (r.equals(n)) {
-                            m.text(Component.text("%s岛".formatted(i.getType())).append(Component.text("\n%s存有数量:%d".formatted(i.getType().substring(2), r.getAmount()), NamedTextColor.RED)));
-                        }
-                    });
+                if (d.location instanceof Resource r) {
+                    r.giveMoney(p);
                 }
             }
         });
+        for (var island : map.islands) {
+            if (island instanceof Resource r) {
+                map.markers.forEach((m, n) -> {
+                    if (r.equals(n)) {
+                        m.text(Component.text("%s岛".formatted(island.getType())).append(Component.text("\n%s存有数量:%d".formatted(island.getType().substring(2), r.getAmount()), NamedTextColor.RED)));
+                    }
+                });
+            }
+        }
     }
 
     public static void nextTurn() {
@@ -172,22 +170,18 @@ public final class GameState {
         });
         players_data.forEach((it, playerData) -> {
             //重置临时战力
-            playerData.resetDpower();
+            playerData.resetTemporaryPower();
             //血量低于50回血
             if (playerData.getHealth() < 50) playerData.setHealth(playerData.getHealth() + 10);
             //重置行动力
             playerData.resetAction();
-            //复活
-//            if (playerData.needRespawn()&&playerData.hasBed()) {
-//                playerData.respawn();
-//            }
             //重置目标
             playerData.resetTarget();
             var Hs = playerData.items.stream().filter(item -> item instanceof HealingSpring).findFirst();
             //生命泉水
             if (Hs.isPresent()) {
                 if (playerData.location instanceof Bed bed && bed.getOrder() == playerData.getOrder()) {
-                    playerData.addDpower(3);
+                    playerData.addTemporaryPower(3);
                 }
             }
         });
@@ -196,11 +190,11 @@ public final class GameState {
 
     public static void pvp(Player attacker, Player target) {
         if (attacker.equals(target)) return;
-        int power1 = PlayerData.power(attacker);
-        int power2 = PlayerData.power(target);
+        int power1 = PlayerData.getPower(attacker);
+        int power2 = PlayerData.getPower(target);
         while (power1 == power2) {
-            power1 = PlayerData.power(attacker);
-            power2 = PlayerData.power(target);
+            power1 = PlayerData.getPower(attacker);
+            power2 = PlayerData.getPower(target);
         }
         attacker.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power1, power2)));
         target.sendMessage(Message.rMsg("          <green>你的战力:%d   <red>对方战力:%d".formatted(power2, power1)));

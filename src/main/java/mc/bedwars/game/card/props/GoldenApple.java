@@ -14,7 +14,7 @@ public class GoldenApple extends Card implements Prop {
         player.getWorld().sendMessage(Component.text("           §l%s使用了 §6金苹果".formatted(player.getName())));
         if (playerData.getPower() < playerData.getMaxPower()) {
             playerData.setHealth(100);
-        } else playerData.addDpower(2);
+        } else playerData.addTemporaryPower(2);
         return true;
     }
 

@@ -22,15 +22,15 @@ import static mc.bedwars.game.GameState.*;
 
 public class TickRunner extends BukkitRunnable {
     public List<Location> graph(Player player) {
-        List<Location> grlocations = new ArrayList<>();
+        List<Location> locations = new ArrayList<>();
         for (double a = 0; a <= 6.29; a += 0.1) {
             double x = 1 * Math.cos(a);
             double y = a / 3;
             double z = 1 * Math.sin(a);
             Location loc = particle.roloc(player, x, y, z, 0);
-            grlocations.add(loc);
+            locations.add(loc);
         }
-        return grlocations;
+        return locations;
     }
 
     @Override
@@ -89,6 +89,7 @@ public class TickRunner extends BukkitRunnable {
             if (r != null) {
                 var e = r.getHitEntity();
                 if (e != null) {
+                    //noinspection SuspiciousMethodCalls
                     pd.target_location = (Island) map.markers.get(e);
                 }
             } else pd.target_location = null;

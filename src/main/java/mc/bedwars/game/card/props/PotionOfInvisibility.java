@@ -12,7 +12,7 @@ public class PotionOfInvisibility extends Card implements Duration, Prop {
     public boolean effect(Player player) {
         player.getWorld().sendMessage(Component.text("<S>      §l%s使用了 §b隐身药水".formatted(player.getName())));
         PlayerData playerData = players_data.get(player);
-        playerData.addDpower(2);
+        playerData.addTemporaryPower(2);
         playerData.addAction(1);
         return true;
     }

@@ -104,13 +104,15 @@ public class GameMap {
         for (; l1.distance(l2) > 1; l1.add(v1)) {
             var block = l1.getBlock();
             if (materials.contains(block.getType())) {
+                var world = Bukkit.getWorld("world");
+                assert world != null;
                 if (material == Material.AIR) {
                     //破坏
-                    Bukkit.getWorld("world").spawnParticle(Particle.CLOUD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
+                    world.spawnParticle(Particle.CLOUD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
                     material = Material.BARRIER;
                 } else {
                     //搭建
-                    Bukkit.getWorld("world").spawnParticle(Particle.END_ROD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
+                    world.spawnParticle(Particle.END_ROD, l1.clone().add(0, 1, 0), 100, 0.2, 0.2, 0.2, 0.4, null, true);
                 }
                 block.setType(material);
             }

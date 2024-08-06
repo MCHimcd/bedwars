@@ -1,5 +1,6 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Island;
@@ -19,31 +20,45 @@ public class BridgeEgg extends Card implements Prop {
         var pd = players_data.get(player);
         Island i1 = (Island) pd.location;
         Island i2 = pd.target_location;
-        if (Math.abs(i1.getX() - i2.getX()) > 2 || Math.abs(i1.getY() - i2.getY()) > 2) return false;
-        if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
-            map.roads.add(new Road(Material.WHITE_WOOL, i1, i2));
-            player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
-            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
-            player.playSound(player, Sound.ENTITY_EGG_THROW, 1f, 1f);
-            pd.addAction(-1);
-            return true;
-        } else if (Math.abs(i1.getX() - i2.getX()) == 2 || Math.abs(i1.getY() - i2.getY()) == 2) {
-            Island middle;
-            if (Math.abs(i1.getX() - i2.getX()) == 2 && Math.abs(i1.getY() - i2.getY()) != 2)
-                middle = getIsland(i1.getX() + (i2.getX() - i1.getX()) / 2, i2.getY());
-            else if (Math.abs(i1.getY() - i2.getY()) == 2 && Math.abs(i1.getX() - i2.getX()) != 2)
-                middle = getIsland(i2.getX(), i1.getY() + (i2.getY() - i1.getY()) / 2);
-            else middle = getIsland(i1.getX() + (i2.getX() - i1.getX()) / 2, i1.getY() + (i2.getY() - i1.getY()) / 2);
-            map.roads.add(new Road(Material.WHITE_WOOL, i1, middle));
-            map.roads.add(new Road(Material.WHITE_WOOL, middle, i2));
-            player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
-            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
-            player.playSound(player, Sound.ENTITY_EGG_THROW, 1f, 1f);
-            pd.addAction(-1);
-            return true;
+        int dx = Math.abs(i1.getX() - i2.getX());
+        int dy = Math.abs(i1.getY() - i2.getY());
+
+        // 检查无效移动
+        if (dx > 2 || dy > 2 || (dx == 2 && dy == 1) || (dx == 1 && dy == 2)) return false;
+
+        if (dx == 1 || dy == 1) {
+            // 直接相邻岛屿
+            createRoadAndNotify(player, i1, i2, pd);
+        } else if (dx == 2 || dy == 2) {
+            // 间接相邻岛屿
+            Island middle = getMiddleIsland(i1, i2, dx, dy);
+            createRoadAndNotify(player, i1, middle, pd);
+            createRoadAndNotify(player, middle, i2, pd);
+        } else {
+            return false;
         }
-        return false;
+
+        pd.addAction(-1);
+        return true;
     }
+
+    private void createRoadAndNotify(Player player, Island i1, Island i2, PlayerData pd) {
+        map.roads.add(new Road(Material.WHITE_WOOL, i1, i2));
+        player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
+        player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
+        player.playSound(player, Sound.ENTITY_EGG_THROW, 1f, 1f);
+    }
+
+    private Island getMiddleIsland(Island i1, Island i2, int dx, int dy) {
+        if (dx == 2 && dy != 2) {
+            return getIsland(i1.getX() + (i2.getX() - i1.getX()) / 2, i2.getY());
+        } else if (dy == 2 && dx != 2) {
+            return getIsland(i2.getX(), i1.getY() + (i2.getY() - i1.getY()) / 2);
+        } else {
+            return getIsland(i1.getX() + (i2.getX() - i1.getX()) / 2, i1.getY() + (i2.getY() - i1.getY()) / 2);
+        }
+    }
+
 
     @Override
     public int power() {

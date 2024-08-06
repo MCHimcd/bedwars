@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static mc.bedwars.game.GameState.*;
 import static mc.bedwars.BedWars.*;
+import static mc.bedwars.game.GameState.*;
 
 public class PlayerData {
     //目标
@@ -45,18 +45,18 @@ public class PlayerData {
     //当前选择的保护床方块层数
     private int protectBed = 1;
     //左1层床保护方块
-    private Material LfirstBedBlock = Material.AIR;
+    private Material LeftFirstBedBlock = Material.AIR;
     //左2层床保护方块
-    private Material LsecondBedBlock = Material.WHITE_WOOL;
+    private Material LeftSecondBedBlock = Material.WHITE_WOOL;
     //左3层床保护方块
-    private Material LthirdBedBlock = Material.WHITE_WOOL;
+    private Material LeftThirdBedBlock = Material.WHITE_WOOL;
 
     //右1层床保护方块
-    private Material RfirstBedBlock = Material.AIR;
+    private Material RightFirstBedBlock = Material.AIR;
     //右2层床保护方块
-    private Material RsecondBedBlock = Material.WHITE_WOOL;
+    private Material RightSecondBedBlock = Material.WHITE_WOOL;
     //右3层床保护方块
-    private Material RthirdBedBlock = Material.WHITE_WOOL;
+    private Material RightThirdBedBlock = Material.WHITE_WOOL;
     //将要破坏的层数
     private int destroyBedBlock = 1;
     private ArmorStand marker;
@@ -70,7 +70,7 @@ public class PlayerData {
     //当前血量
     private int health = 100;
     //临时战力
-    private int Dpower = 0;
+    private int temporary_power = 0;
     private boolean needSpawn = false;
 
     public PlayerData(Player player) {
@@ -107,11 +107,15 @@ public class PlayerData {
         players_data.put(player, this);
     }
 
+    /**
+     * @param money 传入的钱
+     * @return 0或8
+     */
     public static int finalMoney(int money) {
         return money == 0 ? 0 : Math.max(money, 8);
     }
 
-    public static int power(Player p) {
+    public static int getPower(Player p) {
         return players_data.get(p).getPower() + new Random().nextInt(1, 7);
     }
 
@@ -127,16 +131,16 @@ public class PlayerData {
         return money;
     }
 
-    public void addDpower(int amount) {
-        Dpower += amount;
+    public void addTemporaryPower(int amount) {
+        temporary_power += amount;
     }
 
     public void addAction(int amount) {
         action += amount;
     }
 
-    public void resetDpower() {
-        Dpower = 0;
+    public void resetTemporaryPower() {
+        temporary_power = 0;
     }
 
     public int getDestroyBedBlock() {
@@ -174,49 +178,49 @@ public class PlayerData {
 
     public Material protectBedBlockMaterial(int amount) {
         if (amount == 1) {
-            return LfirstBedBlock;
+            return LeftFirstBedBlock;
         }
         if (amount == 2) {
-            return LsecondBedBlock;
+            return LeftSecondBedBlock;
         }
         if (amount == 3) {
-            return LthirdBedBlock;
+            return LeftThirdBedBlock;
         }
         if (amount == 4) {
-            return RthirdBedBlock;
+            return RightThirdBedBlock;
         }
         if (amount == 5) {
-            return RsecondBedBlock;
+            return RightSecondBedBlock;
         }
         if (amount == 6) {
-            return RfirstBedBlock;
+            return RightFirstBedBlock;
         }
         return Material.AIR;
     }
 
     public void placeBedBlock(Material material) {
         if (protectBed == 1) {
-            LfirstBedBlock = material;
+            LeftFirstBedBlock = material;
         }
         if (protectBed == 2) {
-            LsecondBedBlock = material;
+            LeftSecondBedBlock = material;
         }
         if (protectBed == 3) {
-            LthirdBedBlock = material;
+            LeftThirdBedBlock = material;
         }
         if (protectBed == 4) {
-            RthirdBedBlock = material;
+            RightThirdBedBlock = material;
         }
         if (protectBed == 5) {
-            RsecondBedBlock = material;
+            RightSecondBedBlock = material;
         }
         if (protectBed == 6) {
-            RfirstBedBlock = material;
+            RightFirstBedBlock = material;
         }
     }
 
     public int getPower() {
-        return (getMaxPower() * health / 100) + Dpower;
+        return (getMaxPower() * health / 100) + temporary_power;
     }
 
     public int getHealth() {
@@ -227,12 +231,12 @@ public class PlayerData {
         health = amount;
     }
 
-    public boolean hasBed(){
+    public boolean hasBed() {
         return has_bed;
     }
 
     public boolean needRespawn() {
-        return !has_bed || needSpawn;
+        return needSpawn;
     }
 
     public void respawn() {
@@ -275,22 +279,26 @@ public class PlayerData {
         }
     }
 
+    /**
+     * @param killer 击杀者
+     * @return 击杀者获得的钱
+     */
     public int die(Player killer) {
-        var m=0;
+        var finalMoney = 0;
         location.players.remove(player);
         if (player.equals(killer)) {
             Bukkit.broadcast(Component.text("               %s自杀了".formatted(player.getName())));
-            money/=4;
-            action=0;
+            money /= 4;
+            action = 0;
         } else {
             Bukkit.broadcast(Component.text("               %s被%s杀了".formatted(player.getName(), killer.getName())));
-            m = money;
+            finalMoney = money;
             money = 0;
             items.removeIf(Card::CanDrop);
             equipments.removeIf(Card::CanDrop);
             resetInventoryItems();
-            getMarker().teleport(new Location(player.getWorld(), 0, 255, 0));
         }
+        getMarker().teleport(new Location(player.getWorld(), 0, 255, 0));
         if (!has_bed) {
             //最终击杀
             Bukkit.broadcast(Message.rMsg("             <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
@@ -299,7 +307,7 @@ public class PlayerData {
         }
         needSpawn = true;
         //检测结束
-        if(players_data.values().stream().filter(pd-> !pd.has_bed && pd.needSpawn).count()==3) {
+        if (players_data.values().stream().filter(pd -> !pd.has_bed && pd.needSpawn).count() == 3) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -307,7 +315,7 @@ public class PlayerData {
                 }
             }.runTaskLater(BedWars.instance, 1);
         }
-        return m;
+        return finalMoney;
     }
 
 

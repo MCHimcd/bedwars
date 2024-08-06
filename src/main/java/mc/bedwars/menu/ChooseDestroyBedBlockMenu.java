@@ -26,7 +26,7 @@ public class ChooseDestroyBedBlockMenu extends SlotMenu {
                                 for (int j = 1; j < 4; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
-                                        p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
+                                        p.openInventory(new DestroyBedMenu(p, pd.equipments, j).getInventory());
                                         p.sendMessage(Message.rMsg("         当前破坏的层数为%s".formatted(j)));
                                         p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
                                         return;
@@ -50,7 +50,7 @@ public class ChooseDestroyBedBlockMenu extends SlotMenu {
                                 for (int j = 4; j < 7; j++) {
                                     if (pld.protectBedBlockMaterial(j) != Material.AIR) {
                                         pd.setDestroyBedBlock(j);
-                                        p.openInventory(new DestoryBedMenu(p, pd.equipments, j).getInventory());
+                                        p.openInventory(new DestroyBedMenu(p, pd.equipments, j).getInventory());
                                         p.sendMessage(Message.rMsg("          当前破坏的层数为%s".formatted(j)));
                                         p.playSound(p, Sound.UI_BUTTON_CLICK, 1f, .5f);
                                         return;

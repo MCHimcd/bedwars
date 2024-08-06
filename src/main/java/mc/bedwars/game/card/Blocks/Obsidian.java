@@ -55,3 +55,4 @@ public class Obsidian extends Card implements isBlock {
         return Component.text("保护己方的床");
     }
 }
+
