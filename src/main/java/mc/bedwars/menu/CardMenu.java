@@ -25,7 +25,7 @@ public class CardMenu extends SlotMenu {
                                         .Name())
                                 .amount(card.itemMaxCount())
                                 .data(card.CustomModelData())
-                                .lore(card.Introduction())
+                                .lore(card.Lore())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
                             Island i1 = (Island) pd.location;

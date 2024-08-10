@@ -26,7 +26,7 @@ public class BlockMenu extends SlotMenu {
                 setSlot(i, ItemCreator.create(Material.PAPER).name(card
                                         .Name())
                                 .data(card.CustomModelData())
-                                .lore(card.Introduction())
+                                .lore(card.Lore())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
                             var pd1 = players_data.get(p);

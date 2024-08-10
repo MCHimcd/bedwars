@@ -1,8 +1,13 @@
 package mc.bedwars.game.card.boost;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 
 public class Protection extends Card {
     @Override
@@ -37,16 +42,25 @@ public class Protection extends Card {
 
     @Override
     public Component Name() {
-        return Component.text("保护");
+        return rMsg("<green>保护");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>保护I:使盔甲提供的战斗力+1",
+                "<white>保护II:使盔甲提供的战斗力+2",
+                "<white>保护III:使盔甲提供的战斗力+3",
+                "<white>保护IV:使盔甲提供的战斗力+4",
+                "",
+                "<aqua>数量上限:4",
+                "<green>经济:12"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return false;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("获得战力");
     }
 }

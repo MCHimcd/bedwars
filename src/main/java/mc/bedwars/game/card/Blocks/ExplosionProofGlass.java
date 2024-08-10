@@ -1,9 +1,14 @@
 package mc.bedwars.game.card.Blocks;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 
 public class ExplosionProofGlass extends Card implements isBlock {
     @Override
@@ -42,7 +47,7 @@ public class ExplosionProofGlass extends Card implements isBlock {
 
     @Override
     public Component Name() {
-        return Component.text("防爆玻璃");
+        return rMsg("<white>防爆玻璃");
     }
 
     @Override
@@ -51,7 +56,15 @@ public class ExplosionProofGlass extends Card implements isBlock {
     }
 
     @Override
-    public Component Introduction() {
-        return Component.text("方块,可以防爆");
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>搭路:可用于岛屿之间的连接搭路",
+                "<white>守床:可用于保护己方的床",
+                "<white>可破坏:剪刀 镐 斧",
+                "",
+                "<aqua>数量上限:4",
+                "<green>经济:16"
+        ));
     }
 }

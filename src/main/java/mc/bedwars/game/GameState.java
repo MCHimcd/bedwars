@@ -33,17 +33,28 @@ public final class GameState {
     public static GameMap map = null;
     public static int order = 1;
 
-    public static void resetPlayer(Player player) {
-        var team = main_scoreboard.getEntityTeam(player);
-        if (team != null) {
-            team.removeEntity(player);
+    public static void start(List<Player> players) {
+        if (players.size() > 4) {
+            Bukkit.broadcast(Component.text("            §c游戏需要至多4名玩家参与！"));
+            return;
         }
-        player.hideBossBar(bossbar);
-        player.teleport(new Location(player.getWorld(), 0, 66, 0));
-        player.getInventory().clear();
-        player.clearActivePotionEffects();
-        player.setGameMode(GameMode.ADVENTURE);
-        Objects.requireNonNull(player.getAttribute(GENERIC_JUMP_STRENGTH)).setBaseValue(0.5);
+        if (players.size() <= 1) {
+            Bukkit.broadcast(Component.text("            §c游戏需要至少2名玩家参与！"));
+            return;
+        }
+        if (players.size() <= 3) changeSidebarEntries(4, "§e黄队床:§4 ✘");
+        if (players.size() <= 2) changeSidebarEntries(3, "§9蓝队床:§4 ✘");
+
+        new StartBukkitRunnable(players).runTaskTimer(instance, 0, 1);
+    }
+
+    public static void end() {
+        //结束
+        players_data.keySet().stream().filter(p -> !players_data.get(p).needRespawn()).findFirst().ifPresent(winner -> {
+            Bukkit.broadcast(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
+            winner.playSound(winner, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1f);
+        });
+        reset();
     }
 
     public static void reset() {
@@ -68,66 +79,21 @@ public final class GameState {
         started = false;
     }
 
-    public static void start(List<Player> players) {
-        if (players.size() != 4) {
-            Bukkit.broadcast(Component.text("            §c游戏需要4名玩家参与！"));
-            return;
+    public static void resetPlayer(Player player) {
+        var team = main_scoreboard.getEntityTeam(player);
+        if (team != null) {
+            team.removeEntity(player);
         }
-        new BukkitRunnable() {
-            int t = 0;
-            int a = 0;
-
-            @Override
-            public void run() {
-                t++;
-                if (t % 10 == 0) {
-                    a++;
-                    players.forEach(player -> {
-                        player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f);
-                        player.showTitle(Title.title(Message.rMsg("<rainbow> --游戏加载中--"),
-                                Message.rMsg("<gold>" + "■".repeat(t / 10) + "<white>" + "□".repeat(10 - t / 10)),
-                                Title.Times.times(Duration.ZERO, Duration.ofMillis(1100), Duration.ZERO)));
-                    });
-                }
-                if (t <= 81) {
-                    //重置地图
-                    for (int i = -40; i < 41; i++) {
-                        var b = new Location(Bukkit.getWorld("world"), i, 0, t - 41).getBlock();
-                        if (b.getType() != Material.BARRIER && materials.contains(b.getType()))
-                            b.setType(Material.BARRIER);
-                    }
-                }
-                if (t >= 100) {
-                    cancel();
-                    //开始
-                    players.forEach(player -> {
-                        var pd = new PlayerData(player);
-                        player.setGameMode(GameMode.ADVENTURE);
-                        player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
-                        player.teleport(pd.getMarker().getLocation().clone().add(0, 21, 0));
-                        player.showBossBar(bossbar);
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5, false, false));
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5, false, false));
-                    });
-                    sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    started = true;
-                    nextTurn();
-                }
-            }
-        }.runTaskTimer(instance, 0, 1);
-    }
-
-    public static void end() {
-        //结束
-        players_data.keySet().stream().filter(p -> !players_data.get(p).needRespawn()).findFirst().ifPresent(winner -> {
-            Bukkit.broadcast(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
-            winner.playSound(winner, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1f);
-        });
-        reset();
+        player.hideBossBar(bossbar);
+        player.teleport(new Location(player.getWorld(), 0, 66, 0));
+        player.getInventory().clear();
+        player.clearActivePotionEffects();
+        player.setGameMode(GameMode.ADVENTURE);
+        Objects.requireNonNull(player.getAttribute(GENERIC_JUMP_STRENGTH)).setBaseValue(0.5);
     }
 
     public static void nextPlayer() {
-        if (++order == 5) {
+        if (++order == players_data.size() + 1) {
             nextTurn();
             return;
         }
@@ -219,5 +185,55 @@ public final class GameState {
         }
         ld.addAction(-1);
         players_data.get(winner).addAction(-1);
+    }
+
+    private static class StartBukkitRunnable extends BukkitRunnable {
+        private final List<Player> players;
+        int t;
+        int a;
+
+        public StartBukkitRunnable(List<Player> players) {
+            this.players = players;
+            t = 0;
+            a = 0;
+        }
+
+        @Override
+        public void run() {
+            t++;
+            if (t % 10 == 0) {
+                a++;
+                players.forEach(player -> {
+                    player.playSound(player, Sound.UI_BUTTON_CLICK, .5f, 1f);
+                    player.showTitle(Title.title(Message.rMsg("<rainbow> --游戏加载中--"),
+                            Message.rMsg("<gold>" + "■".repeat(t / 10) + "<white>" + "□".repeat(10 - t / 10)),
+                            Title.Times.times(Duration.ZERO, Duration.ofMillis(1100), Duration.ZERO)));
+                });
+            }
+            if (t <= 81) {
+                //重置地图
+                for (int i = -40; i < 41; i++) {
+                    var b = new Location(Bukkit.getWorld("world"), i, 0, t - 41).getBlock();
+                    if (b.getType() != Material.BARRIER && materials.contains(b.getType()))
+                        b.setType(Material.BARRIER);
+                }
+            }
+            if (t >= 100) {
+                cancel();
+                //开始
+                players.forEach(player -> {
+                    var pd = new PlayerData(player);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
+                    player.teleport(pd.getMarker().getLocation().clone().add(0, 21, 0));
+                    player.showBossBar(bossbar);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5, false, false));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5, false, false));
+                });
+                sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+                started = true;
+                nextTurn();
+            }
+        }
     }
 }

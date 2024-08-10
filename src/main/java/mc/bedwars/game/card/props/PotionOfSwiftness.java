@@ -1,10 +1,14 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.players_data;
 
 public class PotionOfSwiftness extends Card implements Prop {
@@ -43,16 +47,23 @@ public class PotionOfSwiftness extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("迅捷药水");
+        return rMsg("<red>迅捷药水");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>迅捷:使用后本回合多一个行动力",
+                "<white>使用此道具不消耗行动点",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:10"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return true;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("立即获得1点行动值");
     }
 }

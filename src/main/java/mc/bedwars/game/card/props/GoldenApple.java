@@ -1,10 +1,14 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.players_data;
 
 public class GoldenApple extends Card implements Prop {
@@ -45,16 +49,26 @@ public class GoldenApple extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("金苹果");
+        return rMsg("<red>金苹果");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>恢复:如当前血量没有达到上限",
+                "<white>则恢复满血量",
+                "<white>强化:如当前血量已经达到上限",
+                "<white>则使当前战力值+2",
+
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:6"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return true;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("当血量未满时将血量回满，当血量已满时增加2点临时战力。");
     }
 }

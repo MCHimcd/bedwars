@@ -1,9 +1,14 @@
 package mc.bedwars.game.card.Blocks;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 
 public class Obsidian extends Card implements isBlock {
     @Override
@@ -42,7 +47,7 @@ public class Obsidian extends Card implements isBlock {
 
     @Override
     public Component Name() {
-        return Component.text("黑耀石");
+        return rMsg("<white>黑曜石");
     }
 
     @Override
@@ -51,8 +56,15 @@ public class Obsidian extends Card implements isBlock {
     }
 
     @Override
-    public Component Introduction() {
-        return Component.text("保护己方的床");
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>守床:可用于保护己方的床",
+                "<white>可破坏:镐*2",
+                "",
+                "<aqua>数量上限:2",
+                "<green>经济:12"
+        ));
     }
 }
 

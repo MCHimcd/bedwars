@@ -11,6 +11,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.map;
 import static mc.bedwars.game.GameState.players_data;
 
@@ -74,16 +77,24 @@ public class Fireball extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("火球");
+        return rMsg("<red>火球");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>破坏:可以破坏当前版图上任意的",
+                "<white>一座 羊毛 木板 桥或任意一个 羊毛",
+                "<white>木板材质的方块",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:8"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return true;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("可以远距离破坏材质为木板或羊毛的桥。");
     }
 }

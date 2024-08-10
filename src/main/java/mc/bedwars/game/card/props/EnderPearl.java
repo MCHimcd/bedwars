@@ -1,5 +1,6 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.GameState;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.GameMap;
@@ -9,6 +10,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.map;
 
 public class EnderPearl extends Card implements Prop {
@@ -26,17 +30,6 @@ public class EnderPearl extends Card implements Prop {
         player.playSound(player, Sound.ENTITY_ENDER_PEARL_THROW, 1f, 1f);
         player.getWorld().sendMessage(Component.text("                 §l%s使用了 §7末影之眼".formatted(player.getName())));
         return true;
-    }
-
-    public void backHome(Player player) {
-        var pd = GameState.players_data.get(player);
-        map.islands.stream().filter(island -> island instanceof Bed b && b.getOrder() == pd.getOrder()).findFirst().ifPresent(island -> {
-            pd.location = island;
-            var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
-            pd.getMarker().teleport(GameMap.getLocation(island).add(dxz, 0, dxz));
-            pd.items.remove(this);
-            pd.resetInventoryItems();
-        });
     }
 
     @Override
@@ -66,7 +59,20 @@ public class EnderPearl extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("末影珍珠");
+        return rMsg("<red>末影珍珠");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>瞬移:可以不消耗行动点移动到版",
+                "<white>图任意岛屿",
+                "<white>自救:掉入虚空可以回到原来所在岛屿或桥并立即获得1行动点",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:16"
+        ));
     }
 
     @Override
@@ -74,8 +80,14 @@ public class EnderPearl extends Card implements Prop {
         return true;
     }
 
-    @Override
-    public Component Introduction() {
-        return Component.text("当被打入虚空时可以使用，回到相邻岛屿");
+    public void backHome(Player player) {
+        var pd = GameState.players_data.get(player);
+        map.islands.stream().filter(island -> island instanceof Bed b && b.getOrder() == pd.getOrder()).findFirst().ifPresent(island -> {
+            pd.location = island;
+            var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
+            pd.getMarker().teleport(GameMap.getLocation(island).add(dxz, 0, dxz));
+            pd.items.remove(this);
+            pd.resetInventoryItems();
+        });
     }
 }

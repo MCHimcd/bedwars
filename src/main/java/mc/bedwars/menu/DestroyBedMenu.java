@@ -26,7 +26,7 @@ public class DestroyBedMenu extends SlotMenu {
                                         .Name())
                                 .amount(card.itemMaxCount())
                                 .data(card.CustomModelData())
-                                .lore(card.Introduction())
+                                .lore(card.Lore())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
                             var pd = players_data.get(pl);

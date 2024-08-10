@@ -32,13 +32,13 @@ public class PlayerData {
     static public Player target = null;
     private static int order_g = 1;
     private final Player player;
+    private final int order;
     public int snakeTime = 0;
     public boolean canTp = true;
     //可使用的卡牌
     public List<Card> items = new ArrayList<>();
     //不可使用的卡牌
     public List<Card> equipments = new ArrayList<>();
-
     public Node location = null;
     public Island target_location = null;
     public Island target_location_1 = null;
@@ -50,7 +50,6 @@ public class PlayerData {
     private Material LeftSecondBedBlock = Material.WHITE_WOOL;
     //左3层床保护方块
     private Material LeftThirdBedBlock = Material.WHITE_WOOL;
-
     //右1层床保护方块
     private Material RightFirstBedBlock = Material.AIR;
     //右2层床保护方块
@@ -60,7 +59,6 @@ public class PlayerData {
     //将要破坏的层数
     private int destroyBedBlock = 1;
     private ArmorStand marker;
-    private final int order;
     //经济
     private int money = 8;
     //是否拥有床
@@ -117,6 +115,14 @@ public class PlayerData {
 
     public static int getPower(Player p) {
         return players_data.get(p).getPower() + new Random().nextInt(1, 7);
+    }
+
+    public int getPower() {
+        return (getMaxPower() * health / 100) + temporary_power;
+    }
+
+    public int getMaxPower() {
+        return 2 + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
 
     public void hurt(int amount) {
@@ -219,10 +225,6 @@ public class PlayerData {
         }
     }
 
-    public int getPower() {
-        return (getMaxPower() * health / 100) + temporary_power;
-    }
-
     public int getHealth() {
         return health;
     }
@@ -247,10 +249,6 @@ public class PlayerData {
         needSpawn = false;
         player.sendMessage(Message.rMsg("             <green>消耗 ① 行动点你复活了"));
         action = 0;
-    }
-
-    public int getMaxPower() {
-        return 2 + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
     }
 
     public int getAction() {
@@ -307,7 +305,7 @@ public class PlayerData {
         }
         needSpawn = true;
         //检测结束
-        if (players_data.values().stream().filter(pd -> !pd.has_bed && pd.needSpawn).count() == 3) {
+        if (players_data.values().stream().filter(pd -> !pd.has_bed && pd.needSpawn).count() == players_data.size() - 1) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -318,6 +316,33 @@ public class PlayerData {
         return finalMoney;
     }
 
+    public ArmorStand getMarker() {
+        return marker;
+    }
+
+    public void resetInventoryItems() {
+        PlayerData playerData = players_data.get(player);
+        List<Card> equipments = playerData.equipments;
+        for (int i = 0; i < equipments.size(); i++) {
+            Card card = equipments.get(i);
+            player.getInventory().setItem(9 + i, ItemCreator.create(Material.PAPER).name(card
+                            .Name())
+                    .amount(1)
+                    .data(card.CustomModelData())
+                    .lore(card.Lore())
+                    .hideAttributes().getItem());
+        }
+        List<Card> items = playerData.items;
+        for (int i = 0; i < items.size(); i++) {
+            Card card = items.get(i);
+            player.getInventory().setItem(35 - i, ItemCreator.create(Material.PAPER).name(card
+                            .Name())
+                    .amount(1)
+                    .data(card.CustomModelData())
+                    .lore(card.Lore())
+                    .hideAttributes().getItem());
+        }
+    }
 
     public int getOrder() {
         return order;
@@ -350,33 +375,5 @@ public class PlayerData {
         //跳过回合
         items.add(ItemCreator.create(Material.PAPER).data(60011).name(Component.text("§9跳过回合")).getItem());
         return items;
-    }
-
-    public ArmorStand getMarker() {
-        return marker;
-    }
-
-    public void resetInventoryItems() {
-        PlayerData playerData = players_data.get(player);
-        List<Card> equipments = playerData.equipments;
-        for (int i = 0; i < equipments.size(); i++) {
-            Card card = equipments.get(i);
-            player.getInventory().setItem(9 + i, ItemCreator.create(Material.PAPER).name(card
-                            .Name())
-                    .amount(1)
-                    .data(card.CustomModelData())
-                    .lore(card.Introduction())
-                    .hideAttributes().getItem());
-        }
-        List<Card> items = playerData.items;
-        for (int i = 0; i < items.size(); i++) {
-            Card card = items.get(i);
-            player.getInventory().setItem(35 - i, ItemCreator.create(Material.PAPER).name(card
-                            .Name())
-                    .amount(1)
-                    .data(card.CustomModelData())
-                    .lore(card.Introduction())
-                    .hideAttributes().getItem());
-        }
     }
 }

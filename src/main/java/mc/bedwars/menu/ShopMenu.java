@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,30 +26,34 @@ public class ShopMenu extends SlotMenu {
     public ShopMenu(Player p) {
         super(27, Component.text("商店"), p);
         Map<Card, ItemStack> items = new LinkedHashMap<>() {{
-            put(new Wool(), ItemCreator.create(Material.PAPER).data(40003).name(Component.text("§c§l羊毛")).getItem());
-            put(new Plank(), ItemCreator.create(Material.PAPER).data(40001).name(Component.text("§c§l木板")).getItem());
-            put(new EndStone(), ItemCreator.create(Material.PAPER).data(40002).name(Component.text("§c§l末地石")).getItem());
-            put(new ExplosionProofGlass(), ItemCreator.create(Material.PAPER).data(40004).name(Component.text("§c§l防爆玻璃")).getItem());
-            put(new Obsidian(), ItemCreator.create(Material.PAPER).data(40005).name(Component.text("§c§l黑曜石")).getItem());
-            put(new HealingSpring(), ItemCreator.create(Material.PAPER).data(30003).name(Component.text("§c§l生命泉水")).getItem());
-            put(new Protection(), ItemCreator.create(Material.PAPER).data(30002).name(Component.text("§c§l保护")).getItem());
-            put(new Sharp(), ItemCreator.create(Material.PAPER).data(30001).name(Component.text("§c§l锋利")).getItem());
-            put(new DiamondEquips(), ItemCreator.create(Material.PAPER).data(10007).name(Component.text("§c§l钻石装备")).getItem());
-            put(new DiamondSword(), ItemCreator.create(Material.PAPER).data(10006).name(Component.text("§c§l钻石剑")).getItem());
-            put(new IronAxe(), ItemCreator.create(Material.PAPER).data(10005).name(Component.text("§c§l铁斧")).getItem());
-            put(new IronEquips(), ItemCreator.create(Material.PAPER).data(10002).name(Component.text("§c§l铁装备")).getItem());
-            put(new IronSword(), ItemCreator.create(Material.PAPER).data(10001).name(Component.text("§c§l铁剑")).getItem());
-            put(new Pickaxe(), ItemCreator.create(Material.PAPER).data(10008).name(Component.text("§c§l镐子")).getItem());
-            put(new Scissors(), ItemCreator.create(Material.PAPER).data(10004).name(Component.text("§c§l剪刀")).getItem());
-            put(new BridgeEgg(), ItemCreator.create(Material.PAPER).data(20002).name(Component.text("§c§l搭桥蛋")).getItem());
-            put(new EnderPearl(), ItemCreator.create(Material.PAPER).data(20003).name(Component.text("§c§l末影之眼")).getItem());
-            put(new Fireball(), ItemCreator.create(Material.PAPER).data(20004).name(Component.text("§c§l火球")).getItem());
-            put(new GoldenApple(), ItemCreator.create(Material.PAPER).data(20007).name(Component.text("§c§l金苹果")).getItem());
-            put(new KbtStick(), ItemCreator.create(Material.PAPER).data(10003).name(Component.text("§c§l击退棒")).getItem());
-            put(new PotionOfInvisibility(), ItemCreator.create(Material.PAPER).data(20008).name(Component.text("§c§l隐身药水")).getItem());
-            put(new PotionOfLeaping(), ItemCreator.create(Material.PAPER).data(20005).name(Component.text("§c§l跳跃药水")).getItem());
-            put(new PotionOfSwiftness(), ItemCreator.create(Material.PAPER).data(20006).name(Component.text("§c§l迅捷药水")).getItem());
-            put(new Tnt(), ItemCreator.create(Material.PAPER).name(Component.text("TNT")).data(20001).getItem());
+            List.of(
+                    new Wool(),
+                    new Plank(),
+                    new EndStone(),
+                    new ExplosionProofGlass(),
+                    new Obsidian(),
+                    new HealingSpring(),
+                    new Protection(),
+                    new Sharp(),
+                    new DiamondEquips(),
+                    new DiamondSword(),
+                    new IronAxe(),
+                    new IronEquips(),
+                    new IronSword(),
+                    new Pickaxe(),
+                    new Scissors(),
+                    new BridgeEgg(),
+                    new EnderPearl(),
+                    new Fireball(),
+                    new GoldenApple(),
+                    new KbtStick(),
+                    new PotionOfInvisibility(),
+                    new PotionOfLeaping(),
+                    new PotionOfSwiftness(),
+                    new Tnt()
+            ).forEach(card -> {
+                put(card, ItemCreator.create(Material.PAPER).data(card.CustomModelData()).name(card.Name()).lore(card.Lore()).getItem());
+            });
         }};
         AtomicInteger i = new AtomicInteger();
         items.forEach((card, itemStack) -> {

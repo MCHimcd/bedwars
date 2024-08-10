@@ -1,5 +1,6 @@
 package mc.bedwars.game.card.props;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.PlayerData;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.node.Road;
@@ -10,6 +11,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.map;
 import static mc.bedwars.game.GameState.players_data;
 import static mc.bedwars.game.map.GameMap.getIsland;
@@ -87,16 +91,24 @@ public class BridgeEgg extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("搭桥蛋");
+        return rMsg("<red>搭桥蛋");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>搭桥:可以不消耗行动点搭桥并直",
+                "<white>接到连接的下一个岛屿（包括间",
+                "<white>隔两座桥的岛屿",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:12"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return true;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("在两座岛屿之间建立材质为羊毛的桥");
     }
 }

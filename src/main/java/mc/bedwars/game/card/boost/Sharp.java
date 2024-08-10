@@ -1,8 +1,13 @@
 package mc.bedwars.game.card.boost;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 
 public class Sharp extends Card {
     @Override
@@ -37,16 +42,22 @@ public class Sharp extends Card {
 
     @Override
     public Component Name() {
-        return Component.text("锋利");
+        return rMsg("<green>锋利");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>锋利:使盔甲提供的战斗力+2",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:8"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return false;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("获得2点战力");
     }
 }

@@ -1,18 +1,19 @@
 package mc.bedwars.game.card.Blocks;
 
+import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
+
 public class Wool extends Card implements isBlock {
     @Override
     public boolean effect(Player player) {
         return true;
-    }
-
-    public Material material() {
-        return Material.WHITE_WOOL;
     }
 
     @Override
@@ -42,7 +43,20 @@ public class Wool extends Card implements isBlock {
 
     @Override
     public Component Name() {
-        return Component.text("羊毛");
+        return rMsg("<white>羊毛");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>搭路:可用于岛屿之间的连接搭路",
+                "<white>守床:可用于保护己方的床",
+                "<white>可破坏:剪刀 火球 TNT",
+                "",
+                "<aqua>数量上限:4",
+                "<green>经济:8"
+        ));
     }
 
     @Override
@@ -50,8 +64,7 @@ public class Wool extends Card implements isBlock {
         return true;
     }
 
-    @Override
-    public Component Introduction() {
-        return Component.text("守床，搭路");
+    public Material material() {
+        return Material.WHITE_WOOL;
     }
 }

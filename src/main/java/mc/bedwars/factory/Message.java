@@ -3,8 +3,6 @@ package mc.bedwars.factory;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.LinkedList;
@@ -19,9 +17,13 @@ public class Message {
     public static final MiniMessage msg = MiniMessage.miniMessage();
 
     public static LinkedList<Component> convertMsg(List<String> sl) {
-        return sl.stream().map(msg::deserialize).collect(Collectors.toCollection(LinkedList::new));
+        return sl.stream().map(s -> {
+            if (s.isEmpty()) return Component.empty();
+            return msg.deserialize("<reset>" + s);
+        }).collect(Collectors.toCollection(LinkedList::new));
     }
-    public static Component rMsg(String s){
-        return msg.deserialize("<reset>"+s);
+
+    public static Component rMsg(String s) {
+        return msg.deserialize("<reset>" + s);
     }
 }

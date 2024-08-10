@@ -11,6 +11,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.map;
 import static mc.bedwars.game.GameState.players_data;
 
@@ -74,16 +77,24 @@ public class Tnt extends Card implements Prop {
 
     @Override
     public Component Name() {
-        return Component.text("TNT");
+        return rMsg("<red>TNT");
+    }
+
+    @Override
+    public List<Component> Lore() {
+        return Message.convertMsg(List.of(
+                "",
+                "<white>破坏:可以破坏当前岛屿或与当前",
+                "<white>岛屿相邻岛屿四周的桥或材质为",
+                "<white>羊毛 木板 末地石 的方块",
+                "",
+                "<aqua>数量上限:1",
+                "<green>经济:16"
+        ));
     }
 
     @Override
     public boolean CanUse() {
         return true;
-    }
-
-    @Override
-    public Component Introduction() {
-        return Component.text("破坏除黑曜石和防爆玻璃以外的所有方块,或以上材质的岛屿");
     }
 }

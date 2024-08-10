@@ -3,6 +3,8 @@ package mc.bedwars.game.card;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 
 public abstract class Card {
     abstract public boolean effect(Player player);
@@ -19,7 +21,7 @@ public abstract class Card {
 
     abstract public Component Name();
 
-    abstract public Component Introduction();
+    abstract public List<Component> Lore();
 
     abstract public boolean CanUse();
 //    abstract public boolean NeedTarget();

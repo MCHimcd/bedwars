@@ -22,7 +22,7 @@ public class PlaceBedMenu extends SlotMenu {
                 setSlot(i, ItemCreator.create(Material.PAPER).name(card
                                         .Name())
                                 .data(card.CustomModelData())
-                                .lore(card.Introduction())
+                                .lore(card.Lore())
                                 .hideAttributes().getItem(),
                         (it, pl) -> {
                             pd.placeBedBlock(((isBlock) card).material());
