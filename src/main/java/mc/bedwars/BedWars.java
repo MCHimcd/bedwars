@@ -1,9 +1,10 @@
 package mc.bedwars;
 
+import mc.bedwars.Command.resetCmd;
 import mc.bedwars.Command.start;
-import mc.bedwars.Command.test;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.TickRunner;
+import mc.bedwars.menu.MainMenu;
 import mc.bedwars.menu.SlotMenu;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -20,6 +21,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Criteria;
@@ -66,7 +68,7 @@ public final class BedWars extends JavaPlugin implements Listener {
         initScoreboard();
 
         try {
-            Objects.requireNonNull(Bukkit.getPluginCommand("test")).setExecutor(new test());
+            Objects.requireNonNull(Bukkit.getPluginCommand("reset")).setExecutor(new resetCmd());
             Objects.requireNonNull(Bukkit.getPluginCommand("start")).setExecutor(new start());
         } catch (NullPointerException e) {
             getLogger().warning(e.getMessage());
@@ -120,7 +122,15 @@ public final class BedWars extends JavaPlugin implements Listener {
             if (player.isPresent()) {
                 p.showBossBar(bossbar);
             } else resetPlayer(p);
-        } else resetPlayer(p);
+        } else {
+            resetPlayer(p);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        var p = event.getPlayer();
+        MainMenu.removePrepared(p);
     }
 
     @EventHandler
@@ -130,16 +140,14 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (started) {
-            if (!(e.getWhoClicked() instanceof Player player)) return;
-            if (e.getInventory().getHolder() instanceof SlotMenu m) m.handleClick(e.getSlot());
-            else if (Objects.requireNonNull(e.getInventory().getHolder()).equals(player)) {
-                e.setCancelled(true);
-                if (e.getClick() == ClickType.RIGHT) {
-                    var it = e.getCurrentItem();
-                    if (it == null) return;
-                    if (it.getType() == Material.PAPER) player.getInventory().setItemInOffHand(it);
-                }
+        if (!(e.getWhoClicked() instanceof Player player)) return;
+        if (e.getInventory().getHolder() instanceof SlotMenu m) m.handleClick(e.getSlot());
+        else if (started && Objects.requireNonNull(e.getInventory().getHolder()).equals(player)) {
+            e.setCancelled(true);
+            if (e.getClick() == ClickType.RIGHT) {
+                var it = e.getCurrentItem();
+                if (it == null) return;
+                if (it.getType() == Material.PAPER) player.getInventory().setItemInOffHand(it);
             }
         }
     }

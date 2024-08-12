@@ -32,7 +32,7 @@ public class PotionOfLeaping extends Card implements Duration, Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PotionOfLeaping extends Card implements Duration, Prop {
                 "<white>+2",
                 "<white>使用此道具不消耗行动点",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:10"
         ));
     }

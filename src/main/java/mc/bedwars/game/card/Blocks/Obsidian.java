@@ -10,14 +10,10 @@ import java.util.List;
 
 import static mc.bedwars.factory.Message.rMsg;
 
-public class Obsidian extends Card implements isBlock {
+public class Obsidian extends Card implements isBlock, multiplePurchase {
     @Override
     public boolean effect(Player player) {
         return true;
-    }
-
-    public Material material() {
-        return Material.OBSIDIAN;
     }
 
     @Override
@@ -27,12 +23,12 @@ public class Obsidian extends Card implements isBlock {
 
     @Override
     public int costMoney() {
-        return 6;
+        return 12;
     }
 
     @Override
     public int itemMaxCount() {
-        return 2;
+        return 999;
     }
 
     @Override
@@ -51,20 +47,29 @@ public class Obsidian extends Card implements isBlock {
     }
 
     @Override
-    public boolean CanUse() {
-        return true;
-    }
-
-    @Override
     public List<Component> Lore() {
         return Message.convertMsg(List.of(
                 "",
                 "<white>守床:可用于保护己方的床",
                 "<white>可破坏:镐*2",
                 "",
-                "<aqua>数量上限:2",
+                "<aqua>每次购买数量:2",
                 "<green>经济:12"
         ));
+    }
+
+    @Override
+    public boolean CanUse() {
+        return true;
+    }
+
+    public Material material() {
+        return Material.OBSIDIAN;
+    }
+
+    @Override
+    public int getPurchaseAmount() {
+        return 2;
     }
 }
 

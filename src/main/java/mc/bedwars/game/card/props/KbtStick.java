@@ -33,7 +33,7 @@ public class KbtStick extends Card implements Prop, NeedTarget {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class KbtStick extends Card implements Prop, NeedTarget {
                 "<white>击落虚空,1/2此卡无效,照常消耗",
 
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:8"
         ));
     }

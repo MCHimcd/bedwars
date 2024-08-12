@@ -76,7 +76,7 @@ public class BridgeEgg extends Card implements Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class BridgeEgg extends Card implements Prop {
                 "<white>接到连接的下一个岛屿（包括间",
                 "<white>隔两座桥的岛屿",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:12"
         ));
     }

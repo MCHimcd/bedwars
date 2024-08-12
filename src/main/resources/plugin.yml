@@ -3,9 +3,9 @@ version: '${version}'
 main: mc.bedwars.BedWars
 api-version: '1.20'
 commands:
-  test:
+  reset:
     usage: /<command>
-    description: "测试"
+    description: "重置游戏"
   start:
     usage: /<command>
     description: "开始游戏"

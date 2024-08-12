@@ -53,7 +53,7 @@ public class Scissors extends Card implements Tool, Equip {
                 "<white>一岛屿材质为 羊毛 的桥或材质",
                 "<white>为羊毛 防爆玻璃 的方块",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:2"
         ));
     }

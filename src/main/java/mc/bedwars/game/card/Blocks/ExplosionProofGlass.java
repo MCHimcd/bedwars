@@ -10,14 +10,10 @@ import java.util.List;
 
 import static mc.bedwars.factory.Message.rMsg;
 
-public class ExplosionProofGlass extends Card implements isBlock {
+public class ExplosionProofGlass extends Card implements isBlock, multiplePurchase {
     @Override
     public boolean effect(Player player) {
         return true;
-    }
-
-    public Material material() {
-        return Material.BLACK_STAINED_GLASS;
     }
 
     @Override
@@ -32,7 +28,7 @@ public class ExplosionProofGlass extends Card implements isBlock {
 
     @Override
     public int itemMaxCount() {
-        return 4;
+        return 999;
     }
 
     @Override
@@ -51,11 +47,6 @@ public class ExplosionProofGlass extends Card implements isBlock {
     }
 
     @Override
-    public boolean CanUse() {
-        return true;
-    }
-
-    @Override
     public List<Component> Lore() {
         return Message.convertMsg(List.of(
                 "",
@@ -63,8 +54,22 @@ public class ExplosionProofGlass extends Card implements isBlock {
                 "<white>守床:可用于保护己方的床",
                 "<white>可破坏:剪刀 镐 斧",
                 "",
-                "<aqua>数量上限:4",
+                "<aqua>每次购买数量:4",
                 "<green>经济:16"
         ));
+    }
+
+    @Override
+    public boolean CanUse() {
+        return true;
+    }
+
+    public Material material() {
+        return Material.BLACK_STAINED_GLASS;
+    }
+
+    @Override
+    public int getPurchaseAmount() {
+        return 4;
     }
 }

@@ -1,10 +1,12 @@
 package mc.bedwars.game;
 
+import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.boost.HealingSpring;
 import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
+import mc.bedwars.menu.MainMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -34,6 +36,7 @@ public final class GameState {
     public static int order = 1;
 
     public static void start(List<Player> players) {
+
         if (players.size() > 4) {
             Bukkit.broadcast(Component.text("            §c游戏需要至多4名玩家参与！"));
             return;
@@ -42,15 +45,15 @@ public final class GameState {
             Bukkit.broadcast(Component.text("            §c游戏需要至少2名玩家参与！"));
             return;
         }
-        if (players.size() <= 3) changeSidebarEntries(4, "§e黄队床:§4 ✘");
-        if (players.size() <= 2) changeSidebarEntries(3, "§9蓝队床:§4 ✘");
+        if (players.size() <= 3) changeSidebarEntries(1, "§e黄队床:§4 ✘");
+        if (players.size() <= 2) changeSidebarEntries(2, "§9蓝队床:§4 ✘");
 
         new StartBukkitRunnable(players).runTaskTimer(instance, 0, 1);
     }
 
     public static void end() {
         //结束
-        players_data.keySet().stream().filter(p -> !players_data.get(p).needRespawn()).findFirst().ifPresent(winner -> {
+        players_data.keySet().stream().filter(p -> players_data.get(p).hasBed()).findFirst().ifPresent(winner -> {
             Bukkit.broadcast(Message.rMsg("      <gold><bold> %s <white>获得了最终的胜利".formatted(winner.getName())));
             winner.playSound(winner, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1f, 1f);
         });
@@ -58,7 +61,7 @@ public final class GameState {
     }
 
     public static void reset() {
-        GameState.turn = 0;
+        turn = 0;
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR_TEAM_AQUA);
         changeSidebarEntries(5, "§6-------------§1");
         changeSidebarEntries(4, "§c红队床:§2 ✔");
@@ -74,9 +77,13 @@ public final class GameState {
         });
         players_data.clear();
         order = 0;
+        PlayerData.resetOrderG();
         if (map != null) map.markers.keySet().forEach(Entity::remove);
         map = new GameMap(Bukkit.getWorld("world"));
         started = false;
+        MainMenu.prepared.clear();
+        MainMenu.start_tick = -1;
+        TickRunner.ending = false;
     }
 
     public static void resetPlayer(Player player) {
@@ -90,6 +97,8 @@ public final class GameState {
         player.clearActivePotionEffects();
         player.setGameMode(GameMode.ADVENTURE);
         Objects.requireNonNull(player.getAttribute(GENERIC_JUMP_STRENGTH)).setBaseValue(0.5);
+
+        player.getInventory().addItem(ItemCreator.create(Material.PAPER).data(60000).name(Message.rMsg("主菜单", NamedTextColor.GOLD)).getItem());
     }
 
     public static void nextPlayer() {
@@ -232,6 +241,7 @@ public final class GameState {
                 });
                 sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
                 started = true;
+                MainMenu.prepared.clear();
                 nextTurn();
             }
         }

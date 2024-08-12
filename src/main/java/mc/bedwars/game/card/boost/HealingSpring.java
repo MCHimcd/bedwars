@@ -51,7 +51,7 @@ public class HealingSpring extends Card {
                 "",
                 "<white>治愈:当玩家在自己基地时战力值+3",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:16"
         ));
     }

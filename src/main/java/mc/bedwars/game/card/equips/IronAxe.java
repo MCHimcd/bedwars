@@ -55,7 +55,7 @@ public class IronAxe extends Card implements Tool, Equip {
                 "<white>木板 防爆玻璃 的方块",
 
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:4"
         ));
     }

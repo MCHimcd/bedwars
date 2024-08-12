@@ -54,7 +54,7 @@ public class Protection extends Card {
                 "<white>保护III:使盔甲提供的战斗力+3",
                 "<white>保护IV:使盔甲提供的战斗力+4",
                 "",
-                "<aqua>数量上限:4",
+                "<aqua>每次购买数量:4",
                 "<green>经济:12"
         ));
     }

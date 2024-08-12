@@ -10,7 +10,7 @@ import java.util.List;
 
 import static mc.bedwars.factory.Message.rMsg;
 
-public class Wool extends Card implements isBlock {
+public class Wool extends Card implements isBlock, multiplePurchase {
     @Override
     public boolean effect(Player player) {
         return true;
@@ -23,12 +23,12 @@ public class Wool extends Card implements isBlock {
 
     @Override
     public int costMoney() {
-        return 4;
+        return 8;
     }
 
     @Override
     public int itemMaxCount() {
-        return 4;
+        return 999;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Wool extends Card implements isBlock {
                 "<white>守床:可用于保护己方的床",
                 "<white>可破坏:剪刀 火球 TNT",
                 "",
-                "<aqua>数量上限:4",
+                "<aqua>每次购买数量:4",
                 "<green>经济:8"
         ));
     }
@@ -66,5 +66,10 @@ public class Wool extends Card implements isBlock {
 
     public Material material() {
         return Material.WHITE_WOOL;
+    }
+
+    @Override
+    public int getPurchaseAmount() {
+        return 4;
     }
 }

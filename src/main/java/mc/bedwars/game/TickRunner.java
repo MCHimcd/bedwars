@@ -19,27 +19,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static mc.bedwars.game.GameState.*;
+import static mc.bedwars.menu.MainMenu.prepared;
+import static mc.bedwars.menu.MainMenu.start_tick;
 
 public class TickRunner extends BukkitRunnable {
-    public List<Location> graph(Player player) {
-        List<Location> locations = new ArrayList<>();
-        for (double a = 0; a <= 6.29; a += 0.1) {
-            double x = 1 * Math.cos(a);
-            double y = a / 3;
-            double z = 1 * Math.sin(a);
-            Location loc = particle.roloc(player, x, y, z, 0);
-            locations.add(loc);
-        }
-        return locations;
-    }
+    public static boolean ending = false;
 
     @Override
     public void run() {
         if (started) {
             players_data.forEach((player, pd) -> {
-                if (pd.getAction() <= 0 && pd.getOrder() == order) {
+                //下一个玩家
+                if (pd.getAction() <= 0 && pd.getOrder() == order && !ending) {
                     nextPlayer();
                 }
+                //传送
                 if (player.isSneaking() && pd.canTp) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 1, 255, false, false));
                     if (pd.snakeTime % 5 == 0) {
@@ -70,7 +64,22 @@ public class TickRunner extends BukkitRunnable {
                     pd.snakeTime = 0;
                 }
             });
+        } else {
+            //开始倒计时
+            if (start_tick >= 0 && start_tick < 200) {
+                if (start_tick % 20 == 0) {
+                    prepared.forEach(player -> {
+                        player.showTitle(Message.title("%d".formatted((200 - start_tick) / 20), "", 0, 1000, 0));
+                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+                    });
+                }
+                start_tick++;
+                if (start_tick == 200) {
+                    start(prepared);
+                }
+            }
         }
+
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (!started) return;
             var pd = players_data.get(player);
@@ -94,5 +103,17 @@ public class TickRunner extends BukkitRunnable {
                 }
             } else pd.target_location = null;
         });
+    }
+
+    public List<Location> graph(Player player) {
+        List<Location> locations = new ArrayList<>();
+        for (double a = 0; a <= 6.29; a += 0.1) {
+            double x = 1 * Math.cos(a);
+            double y = a / 3;
+            double z = 1 * Math.sin(a);
+            Location loc = particle.roloc(player, x, y, z, 0);
+            locations.add(loc);
+        }
+        return locations;
     }
 }

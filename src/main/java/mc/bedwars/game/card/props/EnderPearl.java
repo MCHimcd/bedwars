@@ -25,7 +25,15 @@ public class EnderPearl extends Card implements Prop {
         map.moveTo(player, pd.target_location);
         player.getWorld().spawnParticle(Particle.WITCH, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
         var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
-        pd.getMarker().teleport(GameMap.getLocation(pd.target_location).add(dxz, 0, dxz));
+        pd.getMarker().teleport(GameMap.getLocation(pd.target_location).setDirection(pd.getMarkerDirection()).add(dxz, 0, dxz));
+
+        player.getInventory().clear();
+        pd.resetInventoryItems();
+        var is = pd.getActions();
+        for (int i = 0; i < is.size(); i++) {
+            player.getInventory().setItem(i, is.get(i));
+        }
+
         player.getWorld().spawnParticle(Particle.WITCH, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
         player.playSound(player, Sound.ENTITY_ENDER_PEARL_THROW, 1f, 1f);
         player.getWorld().sendMessage(Component.text("                 §l%s使用了 §7末影之眼".formatted(player.getName())));
@@ -44,7 +52,7 @@ public class EnderPearl extends Card implements Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -70,7 +78,7 @@ public class EnderPearl extends Card implements Prop {
                 "<white>图任意岛屿",
                 "<white>自救:掉入虚空可以回到原来所在岛屿或桥并立即获得1行动点",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:16"
         ));
     }

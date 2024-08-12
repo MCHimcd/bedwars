@@ -62,7 +62,7 @@ public class Fireball extends Card implements Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class Fireball extends Card implements Prop {
                 "<white>一座 羊毛 木板 桥或任意一个 羊毛",
                 "<white>木板材质的方块",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:8"
         ));
     }

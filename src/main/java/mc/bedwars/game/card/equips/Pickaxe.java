@@ -54,7 +54,7 @@ public class Pickaxe extends Card implements Tool, Equip {
                 "<white>为末地石 防爆玻璃 的方块或消耗",
                 "<white>2个此道具拆除一个黑曜石方块",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:4"
         ));
     }

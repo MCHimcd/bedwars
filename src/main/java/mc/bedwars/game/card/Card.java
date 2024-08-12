@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 
-public abstract class Card {
+public abstract class Card implements Cloneable {
     abstract public boolean effect(Player player);
 
     abstract public int power();
@@ -24,6 +24,16 @@ public abstract class Card {
     abstract public List<Component> Lore();
 
     abstract public boolean CanUse();
+
+    @Override
+    public Card clone() {
+        try {
+            return (Card) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 //    abstract public boolean NeedTarget();
 
     //1xxxx   装备

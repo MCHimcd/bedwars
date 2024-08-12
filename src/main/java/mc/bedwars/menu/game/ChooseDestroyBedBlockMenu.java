@@ -1,8 +1,9 @@
-package mc.bedwars.menu;
+package mc.bedwars.menu.game;
 
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.map.node.island.resource.Bed;
+import mc.bedwars.menu.SlotMenu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;

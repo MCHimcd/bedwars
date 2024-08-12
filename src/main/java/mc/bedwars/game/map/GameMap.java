@@ -84,15 +84,6 @@ public class GameMap {
         }
     }
 
-    public static void intoVoid(Player causer, Player p) {
-        var pd = players_data.get(p);
-        var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
-        if (ep.isPresent()) {
-            Bukkit.broadcast(Component.text("          %s使用了末影珍珠防止掉落虚空;".formatted(p.getName())));
-            ((EnderPearl) ep.get()).backHome(p);
-        } else pd.die(causer);
-    }
-
     public static Location getLocation(Island island) {
         return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20 + 0.5, 1, (island.getY() - 2) * 20 + 0.5);
     }
@@ -124,6 +115,30 @@ public class GameMap {
         return i.orElse(null);
     }
 
+    public void breakRoad(Player p, Road r) {
+        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("         %s破坏了一座桥;".formatted(p.getName()))));
+        r.setMaterial(Material.AIR);
+        r.players.forEach(player -> {
+            PlayerData pd = players_data.get(player);
+            var wool = pd.items.stream().filter(item -> item instanceof Wool).findFirst();
+            if (wool.isPresent()) {
+                Bukkit.broadcast(Component.text("          %s使用羊毛防止掉落虚空;".formatted(player.getName())));
+                r.setMaterial(Material.WHITE_WOOL);
+                pd.items.remove(wool.get());
+                players_data.get(p).resetInventoryItems();
+            } else intoVoid(p, player);
+        });
+    }
+
+    public static void intoVoid(Player causer, Player p) {
+        var pd = players_data.get(p);
+        var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
+        if (ep.isPresent()) {
+            Bukkit.broadcast(Component.text("          %s使用了末影珍珠防止掉落虚空;".formatted(p.getName())));
+            ((EnderPearl) ep.get()).backHome(p);
+        } else pd.die(causer);
+    }
+
     public boolean tryMove(Player p, Node start, Node end) {
         PlayerData pd = players_data.get(p);
         var order = pd.getOrder();
@@ -141,7 +156,7 @@ public class GameMap {
                 var l1 = GameMap.getLocation(island);
                 var l2 = GameMap.getLocation((Island) end);
                 var l3 = new Location(l1.getWorld(), (l1.x() + l2.x()) / 2, 1, (l1.z() + l2.z()) / 2);
-                l3.setDirection(l2.toVector().subtract(l1.toVector()));
+                l3.setDirection(players_data.get(p).getMarkerDirection());
                 dxz *= 0.5;
                 pd.getMarker().teleport(l3.add(dxz, 0, dxz));
                 return true;
@@ -171,20 +186,5 @@ public class GameMap {
         }
         end.players.add(p);
         pd.addAction(-1);
-    }
-
-    public void breakRoad(Player p, Road r) {
-        p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("         %s破坏了一座桥;".formatted(p.getName()))));
-        r.setMaterial(Material.AIR);
-        r.players.forEach(player -> {
-            PlayerData pd = players_data.get(player);
-            var wool = pd.items.stream().filter(item -> item instanceof Wool).findFirst();
-            if (wool.isPresent()) {
-                Bukkit.broadcast(Component.text("          %s使用羊毛防止掉落虚空;".formatted(player.getName())));
-                r.setMaterial(Material.WHITE_WOOL);
-                pd.items.remove(wool.get());
-                players_data.get(p).resetInventoryItems();
-            } else intoVoid(p, player);
-        });
     }
 }

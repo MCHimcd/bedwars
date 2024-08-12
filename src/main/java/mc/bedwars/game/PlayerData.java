@@ -1,6 +1,5 @@
 package mc.bedwars.game;
 
-import mc.bedwars.BedWars;
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.card.Card;
@@ -8,17 +7,20 @@ import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
+import mc.bedwars.menu.SkinMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,21 +90,40 @@ public class PlayerData {
             return false;
         }).findFirst().ifPresent(bed -> {
             location = bed;
-            marker = player.getWorld().spawn(GameMap.getLocation(bed), ArmorStand.class, ar -> {
+            marker = player.getWorld().spawn(GameMap.getLocation(bed).setDirection(getMarkerDirection()), ArmorStand.class, ar -> {
                 team.addEntity(ar);
                 ar.setMarker(true);
                 ar.setGlowing(true);
                 ar.setCustomNameVisible(true);
                 ar.customName(Message.rMsg("<rainbow>%s的棋子".formatted(player.getName())));
-                ar.getEquipment().setHelmet(new ItemStack(Material.PLAYER_HEAD) {{
-                    editMeta(m -> {
-                        if (m instanceof SkullMeta meta) meta.setOwningPlayer(player);
-                    });
-                }});
+                var equip = ar.getEquipment();
+                var skin_id = SkinMenu.skins.get(player);
+                if (skin_id != null && skin_id != 90000) {
+                    equip.setHelmet(ItemCreator.create(Material.PAPER).data(skin_id).getItem());
+                } else {
+                    equip.setHelmet(new ItemStack(Material.PLAYER_HEAD) {{
+                        editMeta(m -> {
+                            if (m instanceof SkullMeta meta) meta.setOwningPlayer(player);
+                        });
+                    }});
+                }
             });
         });
-        if (order_g == 5) order_g = 1;
         players_data.put(player, this);
+    }
+
+    public Vector getMarkerDirection() {
+        return switch (order) {
+            case 1 -> new Vector(-1, 0, 0);
+            case 2 -> new Vector(0, 0, 1);
+            case 3 -> new Vector(1, 0, 0);
+            case 4 -> new Vector(0, 0, -1);
+            default -> throw new IllegalStateException("Unexpected value: " + order);
+        };
+    }
+
+    public static void resetOrderG() {
+        order_g = 1;
     }
 
     /**
@@ -243,7 +264,7 @@ public class PlayerData {
 
     public void respawn() {
         map.islands.stream().filter(i -> i instanceof Bed b && b.getOrder() == order).findFirst().ifPresent(island -> {
-            marker.teleport(GameMap.getLocation(island));
+            marker.teleport(GameMap.getLocation(island).setDirection(players_data.get(player).getMarkerDirection()));
             map.moveTo(player, island);
         });
         needSpawn = false;
@@ -273,7 +294,11 @@ public class PlayerData {
                 case 4 -> "§e黄";
                 default -> "";
             }));
-            Bukkit.broadcast(Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName())));
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.sendMessage((Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName()))));
+                player.playSound(player, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
+            }
+
         }
     }
 
@@ -306,12 +331,13 @@ public class PlayerData {
         needSpawn = true;
         //检测结束
         if (players_data.values().stream().filter(pd -> !pd.has_bed && pd.needSpawn).count() == players_data.size() - 1) {
+            TickRunner.ending = true;
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     end();
                 }
-            }.runTaskLater(BedWars.instance, 1);
+            }.runTaskLater(instance, 1);
         }
         return finalMoney;
     }

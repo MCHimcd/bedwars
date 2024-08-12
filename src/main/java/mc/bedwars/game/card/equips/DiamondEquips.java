@@ -52,7 +52,7 @@ public class DiamondEquips extends Card implements Equip {
                 "<white>保护:常驻提供8点战力值",
                 "<white>不掉落:该物品死亡不掉落",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:32"
         ));
     }

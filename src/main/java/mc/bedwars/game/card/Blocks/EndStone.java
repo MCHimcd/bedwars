@@ -10,7 +10,7 @@ import java.util.List;
 
 import static mc.bedwars.factory.Message.rMsg;
 
-public class EndStone extends Card implements isBlock {
+public class EndStone extends Card implements isBlock, multiplePurchase {
     public Material material() {
         return Material.END_STONE;
     }
@@ -27,12 +27,12 @@ public class EndStone extends Card implements isBlock {
 
     @Override
     public int costMoney() {
-        return 8;
+        return 16;
     }
 
     @Override
     public int itemMaxCount() {
-        return 4;
+        return 999;
     }
 
     @Override
@@ -42,11 +42,6 @@ public class EndStone extends Card implements isBlock {
 
     @Override
     public boolean CanDrop() {
-        return true;
-    }
-
-    @Override
-    public boolean CanUse() {
         return true;
     }
 
@@ -63,8 +58,18 @@ public class EndStone extends Card implements isBlock {
                 "<white>守床:可用于保护己方的床",
                 "<white>可破坏:镐 TNT",
                 "",
-                "<aqua>数量上限:4",
+                "<aqua>每次购买数量:4",
                 "<green>经济:16"
         ));
+    }
+
+    @Override
+    public boolean CanUse() {
+        return true;
+    }
+
+    @Override
+    public int getPurchaseAmount() {
+        return 4;
     }
 }

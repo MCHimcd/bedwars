@@ -51,7 +51,7 @@ public class Sharp extends Card {
                 "",
                 "<white>锋利:使盔甲提供的战斗力+2",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:8"
         ));
     }

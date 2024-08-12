@@ -32,7 +32,7 @@ public class PotionOfSwiftness extends Card implements Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PotionOfSwiftness extends Card implements Prop {
                 "<white>迅捷:使用后本回合多一个行动力",
                 "<white>使用此道具不消耗行动点",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:10"
         ));
     }

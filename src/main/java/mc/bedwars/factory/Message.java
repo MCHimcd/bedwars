@@ -1,29 +1,33 @@
 package mc.bedwars.factory;
 
-import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.scoreboard.Scoreboard;
+import net.kyori.adventure.title.Title;
 
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Message {
-    public static Scoreboard h_board;
-    public static final BossBar bar_h = BossBar.bossBar(Component.empty(), 0, BossBar.Color.WHITE, BossBar.Overlay.NOTCHED_10);
-    public static final BossBar bar_time = BossBar.bossBar(Component.empty(), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
-
+public final class Message {
     public static final MiniMessage msg = MiniMessage.miniMessage();
 
     public static LinkedList<Component> convertMsg(List<String> sl) {
-        return sl.stream().map(s -> {
-            if (s.isEmpty()) return Component.empty();
-            return msg.deserialize("<reset>" + s);
-        }).collect(Collectors.toCollection(LinkedList::new));
+        return sl.stream().map(input -> msg.deserialize(input).decoration(TextDecoration.ITALIC, false)).collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    public static Component rMsg(String s, NamedTextColor color) {
+        return Component.text(s, color).decoration(TextDecoration.ITALIC, false);
+    }
+
+    public static Title title(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        return Title.title(rMsg(title), rMsg(subtitle), Title.Times.times(Duration.ofMillis(fadeIn), Duration.ofMillis(stay), Duration.ofMillis(fadeOut)));
     }
 
     public static Component rMsg(String s) {
-        return msg.deserialize("<reset>" + s);
+        return msg.deserialize("<reset>" + s).decoration(TextDecoration.ITALIC, false);
     }
+
 }

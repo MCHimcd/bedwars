@@ -51,7 +51,7 @@ public class IronSword extends Card implements Equip {
                 "",
                 "<white>攻击:常驻提供2点战力值",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:4"
         ));
     }

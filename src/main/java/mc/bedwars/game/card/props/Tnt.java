@@ -62,7 +62,7 @@ public class Tnt extends Card implements Prop {
 
     @Override
     public int itemMaxCount() {
-        return 1;
+        return 999;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class Tnt extends Card implements Prop {
                 "<white>岛屿相邻岛屿四周的桥或材质为",
                 "<white>羊毛 木板 末地石 的方块",
                 "",
-                "<aqua>数量上限:1",
+                "<aqua>每次购买数量:1",
                 "<green>经济:16"
         ));
     }

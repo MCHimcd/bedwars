@@ -9,7 +9,9 @@ import mc.bedwars.game.card.equips.Scissors;
 import mc.bedwars.game.map.node.Road;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
-import mc.bedwars.menu.*;
+import mc.bedwars.menu.MainMenu;
+import mc.bedwars.menu.game.*;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -19,8 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import static mc.bedwars.game.GameState.map;
-import static mc.bedwars.game.GameState.players_data;
+import static mc.bedwars.game.GameState.*;
 
 public class PlayerInteractListener implements Listener {
 
@@ -30,16 +31,23 @@ public class PlayerInteractListener implements Listener {
 
         var item = e.getItem();
         var p = e.getPlayer();
-        if (item == null || !item.getItemMeta().hasCustomModelData()) return;
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasCustomModelData()) return;
 
         var id = item.getItemMeta().getCustomModelData();
+        if (id == 60000) {
+            p.openInventory(new MainMenu(p).getInventory());
+            return;
+        }
+
+        if (!started) return;
+
         var pd = players_data.get(p);
 
         switch (id) {
             case 60009 -> openChoosePlayerMenu(p, pd);
             case 60007 -> handleMove(p, pd);
             case 60003 -> handleBuildBridge(p, pd);
-            case 60008 -> p.openInventory(new CardMenu(p, pd.items).getInventory());
+            case 60008 -> p.openInventory(new CardMenu(p, 0).getInventory());
             case 60002 -> handlePvP(p, pd);
             case 60006 -> handleBreak(p, pd);
             case 60005 -> openShopMenu(p);
@@ -83,7 +91,7 @@ public class PlayerInteractListener implements Listener {
             Island i1 = (Island) pd.location;
             Island i2 = pd.target_location;
             if (Math.abs(i1.getX() - i2.getX()) == 1 || Math.abs(i1.getY() - i2.getY()) == 1) {
-                p.openInventory(new BlockMenu(p).getInventory());
+                p.openInventory(new BlockMenu(p, 0).getInventory());
             } else {
                 showTitleAndPlaySound(p, "<aqua>请选择一个就近岛屿");
             }
@@ -99,6 +107,8 @@ public class PlayerInteractListener implements Listener {
             t.playSound(t, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1.5f);
             p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Message.rMsg("         %s和%s进行了一场<red>pvp".formatted(p.getName(), t.getName()))));
             GameState.pvp(p, t);
+        } else {
+            p.sendMessage(Component.text("清先选择目标"));
         }
     }
 
