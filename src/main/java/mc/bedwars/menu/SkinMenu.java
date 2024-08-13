@@ -16,8 +16,8 @@ import static mc.bedwars.factory.Message.rMsg;
 
 public class SkinMenu extends SlotMenu {
     public static final Map<Player, Integer> skins = new HashMap<>();
-    private static final List<Component> itemNames = List.of(
-            rMsg("原皮"),
+    public static final List<Component> itemNames = List.of(
+            rMsg("<aqua>原皮"),
             rMsg("1"),
             rMsg("2"),
             rMsg("3"),
@@ -100,10 +100,10 @@ public class SkinMenu extends SlotMenu {
     private void setPage(int page) {
         var start = 0;
         if (page == 1) {
-            setSlot(26, ItemCreator.create(Material.PAPER).name(Component.text("下一页")).data(99999).getItem(), (it, pl) -> {
-                pl.openInventory(new SkinMenu(pl, page + 1).getInventory());
-                pl.playSound(pl, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
-            });
+//            setSlot(26, ItemCreator.create(Material.PAPER).name(Component.text("下一页")).data(99999).getItem(), (it, pl) -> {
+//                pl.openInventory(new SkinMenu(pl, page + 1).getInventory());
+//                pl.playSound(pl, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
+//            });
         } else if (page >= 2) {
             start = 1;
             setSlot(0, ItemCreator.create(Material.PAPER).name(Component.text("上一页")).data(99998).getItem(), (it, pl) -> {
@@ -111,7 +111,8 @@ public class SkinMenu extends SlotMenu {
                 pl.playSound(pl, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
             });
         }
-        IntStream.rangeClosed(start, start + 25).forEach(i -> {
+//        IntStream.rangeClosed(start, start + 25).forEach(i -> {
+        IntStream.rangeClosed(0, 17).forEach(i -> {
             var name = itemNames.get(i + (page - 1) * 25);
             var data = i + 90000 + (page - 1) * 25;
             setSlot(i, ItemCreator.create(Material.PAPER).data(data).name(name).getItem(), (it, pl) -> {

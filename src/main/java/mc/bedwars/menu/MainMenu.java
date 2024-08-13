@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mc.bedwars.factory.Message.convertMsg;
 import static mc.bedwars.factory.Message.rMsg;
 
 public class MainMenu extends SlotMenu {
@@ -20,7 +21,14 @@ public class MainMenu extends SlotMenu {
     public MainMenu(Player p) {
         super(27, Component.text("主菜单", NamedTextColor.GOLD), p);
 
-        setSlot(11, ItemCreator.create(Material.PAPER).name(rMsg("选择皮肤")).data(99997).getItem(), (it, pl) -> {
+        setSlot(0, ItemCreator.create(Material.PAPER).name(rMsg("新手教程")).data(0).getItem(), (it, pl) -> {
+            convertMsg(List.of(
+                    "",
+                    ""
+            )).forEach(pl::sendMessage);
+        });
+
+        setSlot(11, ItemCreator.create(Material.PAPER).name(rMsg("选择皮肤")).data(90000).getItem(), (it, pl) -> {
             pl.openInventory(new SkinMenu(pl, 1).getInventory());
         });
 

@@ -2,6 +2,7 @@ package mc.bedwars;
 
 import mc.bedwars.Command.resetCmd;
 import mc.bedwars.Command.start;
+import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.factory.Message;
 import mc.bedwars.game.TickRunner;
 import mc.bedwars.menu.MainMenu;
@@ -10,9 +11,12 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,6 +32,7 @@ import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +68,10 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        Bukkit.getWorld("world").getEntities().stream().filter(e -> e.getScoreboardTags().contains("himcd")).findFirst().ifPresent(entity -> {
+            TickRunner.himcd = (TextDisplay) entity;
+        });
+
         instance = this;
 
         initScoreboard();
@@ -112,6 +121,43 @@ public final class BedWars extends JavaPlugin implements Listener {
             yellow = main_scoreboard.registerNewTeam("yellow");
             yellow.color(NamedTextColor.YELLOW);
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Deprecated
+    private void summonAR() {
+        var w = Bukkit.getWorld("world");
+        assert w != null;
+        w.spawn(new Location(w, 4.5, 65, 13.7), ArmorStand.class, armorStand -> {
+            armorStand.setMarker(true);
+            armorStand.setInvisible(true);
+            armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
+            armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90018).getItem());
+        });
+        w.spawn(new Location(w, 3, 64.85, 13), ArmorStand.class, armorStand -> {
+            armorStand.setMarker(true);
+            armorStand.setInvisible(true);
+            armorStand.teleport(armorStand.getLocation().setDirection(new Vector(-1, 0, -1)));
+            armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90019).getItem());
+        });
+        w.spawn(new Location(w, 1.5, 64, 13.5), ArmorStand.class, armorStand -> {
+            armorStand.setMarker(true);
+            armorStand.setInvisible(true);
+            armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
+            armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90020).getItem());
+        });
+        w.spawn(new Location(w, 0, 64, 13.5), ArmorStand.class, armorStand -> {
+            armorStand.setMarker(true);
+            armorStand.setInvisible(true);
+            armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
+            armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90021).getItem());
+        });
+        w.spawn(new Location(w, -2.2, 65, 13), ArmorStand.class, armorStand -> {
+            armorStand.setMarker(true);
+            armorStand.setInvisible(true);
+            armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0.2, 0, -1)));
+            armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90022).getItem());
+        });
     }
 
     @EventHandler

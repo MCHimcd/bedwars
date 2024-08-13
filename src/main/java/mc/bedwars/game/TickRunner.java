@@ -10,6 +10,7 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,9 +22,13 @@ import java.util.List;
 import static mc.bedwars.game.GameState.*;
 import static mc.bedwars.menu.MainMenu.prepared;
 import static mc.bedwars.menu.MainMenu.start_tick;
+import static mc.bedwars.menu.SkinMenu.itemNames;
+import static mc.bedwars.menu.SkinMenu.skins;
 
 public class TickRunner extends BukkitRunnable {
     public static boolean ending = false;
+    public static TextDisplay himcd;
+    private int himcd_c = 0;
 
     @Override
     public void run() {
@@ -65,6 +70,14 @@ public class TickRunner extends BukkitRunnable {
                 }
             });
         } else {
+            //大厅信息显示
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                player.sendActionBar(
+                        Component.text("你选择的皮肤是：", NamedTextColor.DARK_AQUA)
+                                .append(itemNames.get(skins.getOrDefault(player, 90000) - 90000))
+                );
+
+            });
             //开始倒计时
             if (start_tick >= 0 && start_tick < 200) {
                 if (start_tick % 20 == 0) {
@@ -103,6 +116,11 @@ public class TickRunner extends BukkitRunnable {
                 }
             } else pd.target_location = null;
         });
+
+        if (himcd != null) {
+            if (himcd_c++ == 20) himcd_c = 0;
+            himcd.text(Message.rMsg("<rainbow:%d>极熠-Himcd".formatted(himcd_c)));
+        }
     }
 
     public List<Location> graph(Player player) {

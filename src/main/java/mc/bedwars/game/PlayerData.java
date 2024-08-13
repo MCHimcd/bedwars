@@ -92,7 +92,6 @@ public class PlayerData {
             location = bed;
             marker = player.getWorld().spawn(GameMap.getLocation(bed).setDirection(getMarkerDirection()), ArmorStand.class, ar -> {
                 team.addEntity(ar);
-                ar.setMarker(true);
                 ar.setGlowing(true);
                 ar.setCustomNameVisible(true);
                 ar.customName(Message.rMsg("<rainbow>%s的棋子".formatted(player.getName())));
