@@ -1,6 +1,7 @@
 package mc.bedwars.menu.game;
 
 import mc.bedwars.factory.ItemCreator;
+import mc.bedwars.game.GameState;
 import mc.bedwars.game.card.Blocks.*;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.card.boost.HealingSpring;
@@ -81,7 +82,10 @@ public class ShopMenu extends SlotMenu {
                         p.sendMessage(Component.text("             §a持有%s超过上限。".formatted(PlainTextComponentSerializer.plainText().serialize(card.Name()))));
                         p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
                     } else {
-                        if (pd.removeMoney(card.costMoney())) {
+                        if ((card instanceof EnderPearl || card instanceof Fireball) && GameState.turn < 20) {
+                            p.sendMessage(Component.text("           §6第20轮后才能购买"));
+                            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                        } else if (pd.removeMoney(card.costMoney())) {
                             p.playSound(p, Sound.ENTITY_ITEM_PICKUP, 1f, 2f);
                             p.sendMessage(Component.text("           §6购买成功。"));
                             var count = 1;
