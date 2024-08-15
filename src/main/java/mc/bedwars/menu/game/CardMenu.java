@@ -3,6 +3,7 @@ package mc.bedwars.menu.game;
 import mc.bedwars.factory.ItemCreator;
 import mc.bedwars.game.card.Card;
 import mc.bedwars.game.card.props.*;
+import mc.bedwars.game.map.node.Node;
 import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.menu.SlotMenu;
 import net.kyori.adventure.text.Component;
@@ -48,27 +49,20 @@ public class CardMenu extends SlotMenu {
 
     private void handleCardAction(Player p, Card card) {
         var pd = players_data.get(p);
-        Island currentIsland = (Island) pd.location;
+        Node currentNode = pd.location;
+
         Island targetIsland = pd.target_location;
 
         boolean hasTarget = pd.getTarget() != null;
         boolean hasIslandTarget = targetIsland != null;
-        boolean isAdjacentIsland = targetIsland != null &&
-                (Math.abs(currentIsland.getX() - targetIsland.getX()) == 1 ||
-                        Math.abs(currentIsland.getY() - targetIsland.getY()) == 1);
 
         if (card instanceof NeedTarget && !hasTarget) {
             sendMessage(p, card, "你需要一个目标才可使用%s.");
             return;
         }
 
-        if ((card instanceof BridgeEgg || card instanceof Fireball || card instanceof EnderPearl) && !hasIslandTarget) {
+        if ((card instanceof BridgeEgg || card instanceof Fireball || card instanceof Tnt || card instanceof EnderPearl) && !hasIslandTarget) {
             sendMessage(p, card, "你需要一个岛屿目标才可使用%s.");
-            return;
-        }
-
-        if (card instanceof Tnt && (!hasIslandTarget || !isAdjacentIsland)) {
-            sendMessage(p, card, "你需要选择相邻的岛屿目标才可使用%s.");
             return;
         }
 

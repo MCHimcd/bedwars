@@ -14,16 +14,13 @@ public abstract class Resource extends Island {
         super(x, y);
     }
 
-    abstract int getMaxAmount();
-
-    abstract int getMoneyOfEach();
-
-    abstract int getGenerationCD();
-
     public int getAmount() {
         return r_amount;
     }
 
+    /**
+     * 尝试给指定的玩家钱
+     */
     public void giveMoney(Player p) {
         var pd = GameState.players_data.get(p);
         if (r_amount > 0) {
@@ -34,10 +31,19 @@ public abstract class Resource extends Island {
         }
     }
 
+    abstract int getMoneyOfEach();
+
     public void generate() {
         if (--g_cd == 0) {
             r_amount = Math.min(r_amount + 1, getMaxAmount());
             g_cd = getGenerationCD();
         }
     }
+
+    abstract int getMaxAmount();
+
+    /**
+     * @return 生成的间隔（轮）
+     */
+    abstract int getGenerationCD();
 }

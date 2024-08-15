@@ -28,7 +28,7 @@ public class PotionOfInvisibility extends Card implements Duration, Prop {
 
     @Override
     public int costMoney() {
-        return 10;
+        return 20;
     }
 
     @Override

@@ -25,15 +25,17 @@ public class Fireball extends Card implements Prop {
             pd.target_location_1 = pd.target_location;
             player.sendMessage(Message.rMsg("<aqua>选择下一个岛"));
         } else {
-            Island i1 = pd.target_location_1;
+            Island i1 = (Island) pd.target_location_1.clone();
             pd.target_location_1 = null;
             var road = map.roads.stream().filter(r -> r.hasNode(pd.target_location) && r.hasNode(i1)).findFirst();
             if (road.isPresent()) {
+                Bukkit.broadcast(Component.text(i1.getType()));
+                Bukkit.broadcast(Component.text(pd.target_location.getType()));
                 if (switch (road.get().getMaterial()) {
                     case WHITE_WOOL, CRIMSON_PLANKS -> true;
                     default -> false;
                 }) {
-                    Bukkit.broadcast(Component.text("           §l%s使用了 §1火球".formatted(player.getName())));
+                    player.getWorld().sendMessage(Component.text("           §l%s使用了 §1火球".formatted(player.getName())));
                     var l1 = GameMap.getLocation(i1);
                     var l2 = GameMap.getLocation(pd.target_location);
                     var l3 = new Location(player.getWorld(), (l1.getX() + l2.getX()) / 2, 0, (l1.getZ() + l2.getZ()) / 2);

@@ -49,7 +49,7 @@ public class Sharp extends Card {
     public List<Component> Lore() {
         return Message.convertMsg(List.of(
                 "",
-                "<white>锋利:使盔甲提供的战斗力+2",
+                "<white>锋利:使武器提供的战斗力+2",
                 "",
                 "<aqua>每次购买数量:1",
                 "<green>经济:8"

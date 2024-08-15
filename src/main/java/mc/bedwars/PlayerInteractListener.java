@@ -17,6 +17,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -27,7 +28,8 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onUse(PlayerInteractEvent e) {
-        if (e.getHand() == EquipmentSlot.OFF_HAND) return;
+        if (e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
+            return;
 
         var item = e.getItem();
         var p = e.getPlayer();
@@ -112,6 +114,9 @@ public class PlayerInteractListener implements Listener {
         }
     }
 
+    /**
+     * 破坏桥
+     */
     private void handleBreak(Player p, PlayerData pd) {
         if (pd.target_location != null) {
             if (pd.location instanceof Road) return;

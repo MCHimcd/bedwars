@@ -33,11 +33,13 @@ public class BridgeEgg extends Card implements Prop {
         if (dx == 1 || dy == 1) {
             // 直接相邻岛屿
             createRoadAndNotify(player, i1, i2, pd);
+            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
         } else if (dx == 2 || dy == 2) {
             // 间接相邻岛屿
             Island middle = getMiddleIsland(i1, i2, dx, dy);
             createRoadAndNotify(player, i1, middle, pd);
             createRoadAndNotify(player, middle, i2, pd);
+            player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
         } else {
             return false;
         }
@@ -49,7 +51,6 @@ public class BridgeEgg extends Card implements Prop {
     private void createRoadAndNotify(Player player, Island i1, Island i2, PlayerData pd) {
         map.roads.add(new Road(Material.WHITE_WOOL, i1, i2));
         player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
-        player.getWorld().sendMessage(Component.text("           §l%s使用了 §1搭桥蛋".formatted(player.getName())));
         player.playSound(player, Sound.ENTITY_EGG_THROW, 1f, 1f);
     }
 

@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -51,13 +52,13 @@ public class PlayerData {
     //左2层床保护方块
     private Material LeftSecondBedBlock = Material.WHITE_WOOL;
     //左3层床保护方块
-    private Material LeftThirdBedBlock = Material.WHITE_WOOL;
+    private Material LeftThirdBedBlock = Material.CRIMSON_PLANKS;
     //右1层床保护方块
     private Material RightFirstBedBlock = Material.AIR;
     //右2层床保护方块
     private Material RightSecondBedBlock = Material.WHITE_WOOL;
     //右3层床保护方块
-    private Material RightThirdBedBlock = Material.WHITE_WOOL;
+    private Material RightThirdBedBlock = Material.CRIMSON_PLANKS;
     //将要破坏的层数
     private int destroyBedBlock = 1;
     private ArmorStand marker;
@@ -90,11 +91,14 @@ public class PlayerData {
             return false;
         }).findFirst().ifPresent(bed -> {
             location = bed;
+            location.players.add(player);
             marker = player.getWorld().spawn(GameMap.getLocation(bed).setDirection(getMarkerDirection()), ArmorStand.class, ar -> {
                 team.addEntity(ar);
                 ar.setGlowing(true);
                 ar.setCustomNameVisible(true);
                 ar.customName(Message.rMsg("<rainbow>%s的棋子".formatted(player.getName())));
+                ar.setBasePlate(false);
+                ar.setInvulnerable(true);
                 var equip = ar.getEquipment();
                 var skin_id = SkinMenu.skins.get(player);
                 if (skin_id != null && skin_id != 90000) {
@@ -109,8 +113,12 @@ public class PlayerData {
             });
         });
         players_data.put(player, this);
+        money = 9999;//todo
     }
 
+    /**
+     * @return 获得盔甲架应该的朝向
+     */
     public Vector getMarkerDirection() {
         return switch (order) {
             case 1 -> new Vector(-1, 0, 0);
@@ -121,6 +129,9 @@ public class PlayerData {
         };
     }
 
+    /**
+     * 重置order_g变量为1
+     */
     public static void resetOrderG() {
         order_g = 1;
     }
@@ -133,16 +144,30 @@ public class PlayerData {
         return money == 0 ? 0 : Math.max(money, 8);
     }
 
+    /**
+     * @param p 玩家
+     * @return 最终的力量
+     */
     public static int getPower(Player p) {
         return players_data.get(p).getPower() + new Random().nextInt(1, 7);
     }
 
+    /**
+     * @return 获取最终力量
+     */
     public int getPower() {
         return (getMaxPower() * health / 100) + temporary_power;
     }
 
+    /**
+     * @return 获得物品和装备提供的总力量
+     */
     public int getMaxPower() {
         return 2 + items.stream().mapToInt(Card::power).sum() + equipments.stream().mapToInt(Card::power).sum();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void hurt(int amount) {
@@ -161,69 +186,97 @@ public class PlayerData {
         temporary_power += amount;
     }
 
+    /**
+     * @param amount 行动点数量
+     */
     public void addAction(int amount) {
         action += amount;
     }
 
+    /**
+     * 重置临时力量为0
+     */
     public void resetTemporaryPower() {
         temporary_power = 0;
     }
 
+    /**
+     * @return 将要破坏的层数
+     */
     public int getDestroyBedBlock() {
         return destroyBedBlock;
     }
 
+    /**
+     * @param count 将要破坏的层数
+     */
     public void setDestroyBedBlock(int count) {
         destroyBedBlock = count;
     }
 
+    /**
+     * 将行动点设为1
+     */
     public void resetAction() {
         action = 1;
     }
 
-    public void resetTarget() {
-        target = null;
-        target_location_1 = null;
-    }
-
+    /**
+     * @return pvp目标
+     */
     public Player getTarget() {
         return target;
     }
 
+    /**
+     * @param player pvp目标
+     */
     public void setTarget(Player player) {
         target = player;
     }
 
+    /**
+     * @return 当前选择的保护床方块层数
+     */
     public int getProtectBed() {
         return protectBed;
     }
 
-    public void setProtectBed(int amount) {
-        protectBed = amount;
+    /**
+     * @param id 当前选择的保护床方块层数
+     */
+    public void setProtectBed(int id) {
+        protectBed = id;
     }
 
-    public Material protectBedBlockMaterial(int amount) {
-        if (amount == 1) {
+    /**
+     * @return 根据id获取对应位置的保护床的方块
+     */
+    public Material protectBedBlockMaterial(int id) {
+        if (id == 1) {
             return LeftFirstBedBlock;
         }
-        if (amount == 2) {
+        if (id == 2) {
             return LeftSecondBedBlock;
         }
-        if (amount == 3) {
+        if (id == 3) {
             return LeftThirdBedBlock;
         }
-        if (amount == 4) {
+        if (id == 4) {
             return RightThirdBedBlock;
         }
-        if (amount == 5) {
+        if (id == 5) {
             return RightSecondBedBlock;
         }
-        if (amount == 6) {
+        if (id == 6) {
             return RightFirstBedBlock;
         }
         return Material.AIR;
     }
 
+    /**
+     * 放置保护床的方块
+     */
     public void placeBedBlock(Material material) {
         if (protectBed == 1) {
             LeftFirstBedBlock = material;
@@ -271,8 +324,15 @@ public class PlayerData {
         action = 0;
     }
 
+    /**
+     * @return 行动点
+     */
     public int getAction() {
         return action;
+    }
+
+    public void setAction(int action) {
+        this.action = action;
     }
 
     public boolean removeMoney(int amount) {
@@ -293,9 +353,9 @@ public class PlayerData {
                 case 4 -> "§e黄";
                 default -> "";
             }));
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.sendMessage((Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName()))));
-                player.playSound(player, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                pl.sendMessage((Message.rMsg("       <red>%s<red> <bold>的床被破坏!".formatted(player.getName()))));
+                pl.playSound(pl, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 1f, 1f);
             }
 
         }
@@ -309,25 +369,27 @@ public class PlayerData {
         var finalMoney = 0;
         location.players.remove(player);
         if (player.equals(killer)) {
-            Bukkit.broadcast(Component.text("               %s自杀了".formatted(player.getName())));
+            player.getWorld().sendMessage(Component.text("               %s自杀了".formatted(player.getName())));
             money /= 4;
             action = 0;
         } else {
-            Bukkit.broadcast(Component.text("               %s被%s杀了".formatted(player.getName(), killer.getName())));
+            player.getWorld().sendMessage(Component.text("               %s被%s杀了".formatted(player.getName(), killer.getName())));
             finalMoney = money;
             money = 0;
-            items.removeIf(Card::CanDrop);
-            equipments.removeIf(Card::CanDrop);
-            resetInventoryItems();
         }
+        items.removeIf(Card::CanDrop);
+        equipments.removeIf(Card::CanDrop);
+        resetInventoryItems();
         getMarker().teleport(new Location(player.getWorld(), 0, 255, 0));
         if (!has_bed) {
             //最终击杀
-            Bukkit.broadcast(Message.rMsg("             <red>%s</red> <bold>被最终淘汰!".formatted(player.getName())));
+            player.getWorld().sendMessage(Message.rMsg("             <red>%s</red> <dark_aq>被最终淘汰!".formatted(player.getName())));
+            getMarker().getWorld().spawn(getMarker().getLocation(), LightningStrike.class);
             player.teleport(new Location(player.getWorld(), 0, 22, 0));
             player.showTitle(Title.title(Message.rMsg("<aqua>观战"), Message.rMsg("<rainbow>--------")));
         }
         needSpawn = true;
+        resetTarget();
         //检测结束
         if (players_data.values().stream().filter(pd -> !pd.has_bed && pd.needSpawn).count() == players_data.size() - 1) {
             TickRunner.ending = true;
@@ -341,10 +403,24 @@ public class PlayerData {
         return finalMoney;
     }
 
+    /**
+     * 重置pvp目标和某些需要选择两个岛的道具已选择的第一个岛
+     */
+    public void resetTarget() {
+        target = null;
+        target_location_1 = null;
+    }
+
+    /**
+     * @return 玩家对应的盔甲架
+     */
     public ArmorStand getMarker() {
         return marker;
     }
 
+    /**
+     * 重置玩家背包里显示的物品
+     */
     public void resetInventoryItems() {
         PlayerData playerData = players_data.get(player);
         List<Card> equipments = playerData.equipments;
@@ -373,6 +449,9 @@ public class PlayerData {
         return order;
     }
 
+    /**
+     * @return 玩家快捷栏里的物品
+     */
     public List<ItemStack> getActions() {
         List<ItemStack> items = new ArrayList<>();
         //移动 60007

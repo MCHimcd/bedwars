@@ -9,6 +9,7 @@ import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.MainMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -49,6 +50,7 @@ public final class GameState {
         if (players.size() <= 2) changeSidebarEntries(2, "§9蓝队床:§4 ✘");
 
         new StartBukkitRunnable(players).runTaskTimer(instance, 0, 1);
+        MainMenu.pre_start = true;
     }
 
     public static void end() {
@@ -61,7 +63,7 @@ public final class GameState {
     }
 
     public static void reset() {
-        turn = 0;
+        turn = -1;
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR_TEAM_AQUA);
         changeSidebarEntries(5, "§6-------------§1");
         changeSidebarEntries(4, "§c红队床:§2 ✔");
@@ -83,6 +85,7 @@ public final class GameState {
         started = false;
         MainMenu.prepared.clear();
         MainMenu.start_tick = -1;
+        MainMenu.pre_start = false;
         TickRunner.ending = false;
     }
 
@@ -106,22 +109,24 @@ public final class GameState {
             nextTurn();
             return;
         }
-        players_data.forEach((p, d) -> {
+        players_data.forEach((p, pd) -> {
             p.getInventory().clear();
-            d.resetInventoryItems();
-            if (d.getOrder() == order) {
-                if (d.needRespawn()) {
-                    d.respawn();
+            pd.resetInventoryItems();
+            if (pd.getOrder() == order) {
+                if (pd.needRespawn() && pd.hasBed()) {
+                    pd.respawn();
+                } else if (pd.needRespawn() && !pd.hasBed()) {
+                    nextPlayer();
                 } else {
-                    Bukkit.broadcast(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName())));
+                    Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName()))));
                     bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
                     p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
-                    var is = d.getActions();
+                    var is = pd.getActions();
                     for (int i = 0; i < is.size(); i++) {
                         p.getInventory().setItem(i, is.get(i));
                     }
                 }
-                if (d.location instanceof Resource r) {
+                if (pd.location instanceof Resource r) {
                     r.giveMoney(p);
                 }
             }
@@ -130,7 +135,7 @@ public final class GameState {
             if (island instanceof Resource r) {
                 map.markers.forEach((m, n) -> {
                     if (r.equals(n)) {
-                        m.text(Component.text("%s岛".formatted(island.getType())).append(Component.text("\n%s存有数量:%d".formatted(island.getType().substring(2), r.getAmount()), NamedTextColor.RED)));
+                        m.text(Component.text(island instanceof Bed ? "%s基地".formatted(island.getType()) : "%s岛".formatted(island.getType())).append(Component.text("\n%s存有数量:%d".formatted(r instanceof Bed ? "铁" : island.getType().substring(2), r.getAmount()), TextColor.color(-65281))));
                     }
                 });
             }
@@ -234,7 +239,7 @@ public final class GameState {
                     var pd = new PlayerData(player);
                     player.setGameMode(GameMode.ADVENTURE);
                     player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
-                    player.teleport(pd.getMarker().getLocation().clone().add(0, 21, 0));
+                    player.teleport(pd.getMarker().getLocation().add(0, MainMenu.up.getOrDefault(player, true) ? 21 : 0, 0));
                     player.showBossBar(bossbar);
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 5, false, false));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 5, false, false));

@@ -4,6 +4,8 @@ import mc.bedwars.BedWars;
 import mc.bedwars.factory.Message;
 import mc.bedwars.factory.particle;
 import mc.bedwars.game.map.node.island.Island;
+import mc.bedwars.game.map.node.island.Platform;
+import mc.bedwars.game.map.node.island.resource.Bed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -36,6 +38,7 @@ public class TickRunner extends BukkitRunnable {
             players_data.forEach((player, pd) -> {
                 //下一个玩家
                 if (pd.getAction() <= 0 && pd.getOrder() == order && !ending) {
+                    pd.setAction(0);
                     nextPlayer();
                 }
                 //传送
@@ -96,12 +99,13 @@ public class TickRunner extends BukkitRunnable {
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (!started) return;
             var pd = players_data.get(player);
+            if (pd == null) return;
             player.sendActionBar(Component.text("|")
                     .append(player.teamDisplayName())
                     .append(Component.text("|§d当前目标"))
                     .append(pd.getTarget() == null ? Component.text("无", NamedTextColor.DARK_GRAY) : pd.getTarget().teamDisplayName())
-                    .append(Component.text("§a目标岛屿：%s岛 §b战力值：%s/%s§c血量值: %s §6经济:%s/64 §9行动力:%s".formatted(
-                            pd.target_location == null ? "§8无" : pd.target_location,
+                    .append(Component.text("§a目标岛屿：%s §b战力值：%s/%s§c血量值: %s §6经济:%s/64 §9行动力:%s".formatted(
+                            pd.target_location == null ? "§8无" : pd.target_location instanceof Platform ? "§5平台" : pd.target_location instanceof Bed ? pd.target_location + "基地" : pd.target_location,
                             pd.getPower(),
                             pd.getMaxPower(),
                             pd.getHealth(),

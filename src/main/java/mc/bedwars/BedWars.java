@@ -3,7 +3,6 @@ package mc.bedwars;
 import mc.bedwars.Command.resetCmd;
 import mc.bedwars.Command.start;
 import mc.bedwars.factory.ItemCreator;
-import mc.bedwars.factory.Message;
 import mc.bedwars.game.TickRunner;
 import mc.bedwars.menu.MainMenu;
 import mc.bedwars.menu.SlotMenu;
@@ -11,12 +10,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -38,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static mc.bedwars.factory.Message.rMsg;
 import static mc.bedwars.game.GameState.*;
 
 public final class BedWars extends JavaPlugin implements Listener {
@@ -68,11 +66,13 @@ public final class BedWars extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getWorld("world").getEntities().stream().filter(e -> e.getScoreboardTags().contains("himcd")).findFirst().ifPresent(entity -> {
-            TickRunner.himcd = (TextDisplay) entity;
-        });
+
 
         instance = this;
+
+        //noinspection DataFlowIssue
+        Bukkit.getWorld("world").getEntities().stream().filter(e -> !(e instanceof Player)).forEach(Entity::remove);
+        summonDecorationEntities();
 
         initScoreboard();
 
@@ -96,7 +96,7 @@ public final class BedWars extends JavaPlugin implements Listener {
         main_scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         sidebar = main_scoreboard.getObjective("sidebar");
         if (sidebar == null) {
-            sidebar = main_scoreboard.registerNewObjective("sidebar", Criteria.DUMMY, Message.rMsg("<yellow>BEDWARS"));
+            sidebar = main_scoreboard.registerNewObjective("sidebar", Criteria.DUMMY, rMsg("<yellow>BEDWARS"));
         }
         for (int i = 0; i < 7; i++) {
             sidebar_entries.add("null");
@@ -123,9 +123,7 @@ public final class BedWars extends JavaPlugin implements Listener {
         }
     }
 
-    @SuppressWarnings("unused")
-    @Deprecated
-    private void summonAR() {
+    private void summonDecorationEntities() {
         var w = Bukkit.getWorld("world");
         assert w != null;
         w.spawn(new Location(w, 4.5, 65, 13.7), ArmorStand.class, armorStand -> {
@@ -134,29 +132,59 @@ public final class BedWars extends JavaPlugin implements Listener {
             armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
             armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90018).getItem());
         });
+        w.spawn(new Location(w, 4.5, 67.25, 13.7), TextDisplay.class, textDisplay -> {
+            textDisplay.setBillboard(Display.Billboard.CENTER);
+            textDisplay.text(rMsg("极熠-蓝空"));
+            textDisplay.setBackgroundColor(Color.fromARGB(0));
+        });
+
         w.spawn(new Location(w, 3, 64.85, 13), ArmorStand.class, armorStand -> {
             armorStand.setMarker(true);
             armorStand.setInvisible(true);
             armorStand.teleport(armorStand.getLocation().setDirection(new Vector(-1, 0, -1)));
             armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90019).getItem());
         });
+        w.spawn(new Location(w, 3, 64.85 + 1.75, 13), TextDisplay.class, textDisplay -> {
+            textDisplay.setBillboard(Display.Billboard.CENTER);
+            textDisplay.text(rMsg("极熠-马某"));
+            textDisplay.setBackgroundColor(Color.fromARGB(0));
+        });
+
         w.spawn(new Location(w, 1.5, 64, 13.5), ArmorStand.class, armorStand -> {
             armorStand.setMarker(true);
             armorStand.setInvisible(true);
             armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
             armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90020).getItem());
         });
+        w.spawn(new Location(w, 1.5, 66.25, 13.5), TextDisplay.class, textDisplay -> {
+            textDisplay.setBillboard(Display.Billboard.CENTER);
+            textDisplay.text(rMsg("<aqua>极熠-红雷"));
+            textDisplay.setBackgroundColor(Color.fromARGB(-5746120));
+        });
+
         w.spawn(new Location(w, 0, 64, 13.5), ArmorStand.class, armorStand -> {
             armorStand.setMarker(true);
             armorStand.setInvisible(true);
             armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0, 0, -1)));
             armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90021).getItem());
         });
+        TickRunner.himcd = w.spawn(new Location(w, 0, 66.25, 13.5), TextDisplay.class, textDisplay -> {
+            textDisplay.setBillboard(Display.Billboard.CENTER);
+            textDisplay.text(rMsg("极熠-Himcd"));
+            textDisplay.setBackgroundColor(Color.fromARGB(-9868951));
+            textDisplay.addScoreboardTag("himcd");
+        });
+
         w.spawn(new Location(w, -2.2, 65, 13), ArmorStand.class, armorStand -> {
             armorStand.setMarker(true);
             armorStand.setInvisible(true);
             armorStand.teleport(armorStand.getLocation().setDirection(new Vector(0.2, 0, -1)));
             armorStand.getEquipment().setHelmet(ItemCreator.create(Material.PAPER).data(90022).getItem());
+        });
+        w.spawn(new Location(w, -2.2, 67.25, 13), TextDisplay.class, textDisplay -> {
+            textDisplay.setBillboard(Display.Billboard.CENTER);
+            textDisplay.text(rMsg("DummyTeam-某人"));
+            textDisplay.setBackgroundColor(Color.fromARGB(0));
         });
     }
 
@@ -178,6 +206,7 @@ public final class BedWars extends JavaPlugin implements Listener {
         var p = event.getPlayer();
         MainMenu.removePrepared(p);
     }
+
 
     @EventHandler
     public void onHurt(EntityDamageByEntityEvent e) {
@@ -213,7 +242,8 @@ public final class BedWars extends JavaPlugin implements Listener {
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (started) {
-            players_data.get((Player) event.getPlayer()).resetInventoryItems();
+            var pd = players_data.get((Player) event.getPlayer());
+            if (pd != null) pd.resetInventoryItems();
         }
     }
 }

@@ -79,7 +79,7 @@ public class GameMap {
                 marker.setTransformation(new Transformation(t.getTranslation().add(0, 5, 0), t.getLeftRotation(), t.getScale().mul(4), t.getRightRotation()));
                 marker.setBillboard(Display.Billboard.CENTER);
                 marker.setDefaultBackground(true);
-                marker.text(Component.text("%s岛".formatted(i.getType())));
+                marker.text(Component.text(i instanceof Platform ? "§5平台" : "%s岛".formatted(i.getType())));
             }), i);
         }
     }
@@ -88,6 +88,12 @@ public class GameMap {
         return new Location(Bukkit.getWorld("world"), (island.getX() - 2) * 20 + 0.5, 1, (island.getY() - 2) * 20 + 0.5);
     }
 
+    /**
+     * 更改两座岛之间桥的material
+     *
+     * @param l1 岛1
+     * @param l2 岛2
+     */
     public static void replaceBlock(Location l1, Location l2, Material material) {
         l1.setY(0);
         l2.setY(0);
@@ -110,6 +116,10 @@ public class GameMap {
         }
     }
 
+    /**
+     * @param x 游戏地图的x坐标
+     * @param y 游戏地图的y坐标
+     */
     public static Island getIsland(int x, int y) {
         var i = map.islands.stream().filter(island -> island.getX() == x && island.getY() == y).findFirst();
         return i.orElse(null);
@@ -118,7 +128,7 @@ public class GameMap {
     public void breakRoad(Player p, Road r) {
         p.getServer().getOnlinePlayers().forEach(player -> player.sendMessage(Component.text("         %s破坏了一座桥;".formatted(p.getName()))));
         r.setMaterial(Material.AIR);
-        r.players.forEach(player -> {
+        new ArrayList<>(r.players).forEach(player -> {
             PlayerData pd = players_data.get(player);
             var wool = pd.items.stream().filter(item -> item instanceof Wool).findFirst();
             if (wool.isPresent()) {
@@ -130,6 +140,12 @@ public class GameMap {
         });
     }
 
+    /**
+     * 一个玩家使另一个玩家掉入虚空
+     *
+     * @param causer 引发p掉入虚空的玩家
+     * @param p      掉入虚空的玩家
+     */
     public static void intoVoid(Player causer, Player p) {
         var pd = players_data.get(p);
         var ep = pd.items.stream().filter(item -> item instanceof EnderPearl).findFirst();
@@ -139,13 +155,17 @@ public class GameMap {
         } else pd.die(causer);
     }
 
+    /**
+     * @param p     玩家
+     * @param start 开始
+     * @param end   终点
+     * @return 是否成功
+     */
     public boolean tryMove(Player p, Node start, Node end) {
         PlayerData pd = players_data.get(p);
         var order = pd.getOrder();
         var dxz = order <= 2 ? (order - 3) * 0.5 : (order - 2) * 0.5;
         if (start.equals(end)) {
-            start.players.remove(p);
-            pd.die(p);
             return true;
         } else if (start instanceof Island island) {
             //在岛上
@@ -160,6 +180,9 @@ public class GameMap {
                 dxz *= 0.5;
                 pd.getMarker().teleport(l3.add(dxz, 0, dxz));
                 return true;
+            } else {
+                start.players.remove(p);
+                pd.die(p);
             }
         } else if (start instanceof Road r) {
             //在桥上
@@ -174,6 +197,9 @@ public class GameMap {
         return false;
     }
 
+    /**
+     * 最终的移动
+     */
     public void moveTo(Player p, Node end) {
         PlayerData pd = players_data.get(p);
         pd.location = end;

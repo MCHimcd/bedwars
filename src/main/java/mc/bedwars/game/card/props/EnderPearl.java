@@ -21,7 +21,6 @@ public class EnderPearl extends Card implements Prop {
         var pd = GameState.players_data.get(player);
         pd.addAction(1);
         pd.location.players.remove(player);
-        pd.location = pd.target_location;
         map.moveTo(player, pd.target_location);
         player.getWorld().spawnParticle(Particle.WITCH, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
         var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
@@ -47,7 +46,7 @@ public class EnderPearl extends Card implements Prop {
 
     @Override
     public int costMoney() {
-        return 16;
+        return 24;
     }
 
     @Override
@@ -79,7 +78,7 @@ public class EnderPearl extends Card implements Prop {
                 "<white>自救:掉入虚空可以回到原来所在岛屿或桥并立即获得1行动点",
                 "",
                 "<aqua>每次购买数量:1",
-                "<green>经济:16"
+                "<green>经济:24"
         ));
     }
 
@@ -92,8 +91,9 @@ public class EnderPearl extends Card implements Prop {
         var pd = GameState.players_data.get(player);
         map.islands.stream().filter(island -> island instanceof Bed b && b.getOrder() == pd.getOrder()).findFirst().ifPresent(island -> {
             pd.location = island;
+            island.players.add(player);
             var dxz = pd.getOrder() <= 2 ? (pd.getOrder() - 3) * 0.5 : (pd.getOrder() - 2) * 0.5;
-            pd.getMarker().teleport(GameMap.getLocation(island).add(dxz, 0, dxz));
+            pd.getMarker().teleport(GameMap.getLocation(island).setDirection(pd.getMarkerDirection()).add(dxz, 0, dxz));
             pd.items.remove(this);
             pd.resetInventoryItems();
         });

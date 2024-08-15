@@ -29,7 +29,7 @@ public class PlaceBedMenu extends SlotMenu {
                             pd.placeBedBlock(((isBlock) card).material());
                             pd.items.remove(card);
                             p.sendMessage(Component.text("         %s放置%s成功".formatted(pd.getProtectBed(), ((isBlock) card).material())));
-                            pd.addAction(-1);
+//                            pd.addAction(-1);
                         });
             }
         }

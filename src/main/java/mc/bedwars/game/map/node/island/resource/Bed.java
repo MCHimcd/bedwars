@@ -10,7 +10,7 @@ public class Bed extends Resource {
 
     @Override
     public String getType() {
-        return "§%s%s队床".formatted(
+        return "§%s%s队".formatted(
                 switch (order) {
                     case 1 -> "c";
                     case 2 -> "a";
@@ -29,13 +29,13 @@ public class Bed extends Resource {
     }
 
     @Override
-    public int getMaxAmount() {
-        return 4;
+    public int getMoneyOfEach() {
+        return 2;
     }
 
     @Override
-    public int getMoneyOfEach() {
-        return 2;
+    public int getMaxAmount() {
+        return 4;
     }
 
     @Override

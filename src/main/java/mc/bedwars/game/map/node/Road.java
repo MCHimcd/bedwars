@@ -18,6 +18,9 @@ public class Road extends Node {
         setMaterial(m);
     }
 
+    /**
+     * @return 该路两端是否含有指定的node
+     */
     public boolean hasNode(Node node) {
         return nodes.contains(node);
     }
@@ -31,10 +34,6 @@ public class Road extends Node {
         replaceBlock(getLocation((Island) nodes.get(0)), getLocation((Island) nodes.get(1)), m);
         if (nodes.size() > 2)
             replaceBlock(getLocation((Island) nodes.get(2)), getLocation((Island) nodes.get(3)), m);
-    }
-
-    public void setEnd(Node node) {
-        nodes.set(1, node);
     }
 
     @Override

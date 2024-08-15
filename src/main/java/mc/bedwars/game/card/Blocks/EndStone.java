@@ -47,7 +47,7 @@ public class EndStone extends Card implements isBlock, multiplePurchase {
 
     @Override
     public Component Name() {
-        return rMsg("<white>防爆玻璃");
+        return rMsg("<white>末地石");
     }
 
     @Override
