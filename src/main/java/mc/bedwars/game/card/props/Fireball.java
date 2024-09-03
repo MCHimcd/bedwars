@@ -5,7 +5,6 @@ import mc.bedwars.game.card.Card;
 import mc.bedwars.game.map.GameMap;
 import mc.bedwars.game.map.node.island.Island;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -25,12 +24,9 @@ public class Fireball extends Card implements Prop {
             pd.target_location_1 = pd.target_location;
             player.sendMessage(Message.rMsg("<aqua>选择下一个岛"));
         } else {
-            Island i1 = (Island) pd.target_location_1.clone();
-            pd.target_location_1 = null;
+            Island i1 = pd.target_location_1;
             var road = map.roads.stream().filter(r -> r.hasNode(pd.target_location) && r.hasNode(i1)).findFirst();
             if (road.isPresent()) {
-                Bukkit.broadcast(Component.text(i1.getType()));
-                Bukkit.broadcast(Component.text(pd.target_location.getType()));
                 if (switch (road.get().getMaterial()) {
                     case WHITE_WOOL, CRIMSON_PLANKS -> true;
                     default -> false;
@@ -48,6 +44,7 @@ public class Fireball extends Card implements Prop {
             } else {
                 player.sendMessage(Message.rMsg("<aqua>请重新选择"));
             }
+            pd.target_location_1 = null;
         }
         return false;
     }

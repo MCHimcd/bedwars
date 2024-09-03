@@ -40,15 +40,6 @@ public abstract class Card implements Cloneable {
      */
     abstract public boolean CanUse();
 
-    @Override
-    public Card clone() {
-        try {
-            return (Card) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 //    abstract public boolean NeedTarget();
 
     //1xxxx   装备

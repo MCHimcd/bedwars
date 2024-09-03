@@ -26,7 +26,6 @@ public class Tnt extends Card implements Prop {
             player.sendMessage(Message.rMsg("<aqua>选择下一个岛"));
         } else {
             Island i1 = (Island) pd.target_location_1.clone();
-            pd.target_location_1 = null;
             var road = map.roads.stream().filter(r -> r.hasNode(pd.target_location) && r.hasNode(i1)).findFirst();
             if (road.isPresent()) {
                 if (switch (road.get().getMaterial()) {
@@ -46,6 +45,7 @@ public class Tnt extends Card implements Prop {
             } else {
                 player.sendMessage(Message.rMsg("<aqua>请重新选择"));
             }
+            pd.target_location_1 = null;
         }
         return false;
     }

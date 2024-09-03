@@ -4,10 +4,10 @@ import mc.bedwars.BedWars;
 import mc.bedwars.factory.Message;
 import mc.bedwars.factory.particle;
 import mc.bedwars.game.map.node.island.Island;
-import mc.bedwars.game.map.node.island.Platform;
-import mc.bedwars.game.map.node.island.resource.Bed;
+import mc.bedwars.menu.MainMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -30,7 +30,7 @@ import static mc.bedwars.menu.SkinMenu.skins;
 public class TickRunner extends BukkitRunnable {
     public static boolean ending = false;
     public static TextDisplay himcd;
-    private int himcd_c = 0;
+    private int himcd_timer = 0;
 
     @Override
     public void run() {
@@ -38,7 +38,6 @@ public class TickRunner extends BukkitRunnable {
             players_data.forEach((player, pd) -> {
                 //下一个玩家
                 if (pd.getAction() <= 0 && pd.getOrder() == order && !ending) {
-                    pd.setAction(0);
                     nextPlayer();
                 }
                 //传送
@@ -53,7 +52,7 @@ public class TickRunner extends BukkitRunnable {
                                 Title.Times.times(Duration.ZERO, Duration.ofMillis(1000), Duration.ZERO)));
                     }
                     if (pd.snakeTime++ >= 20) {
-                        var l = pd.getMarker().getLocation().clone();
+                        var l = pd.getMarker().getLocation();
                         l.setY(player.getY());
                         player.teleport(l);
                         player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, .5f);
@@ -74,17 +73,15 @@ public class TickRunner extends BukkitRunnable {
             });
         } else {
             //大厅信息显示
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                player.sendActionBar(
-                        Component.text("你选择的皮肤是：", NamedTextColor.DARK_AQUA)
-                                .append(itemNames.get(skins.getOrDefault(player, 90000) - 90000))
-                );
-
-            });
+            Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(
+                    Message.rMsg("<color:#FFF2E2>你选择的皮肤是：")
+                            .append(itemNames.get(skins.getOrDefault(player, 90000) - 90000))
+                            .append(Message.rMsg(" <color:#EAEAEF>| <color:#DCE2F1>你将会在<gold>%s层<color:#DCE2F1>下棋".formatted(MainMenu.up.getOrDefault(player, true) ? "上" : "下")))
+            ));
             //开始倒计时
             if (start_tick >= 0 && start_tick < 200) {
                 if (start_tick % 20 == 0) {
-                    prepared.forEach(player -> {
+                    Bukkit.getOnlinePlayers().forEach(player -> {
                         player.showTitle(Message.title("%d".formatted((200 - start_tick) / 20), "", 0, 1000, 0));
                         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
                     });
@@ -100,12 +97,14 @@ public class TickRunner extends BukkitRunnable {
             if (!started) return;
             var pd = players_data.get(player);
             if (pd == null) return;
-            player.sendActionBar(Component.text("|")
-                    .append(player.teamDisplayName())
-                    .append(Component.text("|§d当前目标"))
-                    .append(pd.getTarget() == null ? Component.text("无", NamedTextColor.DARK_GRAY) : pd.getTarget().teamDisplayName())
-                    .append(Component.text("§a目标岛屿：%s §b战力值：%s/%s§c血量值: %s §6经济:%s/64 §9行动力:%s".formatted(
-                            pd.target_location == null ? "§8无" : pd.target_location instanceof Platform ? "§5平台" : pd.target_location instanceof Bed ? pd.target_location + "基地" : pd.target_location,
+            player.sendActionBar(Message.msg.deserialize("|<name>|", Placeholder.component("name", player.teamDisplayName()))
+                    .append(pd.canPVP() ? Component.text(" §dPVP目标:").append(pd.getTarget() == null ? Component.text("无", NamedTextColor.DARK_GRAY) : pd.getTarget().teamDisplayName()) : Component.empty())
+                    .append(
+                            pd.target_location != null ?
+                                    Message.rMsg(" <color:#B7E8BD>目标岛屿:").append(Component.text(pd.target_location.toString())) :
+                                    Component.empty()
+                    )
+                    .append(Component.text(" §b战力值:%s/%s§c 血量值:%s §6经济:%s/64 §9行动力:%s".formatted(
                             pd.getPower(),
                             pd.getMaxPower(),
                             pd.getHealth(),
@@ -122,8 +121,8 @@ public class TickRunner extends BukkitRunnable {
         });
 
         if (himcd != null) {
-            if (himcd_c++ == 20) himcd_c = 0;
-            himcd.text(Message.rMsg("<rainbow:%d>极熠-Himcd".formatted(himcd_c)));
+            if (himcd_timer++ == 20) himcd_timer = 0;
+            himcd.text(Message.rMsg("<rainbow:%d>极熠-Himcd".formatted(himcd_timer)));
         }
     }
 

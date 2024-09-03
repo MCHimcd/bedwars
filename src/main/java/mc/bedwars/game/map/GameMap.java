@@ -175,21 +175,27 @@ public class GameMap {
                 moveTo(p, road.get());
                 var l1 = GameMap.getLocation(island);
                 var l2 = GameMap.getLocation((Island) end);
-                var l3 = new Location(l1.getWorld(), (l1.x() + l2.x()) / 2, 1, (l1.z() + l2.z()) / 2);
-                l3.setDirection(players_data.get(p).getMarkerDirection());
                 dxz *= 0.5;
-                pd.getMarker().teleport(l3.add(dxz, 0, dxz));
+                pd.getMarker().teleport(new Location(
+                        l1.getWorld(),
+                        (l1.x() + l2.x()) / 2,
+                        1,
+                        (l1.z() + l2.z()) / 2
+                ).setDirection(players_data.get(p).getMarkerDirection()).add(dxz, 0, dxz));
                 return true;
             } else {
                 start.players.remove(p);
                 pd.die(p);
+                pd.addAction(-1);
             }
         } else if (start instanceof Road r) {
             //在桥上
             if (r.hasNode(end)) {
                 r.players.remove(p);
                 moveTo(p, end);
-                var l = GameMap.getLocation((Island) end).add(dxz, 0, dxz);
+                var l = GameMap.getLocation((Island) end)
+                        .setDirection(players_data.get(p).getMarkerDirection())
+                        .add(dxz, 0, dxz);
                 pd.getMarker().teleport(l);
                 return true;
             }
@@ -203,14 +209,14 @@ public class GameMap {
     public void moveTo(Player p, Node end) {
         PlayerData pd = players_data.get(p);
         pd.location = end;
-        var is = pd.getActions();
+        var is = pd.getActionItems();
         for (int i = 0; i < is.size(); i++) {
             p.getInventory().setItem(i, is.get(i));
         }
-        if (end instanceof Resource r) {
-            r.giveMoney(p);
-        }
         end.players.add(p);
+        if (end instanceof Resource r) {
+            r.giveMoney();
+        }
         pd.addAction(-1);
     }
 }

@@ -19,7 +19,7 @@ public abstract class Node implements Cloneable {
 
     @Override
     public String toString() {
-        return getType();
+        return getType() + "岛";
     }
 
     public abstract String getType();

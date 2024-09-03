@@ -9,6 +9,11 @@ public class Bed extends Resource {
     }
 
     @Override
+    public String toString() {
+        return getType() + "基地";
+    }
+
+    @Override
     public String getType() {
         return "§%s%s队".formatted(
                 switch (order) {

@@ -54,7 +54,8 @@ public class ChooseDestroyBedBlockMenu extends SlotMenu {
         }
 
         for (int i = 5; i <= 7; i++) {
-            if (pd_destroyer.protectBedBlockMaterial(i - 1) != Material.AIR) {
+            int c = i - 1;
+            if (pd_destroyer.protectBedBlockMaterial(c) != Material.AIR) {
                 setSlot(i, ItemCreator.create(Material.BLACK_STAINED_GLASS).getItem(), (it, pl) -> {
                 });
             } else {

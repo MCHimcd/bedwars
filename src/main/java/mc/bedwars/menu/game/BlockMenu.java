@@ -31,11 +31,27 @@ public class BlockMenu extends SlotMenu {
                             .hideAttributes().getItem(),
                     (it, pl) -> {
                         var pd1 = players_data.get(p);
-                        pd1.items.remove(card);
-                        map.roads.add(new Road(((isBlock) card).material(), pd1.location, pd1.target_location));
-                        p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.5f);
-                        p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1.5f);
-                        pd1.addAction(-1);
+                        var success = true;
+
+                        var m = ((isBlock) card).material();
+                        var road = map.roads.stream().filter(r -> r.hasNode(pd1.location) && r.hasNode(pd1.target_location)).findFirst();
+                        if (road.isPresent()) {
+                            if (road.get().getMaterial() == m) {
+                                pl.sendMessage(Component.text("该位置已有指定方块的桥"));
+                                success = false;
+                            } else {
+                                road.get().setMaterial(m);
+                            }
+                        } else {
+                            map.roads.add(new Road(m, pd1.location, pd1.target_location));
+                        }
+
+                        if (success) {
+                            p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.5f);
+                            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1.5f);
+                            pd.items.remove(card);
+                            pd1.addAction(-1);
+                        }
                     }
             );
         }

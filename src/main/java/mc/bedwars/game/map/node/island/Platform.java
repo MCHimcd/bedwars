@@ -6,6 +6,11 @@ public class Platform extends Island {
     }
 
     @Override
+    public String toString() {
+        return getType();
+    }
+
+    @Override
     public String getType() {
         return "§5平台";
     }

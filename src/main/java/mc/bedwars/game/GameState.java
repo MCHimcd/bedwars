@@ -8,8 +8,8 @@ import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.game.map.node.island.resource.Resource;
 import mc.bedwars.menu.MainMenu;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -83,10 +83,10 @@ public final class GameState {
         if (map != null) map.markers.keySet().forEach(Entity::remove);
         map = new GameMap(Bukkit.getWorld("world"));
         started = false;
+        TickRunner.ending = false;
         MainMenu.prepared.clear();
         MainMenu.start_tick = -1;
         MainMenu.pre_start = false;
-        TickRunner.ending = false;
     }
 
     public static void resetPlayer(Player player) {
@@ -101,7 +101,7 @@ public final class GameState {
         player.setGameMode(GameMode.ADVENTURE);
         Objects.requireNonNull(player.getAttribute(GENERIC_JUMP_STRENGTH)).setBaseValue(0.5);
 
-        player.getInventory().addItem(ItemCreator.create(Material.PAPER).data(60000).name(Message.rMsg("主菜单", NamedTextColor.GOLD)).getItem());
+        player.getInventory().addItem(ItemCreator.create(Material.PAPER).data(60000).name(Message.rMsg("<gold>主菜单")).getItem());
     }
 
     public static void nextPlayer() {
@@ -118,37 +118,38 @@ public final class GameState {
                 } else if (pd.needRespawn() && !pd.hasBed()) {
                     nextPlayer();
                 } else {
-                    Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(Message.rMsg("               <gold>现在轮到<aqua><bold> %s <reset><gold>的回合了".formatted(p.getName()))));
-                    bossbar.name(Message.rMsg("<aqua><bold>%s</bold>回合<gold>  当前轮次:</gold><blue><bold>%s".formatted(p.getName(), turn)));
+                    p.getWorld().sendMessage(Message.msg.deserialize("               <gold>现在轮到<aqua><bold><name></bold><gold>的回合了", Placeholder.component("name", p.teamDisplayName())));
+                    bossbar.name(Message.msg.deserialize("<aqua><name>的回合<gold>  当前轮次：<color:#00FF7F>%d".formatted(turn), Placeholder.component("name", p.teamDisplayName())));
                     p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f, 2f);
-                    var is = pd.getActions();
+                    var is = pd.getActionItems();
                     for (int i = 0; i < is.size(); i++) {
                         p.getInventory().setItem(i, is.get(i));
                     }
                 }
-                if (pd.location instanceof Resource r) {
-                    r.giveMoney(p);
+            }
+            for (var island : map.islands) {
+                if (island instanceof Resource r) {
+                    r.giveMoney();
+                    map.markers.forEach((m, n) -> {
+                        if (r.equals(n)) {
+                            m.text(Component.text(island.toString()).append(Component.text("\n%s存有数量:%d".formatted(r instanceof Bed ? "铁" : island.getType().substring(2), r.getAmount()), TextColor.color(-65281))));
+                        }
+                    });
                 }
             }
         });
-        for (var island : map.islands) {
-            if (island instanceof Resource r) {
-                map.markers.forEach((m, n) -> {
-                    if (r.equals(n)) {
-                        m.text(Component.text(island instanceof Bed ? "%s基地".formatted(island.getType()) : "%s岛".formatted(island.getType())).append(Component.text("\n%s存有数量:%d".formatted(r instanceof Bed ? "铁" : island.getType().substring(2), r.getAmount()), TextColor.color(-65281))));
-                    }
-                });
-            }
-        }
     }
 
     public static void nextTurn() {
         order = 0;
         turn++;
         map.islands.forEach(node -> {
-            if (node instanceof Resource r) r.generate();
+            if (node instanceof Resource r) {
+                r.generate();
+            }
         });
-        players_data.forEach((it, playerData) -> {
+
+        players_data.forEach((player, playerData) -> {
             //重置临时战力
             playerData.resetTemporaryPower();
             //血量低于50回血

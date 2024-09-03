@@ -49,7 +49,12 @@ public class BridgeEgg extends Card implements Prop {
     }
 
     private void createRoadAndNotify(Player player, Island i1, Island i2, PlayerData pd) {
-        map.roads.add(new Road(Material.WHITE_WOOL, i1, i2));
+        var road = map.roads.stream().filter(r -> r.hasNode(i1) && r.hasNode(i2)).findFirst();
+        if (road.isPresent()) {
+            if (road.get().getMaterial() == Material.AIR) road.get().setMaterial(Material.WHITE_WOOL);
+        } else {
+            map.roads.add(new Road(Material.WHITE_WOOL, i1, i2));
+        }
         player.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, pd.getMarker().getLocation(), 100, 0.5, 1, 0.5, 0.3, null, true);
         player.playSound(player, Sound.ENTITY_EGG_THROW, 1f, 1f);
     }

@@ -42,6 +42,7 @@ public class DestroyBedMenu extends SlotMenu {
                                     pld.setProtectBed(j);
                                     p.sendMessage(Component.text("            正确的的选择，该玩家%s层保护为%s".formatted(pd.getDestroyBedBlock(), pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
                                     pld.placeBedBlock(Material.AIR);
+                                    p.sendMessage(Component.text("            %s".formatted(pld.protectBedBlockMaterial(pd.getDestroyBedBlock()))));
                                     p.closeInventory();
                                 } else {
                                     pd.addAction(-1);

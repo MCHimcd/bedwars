@@ -9,6 +9,7 @@ import mc.bedwars.game.map.node.island.Island;
 import mc.bedwars.game.map.node.island.resource.Bed;
 import mc.bedwars.menu.SkinMenu;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -96,7 +97,7 @@ public class PlayerData {
                 team.addEntity(ar);
                 ar.setGlowing(true);
                 ar.setCustomNameVisible(true);
-                ar.customName(Message.rMsg("<rainbow>%s的棋子".formatted(player.getName())));
+                ar.customName(Message.msg.deserialize("<name><color:#F5FFFA>的棋子", Placeholder.component("name", player.teamDisplayName())));
                 ar.setBasePlate(false);
                 ar.setInvulnerable(true);
                 var equip = ar.getEquipment();
@@ -113,20 +114,17 @@ public class PlayerData {
             });
         });
         players_data.put(player, this);
-        money = 9999;//todo
     }
 
     /**
      * @return 获得盔甲架应该的朝向
      */
     public Vector getMarkerDirection() {
-        return switch (order) {
-            case 1 -> new Vector(-1, 0, 0);
-            case 2 -> new Vector(0, 0, 1);
-            case 3 -> new Vector(1, 0, 0);
-            case 4 -> new Vector(0, 0, -1);
-            default -> throw new IllegalStateException("Unexpected value: " + order);
-        };
+        return new Vector(
+                order % 2 == 1 ? (order - 2) : 0,
+                0,
+                order % 2 == 0 ? (-order + 3) : 0
+        );
     }
 
     /**
@@ -184,13 +182,6 @@ public class PlayerData {
 
     public void addTemporaryPower(int amount) {
         temporary_power += amount;
-    }
-
-    /**
-     * @param amount 行动点数量
-     */
-    public void addAction(int amount) {
-        action += amount;
     }
 
     /**
@@ -306,10 +297,6 @@ public class PlayerData {
         health = amount;
     }
 
-    public boolean hasBed() {
-        return has_bed;
-    }
-
     public boolean needRespawn() {
         return needSpawn;
     }
@@ -321,7 +308,14 @@ public class PlayerData {
         });
         needSpawn = false;
         player.sendMessage(Message.rMsg("             <green>消耗 ① 行动点你复活了"));
-        action = 0;
+        addAction(-1);
+    }
+
+    /**
+     * @param amount 行动点数量-正为加，负为减
+     */
+    public void addAction(int amount) {
+        action = Math.max(0, action + amount);
     }
 
     /**
@@ -329,10 +323,6 @@ public class PlayerData {
      */
     public int getAction() {
         return action;
-    }
-
-    public void setAction(int action) {
-        this.action = action;
     }
 
     public boolean removeMoney(int amount) {
@@ -346,6 +336,7 @@ public class PlayerData {
     public void destroyBed() {
         if (has_bed) {
             has_bed = false;
+
             changeSidebarEntries(5 - order, "%s队床:§4 ✘".formatted(switch (order) {
                 case 1 -> "§c红";
                 case 2 -> "§a绿";
@@ -445,14 +436,10 @@ public class PlayerData {
         }
     }
 
-    public int getOrder() {
-        return order;
-    }
-
     /**
      * @return 玩家快捷栏里的物品
      */
-    public List<ItemStack> getActions() {
+    public List<ItemStack> getActionItems() {
         List<ItemStack> items = new ArrayList<>();
         //移动 60007
         items.add(ItemCreator.create(Material.PAPER).data(60007).name(Component.text("§a移动")).getItem());
@@ -462,7 +449,7 @@ public class PlayerData {
         }
         //选择目标 60009
         //pvp 60002
-        if (location.players.size() > 1) {
+        if (canPVP()) {
             items.add(ItemCreator.create(Material.PAPER).data(60009).name(Component.text("§7选择目标")).getItem());
             items.add(ItemCreator.create(Material.PAPER).data(60002).name(Component.text("§cPVP")).getItem());
         }
@@ -474,10 +461,24 @@ public class PlayerData {
         if (location instanceof Bed) {
             //商店
             items.add(ItemCreator.create(Material.PAPER).data(60005).name(Component.text("§6商店")).getItem());
-            items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("§3与床互动")).getItem());
+            players_data.values().stream().filter(playerData -> playerData.getOrder() == ((Bed) location).getOrder() && playerData.hasBed()).findFirst().ifPresent(_ -> {
+                items.add(ItemCreator.create(Material.PAPER).data(60010).name(Component.text("§3与床互动")).getItem());
+            });
         }
         //跳过回合
         items.add(ItemCreator.create(Material.PAPER).data(60011).name(Component.text("§9跳过回合")).getItem());
         return items;
+    }
+
+    public boolean hasBed() {
+        return has_bed;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public boolean canPVP() {
+        return location.players.size() >= 2;
     }
 }

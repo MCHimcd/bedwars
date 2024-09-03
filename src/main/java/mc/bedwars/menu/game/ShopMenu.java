@@ -91,7 +91,7 @@ public class ShopMenu extends SlotMenu {
                             var count = 1;
                             if (card instanceof multiplePurchase mp) count = mp.getPurchaseAmount();
                             for (int j = 0; j < count; j++) {
-                                pd.items.add(card.clone());
+                                pd.items.add(card);
                             }
                             pd.resetInventoryItems();
                         } else {

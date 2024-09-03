@@ -28,7 +28,7 @@ public class EnderPearl extends Card implements Prop {
 
         player.getInventory().clear();
         pd.resetInventoryItems();
-        var is = pd.getActions();
+        var is = pd.getActionItems();
         for (int i = 0; i < is.size(); i++) {
             player.getInventory().setItem(i, is.get(i));
         }

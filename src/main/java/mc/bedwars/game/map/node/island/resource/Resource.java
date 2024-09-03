@@ -4,7 +4,6 @@ import mc.bedwars.factory.Message;
 import mc.bedwars.game.GameState;
 import mc.bedwars.game.map.node.island.Island;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
 public abstract class Resource extends Island {
     private int r_amount = 0;
@@ -19,9 +18,12 @@ public abstract class Resource extends Island {
     }
 
     /**
-     * 尝试给指定的玩家钱
+     * 给第一个上岛的玩家钱
      */
-    public void giveMoney(Player p) {
+    public void giveMoney() {
+        if (players.isEmpty()) return;
+        var p = players.getFirst();
+        if (p == null) return;
         var pd = GameState.players_data.get(p);
         if (r_amount > 0) {
             pd.addMoney(r_amount * getMoneyOfEach());
